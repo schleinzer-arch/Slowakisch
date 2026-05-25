@@ -23,11 +23,67 @@
   <script type="text/babel">
     const { useState, useEffect, useCallback } = React;
 
-const COLORS = {
+
+// ── STORAGE HELPERS ──────────────────────────────────────────────────────────
+function loadProgress() {
+  try { return JSON.parse(localStorage.getItem("sk_progress") || "{}"); } catch { return {}; }
+}
+function saveProgress(known, learning) {
+  try { localStorage.setItem("sk_progress", JSON.stringify({ known: [...known], learning: [...learning] })); } catch {}
+}
+function loadTheme() {
+  try { return localStorage.getItem("sk_theme") || "dark"; } catch { return "dark"; }
+}
+function saveTheme(t) {
+  try { localStorage.setItem("sk_theme", t); } catch {}
+}
+
+
+// ── AUSSPRACHE-TIPPS ─────────────────────────────────────────────────────────
+const PRONUNC = {
+  "š": "= 'sch' wie in 'Schule'",
+  "č": "= 'tsch' wie in 'Tschüss'",
+  "ž": "= 'sh' wie im französischen 'je'",
+  "ď": "= weiches 'dj' (Zunge an Gaumen)",
+  "ť": "= weiches 'tj' (Zunge an Gaumen)",
+  "ň": "= 'nj' wie in spanisch 'mañana'",
+  "ľ": "= weiches 'lj' (Zunge an Gaumen)",
+  "á": "= langes 'a'",
+  "é": "= langes 'e'",
+  "í": "= langes 'i'",
+  "ó": "= langes 'o'",
+  "ú": "= langes 'u'",
+  "ý": "= langes 'i'",
+  "ô": "= 'uo' (Diphthong)",
+  "dz": "= 'dz' wie in 'Adze'",
+  "dž": "= 'dsch' wie in 'Dschungel'",
+};
+
+function getPronunciationTips(word) {
+  const tips = [];
+  const lower = word.toLowerCase();
+  if (lower.includes("dž")) tips.push({ ch: "dž", tip: PRONUNC["dž"] });
+  if (lower.includes("dz") && !lower.includes("dž")) tips.push({ ch: "dz", tip: PRONUNC["dz"] });
+  for (const [ch, tip] of Object.entries(PRONUNC)) {
+    if (ch === "dz" || ch === "dž") continue;
+    if (lower.includes(ch)) tips.push({ ch, tip });
+  }
+  return tips;
+}
+
+const DARK = {
   bg: "#0f0e17", surface: "#1a1928", card: "#22203a",
   accent: "#e8c547", accentSoft: "#e8c54722", text: "#fffffe",
   muted: "#a7a9be", success: "#4ecdc4", error: "#ff6b6b", border: "#2e2c4a",
 };
+const LIGHT = {
+  bg: "#f5f4f0", surface: "#ffffff", card: "#ffffff",
+  accent: "#b8960a", accentSoft: "#e8c54722", text: "#1a1a2e",
+  muted: "#6b6b8a", success: "#2a9d8f", error: "#e63946", border: "#dddbe8",
+};
+// COLORS is set dynamically by App via window.__COLORS__
+let COLORS = DARK;
+
 
 // ── VOCAB: ~40 cards per category ────────────────────────────────────────────
 
@@ -433,9 +489,9 @@ function FlashCards() {
   const [cat, setCat] = useState("Alle");
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [known, setKnown] = useState(new Set());
-  const [learning, setLearning] = useState(new Set());
-  const [randomPool, setRandomPool] = useState(null); // null = kein Mix-Modus
+  const [known, setKnown] = useState(() => { const p = loadProgress(); return new Set(p.known || []); });
+  const [learning, setLearning] = useState(() => { const p = loadProgress(); return new Set(p.learning || []); });
+  const [randomPool, setRandomPool] = useState(null);
 
   const basePool = cat === "Alle" ? VOCAB : VOCAB.filter(v => v.cat === cat);
   const pool = randomPool || basePool;
@@ -458,15 +514,23 @@ function FlashCards() {
 
   const next = (mark) => {
     const key = `${cat}-${idx}`;
-    if (mark === "known") setKnown(s => new Set([...s, key]));
-    else setLearning(s => new Set([...s, key]));
+    const newKnown = mark === "known" ? new Set([...known, key]) : known;
+    const newLearning = mark === "learning" ? new Set([...learning, key]) : learning;
+    if (mark === "known") setKnown(newKnown); else setLearning(newLearning);
+    if (!randomPool) saveProgress(newKnown, newLearning);
     setFlipped(false);
     setTimeout(() => setIdx(i => (i + 1) % pool.length), 100);
+  };
+
+  const resetProgress = () => {
+    setKnown(new Set()); setLearning(new Set());
+    saveProgress(new Set(), new Set());
   };
 
   const isRandomMode = !!randomPool;
   const currentPos = idx % pool.length;
   const isLastCard = isRandomMode && currentPos === pool.length - 1;
+  const pronTips = getPronunciationTips(card.sk);
 
   const speak = (text) => {
     if (!window.speechSynthesis) return;
@@ -509,9 +573,12 @@ function FlashCards() {
         <div style={{ flex: 1, margin: "0 12px", height: 5, background: COLORS.border, borderRadius: 3 }}>
           <div style={{ width: `${isRandomMode ? Math.round(((currentPos + 1) / pool.length) * 100) : progress}%`, height: "100%", background: COLORS.accent, borderRadius: 3, transition: "width 0.4s" }} />
         </div>
-        <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           <span style={S.badge(COLORS.success)}>✓ {known.size}</span>
           <span style={S.badge(COLORS.error)}>↺ {learning.size}</span>
+          {!isRandomMode && (known.size > 0 || learning.size > 0) && (
+            <button onClick={resetProgress} title="Fortschritt zurücksetzen" style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: COLORS.muted }}>🗑</button>
+          )}
         </div>
       </div>
 
@@ -531,6 +598,16 @@ function FlashCards() {
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, marginTop: 10 }}>
             <div style={{ color: COLORS.accent, fontSize: 13, fontFamily: "monospace", maxWidth: 300 }}>📝 {card.ex}</div>
             <button onClick={e => { e.stopPropagation(); speak(card.ex); }} style={{ background: COLORS.accentSoft, border: `1px solid ${COLORS.accent}44`, borderRadius: 7, padding: "4px 10px", cursor: "pointer", fontSize: 11, color: COLORS.accent, fontFamily: "monospace" }}>🔊 Beispiel vorlesen</button>
+            {pronTips.length > 0 && (
+              <div style={{ marginTop: 6, padding: "8px 12px", background: COLORS.surface, borderRadius: 8, border: `1px solid ${COLORS.border}`, maxWidth: 300, width: "100%" }}>
+                <div style={{ fontSize: 10, color: COLORS.muted, fontFamily: "monospace", marginBottom: 4 }}>🔤 AUSSPRACHE</div>
+                {pronTips.map(({ch, tip}) => (
+                  <div key={ch} style={{ fontSize: 11, fontFamily: "monospace", color: COLORS.text, lineHeight: 1.6 }}>
+                    <span style={{ color: COLORS.accent, fontWeight: "bold" }}>{ch}</span> {tip}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -746,19 +823,42 @@ const TABS = [
 
 function App() {
   const [tab, setTab] = useState("flash");
+  const [theme, setTheme] = useState(loadTheme);
+
+  useEffect(() => {
+    COLORS = theme === "dark" ? DARK : LIGHT;
+    document.body.style.background = COLORS.bg;
+    saveTheme(theme);
+  }, [theme]);
+
+  // Force re-render when theme changes by passing it as key to children
+  COLORS = theme === "dark" ? DARK : LIGHT;
+
+  const S_live = {
+    ...S,
+    app: { ...S.app, background: COLORS.bg, color: COLORS.text },
+    header: { ...S.header, background: COLORS.surface, borderBottom: `1px solid ${COLORS.border}` },
+    nav: { ...S.nav, background: COLORS.surface, borderBottom: `1px solid ${COLORS.border}` },
+  };
+
   return (
-    <div style={S.app}>
-      <div style={S.header}>
+    <div style={S_live.app}>
+      <div style={S_live.header}>
         <span style={{ fontSize: 26 }}>🇸🇰</span>
-        <div>
+        <div style={{ flex: 1 }}>
           <p style={S.title}>Slovenčina</p>
           <p style={S.subtitle}>{VOCAB.length} Vokabeln · {CATEGORIES.length - 1} Themen · KI-Tutor</p>
         </div>
+        <button
+          onClick={() => setTheme(t => t === "dark" ? "light" : "dark")}
+          title="Hell/Dunkel umschalten"
+          style={{ background: COLORS.accentSoft, border: `1px solid ${COLORS.accent}44`, borderRadius: 10, padding: "7px 11px", cursor: "pointer", fontSize: 18, lineHeight: 1 }}
+        >{theme === "dark" ? "☀️" : "🌙"}</button>
       </div>
-      <nav style={S.nav}>
+      <nav style={S_live.nav}>
         {TABS.map(t => <button key={t.id} style={S.navBtn(tab === t.id)} onClick={() => setTab(t.id)}>{t.icon} {t.label}</button>)}
       </nav>
-      <div style={S.content}>
+      <div style={S.content} key={theme}>
         {tab === "flash" && <FlashCards />}
         {tab === "phrases" && <Phrases />}
         {tab === "grammar" && <Grammar />}
