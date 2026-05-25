@@ -37,6 +37,32 @@ function loadTheme() {
 function saveTheme(t) {
   try { localStorage.setItem("sk_theme", t); } catch {}
 }
+function loadPlan() {
+  try { return JSON.parse(localStorage.getItem("sk_plan") || "null"); } catch { return null; }
+}
+function savePlan(plan) {
+  try { localStorage.setItem("sk_plan", JSON.stringify(plan)); } catch {}
+}
+function loadStats() {
+  try { return JSON.parse(localStorage.getItem("sk_stats") || "{}"); } catch { return {}; }
+}
+function saveStats(stats) {
+  try { localStorage.setItem("sk_stats", JSON.stringify(stats)); } catch {}
+}
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+function recordActivity(correct) {
+  const stats = loadStats();
+  const key = todayKey();
+  if (!stats[key]) stats[key] = { seen: 0, correct: 0 };
+  stats[key].seen++;
+  if (correct) stats[key].correct++;
+  // Keep only last 30 days
+  const keys = Object.keys(stats).sort();
+  if (keys.length > 30) keys.slice(0, keys.length - 30).forEach(k => delete stats[k]);
+  saveStats(stats);
+}
 
 
 // ── AUSSPRACHE-TIPPS ─────────────────────────────────────────────────────────
@@ -487,48 +513,72 @@ const S = {
 // ── FLASHCARDS ────────────────────────────────────────────────────────────────
 function FlashCards() {
   const [cat, setCat] = useState("Alle");
-  const [idx, setIdx] = useState(0);
+  const [dir, setDir] = useState("sk2de"); // "sk2de" or "de2sk"
   const [flipped, setFlipped] = useState(false);
   const [known, setKnown] = useState(() => { const p = loadProgress(); return new Set(p.known || []); });
   const [learning, setLearning] = useState(() => { const p = loadProgress(); return new Set(p.learning || []); });
   const [randomPool, setRandomPool] = useState(null);
+  const [idx, setIdx] = useState(0);
+  // Anki queue
+  const [srQueue, setSrQueue] = useState(() => VOCAB.map((_, i) => i).sort(() => Math.random() - 0.5));
+  const [srPos, setSrPos] = useState(0);
+  const [ankiMode, setAnkiMode] = useState(false);
 
   const basePool = cat === "Alle" ? VOCAB : VOCAB.filter(v => v.cat === cat);
   const pool = randomPool || basePool;
-  const card = pool[idx % pool.length];
-  const progress = randomPool
-    ? Math.round(((idx + 1) / pool.length) * 100)
-    : Math.round((known.size / pool.length) * 100);
+  const card = ankiMode ? VOCAB[srQueue[srPos % srQueue.length]] : pool[idx % pool.length];
+  const currentPos = ankiMode ? srPos % srQueue.length : idx % pool.length;
+  const totalCards = ankiMode ? srQueue.length : pool.length;
+  const progress = Math.round((known.size / VOCAB.length) * 100);
 
-  const switchCat = (c) => { setCat(c); setIdx(0); setFlipped(false); setRandomPool(null); };
+  // What to show on front vs back depending on direction
+  const front = dir === "sk2de" ? card.sk : card.de;
+  const back  = dir === "sk2de" ? card.de : card.sk;
+  const frontLang = dir === "sk2de" ? "🇸🇰" : "🇩🇪";
+  const backLang  = dir === "sk2de" ? "🇩🇪" : "🇸🇰";
+
+  const switchCat = (c) => { setCat(c); setIdx(0); setFlipped(false); setRandomPool(null); setAnkiMode(false); };
 
   const startRandomMix = () => {
     const shuffled = [...VOCAB].sort(() => Math.random() - 0.5).slice(0, 20);
-    setRandomPool(shuffled);
-    setIdx(0);
-    setFlipped(false);
-    setKnown(new Set());
-    setLearning(new Set());
-    setCat("Alle");
+    setRandomPool(shuffled); setIdx(0); setFlipped(false); setCat("Alle"); setAnkiMode(false);
+  };
+
+  const startAnki = () => {
+    const q = VOCAB.map((_, i) => i).sort(() => Math.random() - 0.5);
+    setSrQueue(q); setSrPos(0); setAnkiMode(true); setFlipped(false); setRandomPool(null);
   };
 
   const next = (mark) => {
-    const key = `${cat}-${idx}`;
-    const newKnown = mark === "known" ? new Set([...known, key]) : known;
-    const newLearning = mark === "learning" ? new Set([...learning, key]) : learning;
-    if (mark === "known") setKnown(newKnown); else setLearning(newLearning);
-    if (!randomPool) saveProgress(newKnown, newLearning);
+    const cardKey = card.sk;
+    const newKnown   = mark === "known"    ? new Set([...known, cardKey])    : known;
+    const newLearning = mark === "learning" ? new Set([...learning, cardKey]) : learning;
+    if (mark === "known")    setKnown(newKnown);
+    if (mark === "learning") setLearning(newLearning);
+    saveProgress(newKnown, newLearning);
+    recordActivity(mark === "known");
     setFlipped(false);
-    setTimeout(() => setIdx(i => (i + 1) % pool.length), 100);
+
+    if (ankiMode) {
+      const currentIdx = srQueue[srPos % srQueue.length];
+      if (mark === "learning") {
+        // Unknown: reinsert after 3–10 cards
+        const interval = Math.floor(Math.random() * 8) + 3;
+        setSrQueue(q => { const nq = [...q]; nq.splice(srPos + interval, 0, currentIdx); return nq; });
+      } else {
+        // Known: reinsert after 20–30 cards for periodic review
+        const interval = Math.floor(Math.random() * 11) + 20;
+        setSrQueue(q => { const nq = [...q]; nq.splice(srPos + interval, 0, currentIdx); return nq; });
+      }
+      setTimeout(() => setSrPos(p => p + 1), 100);
+    } else {
+      setTimeout(() => setIdx(i => (i + 1) % pool.length), 100);
+    }
   };
 
-  const resetProgress = () => {
-    setKnown(new Set()); setLearning(new Set());
-    saveProgress(new Set(), new Set());
-  };
+  const resetProgress = () => { setKnown(new Set()); setLearning(new Set()); saveProgress(new Set(), new Set()); };
 
-  const isRandomMode = !!randomPool;
-  const currentPos = idx % pool.length;
+  const isRandomMode = !!randomPool && !ankiMode;
   const isLastCard = isRandomMode && currentPos === pool.length - 1;
   const pronTips = getPronunciationTips(card.sk);
 
@@ -546,60 +596,70 @@ function FlashCards() {
 
   return (
     <div>
-      {/* Category filter + Mix button */}
-      <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 10, marginBottom: 10 }}>
-        {CATEGORIES.map(c => (
-          <button key={c} style={S.catBtn(!isRandomMode && cat === c)} onClick={() => switchCat(c)}>{c}</button>
-        ))}
-        <button
-          onClick={startRandomMix}
-          style={{ ...S.catBtn(isRandomMode), padding: "6px 13px", borderRadius: 20, whiteSpace: "nowrap", background: isRandomMode ? "#e8c54733" : "transparent", borderColor: isRandomMode ? COLORS.accent : "#e8c54788", color: isRandomMode ? COLORS.accent : "#e8c54799" }}
-        >
-          🎲 20er Mix
-        </button>
+      {/* Direction toggle */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+        <button style={{ ...S.catBtn(dir === "sk2de"), flex: 1 }} onClick={() => { setDir("sk2de"); setFlipped(false); }}>🇸🇰 → 🇩🇪</button>
+        <button style={{ ...S.catBtn(dir === "de2sk"), flex: 1 }} onClick={() => { setDir("de2sk"); setFlipped(false); }}>🇩🇪 → 🇸🇰</button>
       </div>
 
-      {/* Random mode banner */}
+      {/* Category filter + Mix + Anki buttons */}
+      <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 10, marginBottom: 10 }}>
+        {CATEGORIES.map(c => (
+          <button key={c} style={S.catBtn(!isRandomMode && !ankiMode && cat === c)} onClick={() => switchCat(c)}>{c}</button>
+        ))}
+        <button onClick={startRandomMix} style={{ ...S.catBtn(isRandomMode), whiteSpace: "nowrap", borderColor: isRandomMode ? COLORS.accent : "#e8c54788", color: isRandomMode ? COLORS.accent : "#e8c54799", background: isRandomMode ? "#e8c54733" : "transparent" }}>🎲 20er Mix</button>
+        <button onClick={startAnki} style={{ ...S.catBtn(ankiMode), whiteSpace: "nowrap", borderColor: ankiMode ? COLORS.success : COLORS.success+"66", color: ankiMode ? COLORS.success : COLORS.success+"99", background: ankiMode ? COLORS.success+"22" : "transparent" }}>🧠 Anki</button>
+      </div>
+
+      {/* Banners */}
       {isRandomMode && (
         <div style={{ ...S.card, padding: "9px 14px", marginBottom: 10, background: COLORS.accentSoft, border: `1px solid ${COLORS.accent}44`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: 12, color: COLORS.accent, fontFamily: "monospace" }}>🎲 Zufalls-Mix · 20 Karten aus allen Themen</span>
-          <button onClick={() => { setRandomPool(null); setIdx(0); setFlipped(false); }} style={{ background: "none", border: "none", color: COLORS.muted, cursor: "pointer", fontSize: 12, fontFamily: "monospace" }}>✕ Beenden</button>
+          <span style={{ fontSize: 12, color: COLORS.accent, fontFamily: "monospace" }}>🎲 Zufalls-Mix · 20 Karten</span>
+          <button onClick={() => { setRandomPool(null); setIdx(0); setFlipped(false); }} style={{ background: "none", border: "none", color: COLORS.muted, cursor: "pointer", fontSize: 12 }}>✕</button>
+        </div>
+      )}
+      {ankiMode && (
+        <div style={{ ...S.card, padding: "9px 14px", marginBottom: 10, background: COLORS.success+"22", border: `1px solid ${COLORS.success}44`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontSize: 12, color: COLORS.success, fontFamily: "monospace" }}>🧠 Anki · Nochmal: 3–10 Karten · Gewusst: 20–30 Karten</span>
+          <button onClick={() => { setAnkiMode(false); setIdx(0); setFlipped(false); }} style={{ background: "none", border: "none", color: COLORS.muted, cursor: "pointer", fontSize: 12 }}>✕</button>
         </div>
       )}
 
       {/* Stats bar */}
       <div style={{ ...S.card, padding: 12, display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-        <span style={{ fontFamily: "monospace", fontSize: 12, color: COLORS.muted }}>{currentPos + 1} / {pool.length}</span>
+        <span style={{ fontFamily: "monospace", fontSize: 12, color: COLORS.muted }}>
+          {ankiMode ? `🧠 ${srPos + 1} / ${srQueue.length}` : `${currentPos + 1} / ${totalCards}`}
+        </span>
         <div style={{ flex: 1, margin: "0 12px", height: 5, background: COLORS.border, borderRadius: 3 }}>
-          <div style={{ width: `${isRandomMode ? Math.round(((currentPos + 1) / pool.length) * 100) : progress}%`, height: "100%", background: COLORS.accent, borderRadius: 3, transition: "width 0.4s" }} />
+          <div style={{ width: `${progress}%`, height: "100%", background: ankiMode ? COLORS.success : COLORS.accent, borderRadius: 3, transition: "width 0.4s" }} />
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           <span style={S.badge(COLORS.success)}>✓ {known.size}</span>
           <span style={S.badge(COLORS.error)}>↺ {learning.size}</span>
-          {!isRandomMode && (known.size > 0 || learning.size > 0) && (
-            <button onClick={resetProgress} title="Fortschritt zurücksetzen" style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: COLORS.muted }}>🗑</button>
+          {(known.size > 0 || learning.size > 0) && (
+            <button onClick={resetProgress} title="Zurücksetzen" style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: COLORS.muted }}>🗑</button>
           )}
         </div>
       </div>
 
       {/* Flashcard */}
-      <div onClick={() => setFlipped(f => !f)} style={{ ...S.card, minHeight: 200, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", textAlign: "center", border: `1px solid ${flipped ? COLORS.accent + "77" : COLORS.border}`, transition: "border 0.3s", position: "relative" }}>
-        <button
-          onClick={e => { e.stopPropagation(); speak(card.sk); }}
-          title="Slowakisch vorlesen"
-          style={{ position: "absolute", top: 12, right: 12, background: COLORS.accentSoft, border: `1px solid ${COLORS.accent}44`, borderRadius: 8, padding: "5px 9px", cursor: "pointer", fontSize: 16, lineHeight: 1 }}
-        >🔊</button>
+      <div onClick={() => setFlipped(f => !f)} style={{ ...S.card, minHeight: 200, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", textAlign: "center", border: `1px solid ${flipped ? COLORS.accent+"77" : COLORS.border}`, transition: "border 0.3s", position: "relative" }}>
+        {/* Lang indicator */}
+        <div style={{ position: "absolute", top: 12, left: 14, fontSize: 16 }}>{flipped ? backLang : frontLang}</div>
+        {/* Speaker — always speaks Slovak */}
+        <button onClick={e => { e.stopPropagation(); speak(card.sk); }} title="Slowakisch vorlesen"
+          style={{ position: "absolute", top: 12, right: 12, background: COLORS.accentSoft, border: `1px solid ${COLORS.accent}44`, borderRadius: 8, padding: "5px 9px", cursor: "pointer", fontSize: 16, lineHeight: 1 }}>🔊</button>
         <span style={S.badge(COLORS.accent)}>{card.cat}</span>
-        <div style={{ fontSize: 36, fontWeight: "bold", margin: "16px 0 6px", color: flipped ? COLORS.muted : COLORS.text }}>
-          {flipped ? card.de : card.sk}
+        <div style={{ fontSize: 34, fontWeight: "bold", margin: "14px 0 6px", color: flipped ? COLORS.muted : COLORS.text, padding: "0 40px" }}>
+          {flipped ? back : front}
         </div>
         {!flipped && <div style={{ color: COLORS.muted, fontSize: 12, fontStyle: "italic" }}>Tippen zum Umdrehen</div>}
         {flipped && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, marginTop: 10 }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, marginTop: 8 }}>
             <div style={{ color: COLORS.accent, fontSize: 13, fontFamily: "monospace", maxWidth: 300 }}>📝 {card.ex}</div>
-            <button onClick={e => { e.stopPropagation(); speak(card.ex); }} style={{ background: COLORS.accentSoft, border: `1px solid ${COLORS.accent}44`, borderRadius: 7, padding: "4px 10px", cursor: "pointer", fontSize: 11, color: COLORS.accent, fontFamily: "monospace" }}>🔊 Beispiel vorlesen</button>
+            <button onClick={e => { e.stopPropagation(); speak(card.ex); }} style={{ background: COLORS.accentSoft, border: `1px solid ${COLORS.accent}44`, borderRadius: 7, padding: "4px 10px", cursor: "pointer", fontSize: 11, color: COLORS.accent, fontFamily: "monospace" }}>🔊 Beispiel</button>
             {pronTips.length > 0 && (
-              <div style={{ marginTop: 6, padding: "8px 12px", background: COLORS.surface, borderRadius: 8, border: `1px solid ${COLORS.border}`, maxWidth: 300, width: "100%" }}>
+              <div style={{ marginTop: 4, padding: "8px 12px", background: COLORS.surface, borderRadius: 8, border: `1px solid ${COLORS.border}`, maxWidth: 300, width: "100%" }}>
                 <div style={{ fontSize: 10, color: COLORS.muted, fontFamily: "monospace", marginBottom: 4 }}>🔤 AUSSPRACHE</div>
                 {pronTips.map(({ch, tip}) => (
                   <div key={ch} style={{ fontSize: 11, fontFamily: "monospace", color: COLORS.text, lineHeight: 1.6 }}>
@@ -620,27 +680,23 @@ function FlashCards() {
       ) : (
         <div style={{ display: "flex", gap: 10 }}>
           <button style={{ ...S.btn(), flex: 1, padding: 13 }} onClick={() => setFlipped(true)}>Lösung anzeigen</button>
-          <button onClick={e => { e.stopPropagation(); speak(card.sk); }} style={{ ...S.btn("ghost"), padding: "13px 16px", fontSize: 18 }} title="Vorlesen">🔊</button>
+          <button onClick={() => speak(card.sk)} style={{ ...S.btn("ghost"), padding: "13px 16px", fontSize: 18 }}>🔊</button>
         </div>
       )}
 
       <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}>
         <button style={S.btn("ghost")} onClick={() => { setFlipped(false); setIdx(i => (i - 1 + pool.length) % pool.length); }}>← Zurück</button>
-        {isRandomMode && isLastCard && flipped ? (
-          <button style={{ ...S.btn("primary"), padding: "9px 18px" }} onClick={startRandomMix}>🎲 Neuer Mix</button>
-        ) : (
-          <button style={S.btn("ghost")} onClick={() => { setFlipped(false); setIdx(i => (i + 1) % pool.length); }}>Weiter →</button>
-        )}
+        {isRandomMode && isLastCard && flipped
+          ? <button style={{ ...S.btn("primary"), padding: "9px 18px" }} onClick={startRandomMix}>🎲 Neuer Mix</button>
+          : <button style={S.btn("ghost")} onClick={() => { setFlipped(false); ankiMode ? setSrPos(p => p+1) : setIdx(i => (i+1) % pool.length); }}>Weiter →</button>
+        }
       </div>
 
-      {/* Mix completed message */}
       {isRandomMode && isLastCard && flipped && (
         <div style={{ ...S.card, marginTop: 12, background: COLORS.accentSoft, border: `1px solid ${COLORS.accent}55`, textAlign: "center" }}>
           <div style={{ fontSize: 22, marginBottom: 6 }}>🎉</div>
           <div style={{ fontWeight: "bold", color: COLORS.accent, marginBottom: 4 }}>Mix abgeschlossen!</div>
-          <div style={{ fontSize: 12, color: COLORS.muted, fontFamily: "monospace" }}>
-            {known.size} gewusst · {learning.size} nochmal üben
-          </div>
+          <div style={{ fontSize: 12, color: COLORS.muted, fontFamily: "monospace" }}>{known.size} gewusst · {learning.size} nochmal üben</div>
         </div>
       )}
     </div>
@@ -706,6 +762,7 @@ function Grammar() {
 // ── QUIZ ──────────────────────────────────────────────────────────────────────
 function Quiz() {
   const [cat, setCat] = useState("Alle");
+  const [dir, setDir] = useState("sk2de"); // "sk2de" or "de2sk"
   const [q, setQ] = useState(null);
   const [chosen, setChosen] = useState(null);
   const [score, setScore] = useState({ right: 0, wrong: 0 });
@@ -715,24 +772,38 @@ function Quiz() {
   const generate = useCallback(() => {
     if (pool.length < 4) return;
     const correct = pool[Math.floor(Math.random() * pool.length)];
-    const wrongs = pool.filter(v => v.sk !== correct.sk).sort(() => Math.random() - 0.5).slice(0, 3).map(v => v.de);
-    const options = [...wrongs, correct.de].sort(() => Math.random() - 0.5);
-    setQ({ correct, options }); setChosen(null);
-  }, [cat, pool.length]);
+    if (dir === "sk2de") {
+      const wrongs = pool.filter(v => v.sk !== correct.sk).sort(() => Math.random() - 0.5).slice(0, 3).map(v => v.de);
+      const options = [...wrongs, correct.de].sort(() => Math.random() - 0.5);
+      setQ({ question: correct.sk, answer: correct.de, options, correct });
+    } else {
+      const wrongs = pool.filter(v => v.sk !== correct.sk).sort(() => Math.random() - 0.5).slice(0, 3).map(v => v.sk);
+      const options = [...wrongs, correct.sk].sort(() => Math.random() - 0.5);
+      setQ({ question: correct.de, answer: correct.sk, options, correct });
+    }
+    setChosen(null);
+  }, [cat, dir, pool.length]);
 
-  useEffect(() => { generate(); }, [cat]);
+  useEffect(() => { generate(); }, [cat, dir]);
 
   const pick = (opt) => {
     if (chosen) return;
     setChosen(opt);
-    if (opt === q.correct.de) setScore(s => ({ ...s, right: s.right + 1 }));
+    const correct = opt === q.answer;
+    if (correct) setScore(s => ({ ...s, right: s.right + 1 }));
     else setScore(s => ({ ...s, wrong: s.wrong + 1 }));
+    recordActivity(correct);
   };
   const total = score.right + score.wrong;
   const pct = total ? Math.round((score.right / total) * 100) : 0;
 
   return (
     <div>
+      {/* Direction toggle */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+        <button style={{ ...S.catBtn(dir === "sk2de"), flex: 1 }} onClick={() => { setDir("sk2de"); setScore({ right: 0, wrong: 0 }); }}>🇸🇰 → 🇩🇪 Slowakisch → Deutsch</button>
+        <button style={{ ...S.catBtn(dir === "de2sk"), flex: 1 }} onClick={() => { setDir("de2sk"); setScore({ right: 0, wrong: 0 }); }}>🇩🇪 → 🇸🇰 Deutsch → Slowakisch</button>
+      </div>
       <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 10, marginBottom: 10 }}>
         {CATEGORIES.map(c => <button key={c} style={S.catBtn(cat === c)} onClick={() => { setCat(c); setScore({ right: 0, wrong: 0 }); setTimeout(generate, 50); }}>{c}</button>)}
       </div>
@@ -743,15 +814,17 @@ function Quiz() {
       </div>
       {q && <>
         <div style={{ ...S.card, textAlign: "center", minHeight: 100, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 6, fontFamily: "monospace" }}>Was bedeutet…</div>
-          <div style={{ fontSize: 34, fontWeight: "bold", color: COLORS.accent }}>{q.correct.sk}</div>
+          <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 6, fontFamily: "monospace" }}>
+            {dir === "sk2de" ? "Was bedeutet auf Deutsch…" : "Wie heißt das auf Slowakisch…"}
+          </div>
+          <div style={{ fontSize: 32, fontWeight: "bold", color: COLORS.accent, padding: "0 12px" }}>{q.question}</div>
           <span style={{ ...S.badge(COLORS.muted), marginTop: 8, fontSize: 10 }}>{q.correct.cat}</span>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
           {q.options.map(opt => {
-            const isC = opt === q.correct.de, isP = chosen === opt;
+            const isC = opt === q.answer, isP = chosen === opt;
             return (
-              <button key={opt} onClick={() => pick(opt)} style={{ padding: "13px 8px", background: chosen ? (isC ? COLORS.success + "22" : isP ? COLORS.error + "22" : COLORS.card) : COLORS.card, border: `1px solid ${chosen ? (isC ? COLORS.success : isP ? COLORS.error : COLORS.border) : COLORS.border}`, borderRadius: 10, color: COLORS.text, cursor: chosen ? "default" : "pointer", fontFamily: "Georgia", fontSize: 14, transition: "all 0.2s" }}>
+              <button key={opt} onClick={() => pick(opt)} style={{ padding: "13px 8px", background: chosen ? (isC ? COLORS.success+"22" : isP ? COLORS.error+"22" : COLORS.card) : COLORS.card, border: `1px solid ${chosen ? (isC ? COLORS.success : isP ? COLORS.error : COLORS.border) : COLORS.border}`, borderRadius: 10, color: COLORS.text, cursor: chosen ? "default" : "pointer", fontFamily: "Georgia", fontSize: 13, transition: "all 0.2s" }}>
                 {chosen && isC ? "✓ " : ""}{opt}
               </button>
             );
@@ -759,8 +832,10 @@ function Quiz() {
         </div>
         {chosen && (
           <div style={{ marginTop: 12 }}>
-            <div style={{ ...S.card, background: (chosen === q.correct.de ? COLORS.success : COLORS.error) + "22", border: `1px solid ${chosen === q.correct.de ? COLORS.success : COLORS.error}`, textAlign: "center", padding: 12 }}>
-              {chosen === q.correct.de ? `🎉 Richtig! "${q.correct.sk}" = "${q.correct.de}"` : `✗ Falsch. "${q.correct.sk}" bedeutet "${q.correct.de}"`}
+            <div style={{ ...S.card, background: (chosen === q.answer ? COLORS.success : COLORS.error)+"22", border: `1px solid ${chosen === q.answer ? COLORS.success : COLORS.error}`, textAlign: "center", padding: 12, fontSize: 13 }}>
+              {chosen === q.answer
+                ? `🎉 Richtig! "${q.correct.sk}" = "${q.correct.de}"`
+                : `✗ Falsch. Die Antwort war: "${q.answer}"`}
             </div>
             <button style={{ ...S.btn(), width: "100%", padding: 13, marginTop: 8 }} onClick={generate}>Nächste Frage →</button>
           </div>
@@ -812,6 +887,227 @@ function AiTutor() {
   );
 }
 
+
+// ── LERNPLAN ──────────────────────────────────────────────────────────────────
+function Lernplan() {
+  const [plan, setPlan] = useState(() => loadPlan() || { dailyGoal: 10, categories: [], startDate: todayKey() });
+  const [saved, setSaved] = useState(false);
+  const stats = loadStats();
+  const today = todayKey();
+  const todayStats = stats[today] || { seen: 0, correct: 0 };
+  const progress = Math.min(100, Math.round((todayStats.seen / plan.dailyGoal) * 100));
+  const done = todayStats.seen >= plan.dailyGoal;
+
+  const save = () => {
+    savePlan(plan);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const toggleCat = (cat) => {
+    setPlan(p => ({
+      ...p,
+      categories: p.categories.includes(cat)
+        ? p.categories.filter(c => c !== cat)
+        : [...p.categories, cat]
+    }));
+  };
+
+  // Compute streak
+  let streak = 0;
+  const d = new Date();
+  while (true) {
+    const key = d.toISOString().slice(0, 10);
+    const s = stats[key];
+    if (s && s.seen >= plan.dailyGoal) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+
+  return (
+    <div>
+      {/* Today's progress */}
+      <div style={{ ...S.card, textAlign: "center" }}>
+        <div style={{ fontSize: 13, color: COLORS.muted, fontFamily: "monospace", marginBottom: 8 }}>HEUTE</div>
+        <div style={{ fontSize: 42, fontWeight: "bold", color: done ? COLORS.success : COLORS.accent }}>
+          {todayStats.seen} <span style={{ fontSize: 18, color: COLORS.muted }}>/ {plan.dailyGoal}</span>
+        </div>
+        <div style={{ fontSize: 12, color: COLORS.muted, fontFamily: "monospace", marginBottom: 12 }}>
+          Vokabeln gelernt · {todayStats.correct} richtig
+        </div>
+        <div style={{ height: 8, background: COLORS.border, borderRadius: 4, overflow: "hidden" }}>
+          <div style={{ width: `${progress}%`, height: "100%", background: done ? COLORS.success : COLORS.accent, borderRadius: 4, transition: "width 0.5s" }} />
+        </div>
+        {done && <div style={{ marginTop: 10, color: COLORS.success, fontSize: 13, fontFamily: "monospace" }}>🎉 Tagesziel erreicht!</div>}
+      </div>
+
+      {/* Streak */}
+      <div style={{ ...S.card, display: "flex", alignItems: "center", gap: 16 }}>
+        <div style={{ fontSize: 36 }}>🔥</div>
+        <div>
+          <div style={{ fontSize: 24, fontWeight: "bold", color: COLORS.accent }}>{streak} {streak === 1 ? "Tag" : "Tage"}</div>
+          <div style={{ fontSize: 12, color: COLORS.muted, fontFamily: "monospace" }}>aktuelle Serie</div>
+        </div>
+        <div style={{ marginLeft: "auto", textAlign: "right" }}>
+          <div style={{ fontSize: 18, fontWeight: "bold", color: COLORS.text }}>{Object.keys(stats).length}</div>
+          <div style={{ fontSize: 11, color: COLORS.muted, fontFamily: "monospace" }}>Lerntage gesamt</div>
+        </div>
+      </div>
+
+      {/* Daily goal setting */}
+      <div style={S.card}>
+        <div style={{ fontSize: 14, fontWeight: "bold", marginBottom: 12 }}>📅 Tagesziel</div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {[5, 10, 15, 20, 30].map(n => (
+            <button key={n} style={{ ...S.catBtn(plan.dailyGoal === n), flex: 1, minWidth: 50 }}
+              onClick={() => setPlan(p => ({ ...p, dailyGoal: n }))}>{n}</button>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: COLORS.muted, fontFamily: "monospace", marginTop: 8 }}>
+          Vokabeln pro Tag
+        </div>
+      </div>
+
+      {/* Category focus */}
+      <div style={S.card}>
+        <div style={{ fontSize: 14, fontWeight: "bold", marginBottom: 4 }}>🎯 Themen-Fokus</div>
+        <div style={{ fontSize: 11, color: COLORS.muted, fontFamily: "monospace", marginBottom: 10 }}>
+          Leer = alle Themen · Auswahl = nur diese
+        </div>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {CATEGORIES.filter(c => c !== "Alle").map(cat => (
+            <button key={cat} style={{ ...S.catBtn(plan.categories.includes(cat)), fontSize: 10, padding: "5px 10px" }}
+              onClick={() => toggleCat(cat)}>{cat}</button>
+          ))}
+        </div>
+      </div>
+
+      <button style={{ ...S.btn(), width: "100%", padding: 14 }} onClick={save}>
+        {saved ? "✓ Gespeichert!" : "Lernplan speichern"}
+      </button>
+    </div>
+  );
+}
+
+// ── STATISTIKEN ───────────────────────────────────────────────────────────────
+function Statistiken() {
+  const stats = loadStats();
+  const progress = loadProgress();
+  const known = new Set(progress.known || []);
+  const learning = new Set(progress.learning || []);
+  const plan = loadPlan() || { dailyGoal: 10 };
+
+  // Last 14 days
+  const days = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    const label = i === 0 ? "Heute" : i === 1 ? "Gestern" : d.toLocaleDateString("de", { weekday: "short" });
+    days.push({ key, label, data: stats[key] || { seen: 0, correct: 0 } });
+  }
+
+  const totalSeen = Object.values(stats).reduce((s, d) => s + d.seen, 0);
+  const totalCorrect = Object.values(stats).reduce((s, d) => s + d.correct, 0);
+  const accuracy = totalSeen ? Math.round((totalCorrect / totalSeen) * 100) : 0;
+  const maxSeen = Math.max(...days.map(d => d.data.seen), plan.dailyGoal, 1);
+
+  // Category breakdown
+  const catStats = {};
+  VOCAB.forEach(v => {
+    if (!catStats[v.cat]) catStats[v.cat] = { total: 0, known: 0 };
+    catStats[v.cat].total++;
+    if (known.has(v.sk)) catStats[v.cat].known++;
+  });
+
+  return (
+    <div>
+      {/* Summary cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 0 }}>
+        {[
+          { label: "Vokabeln gelernt", value: known.size, total: VOCAB.length, color: COLORS.success },
+          { label: "Noch üben", value: learning.size, total: VOCAB.length, color: COLORS.error },
+          { label: "Gesamt gesehen", value: totalSeen, color: COLORS.accent },
+          { label: "Trefferquote", value: accuracy + "%", color: COLORS.success },
+        ].map(({ label, value, total, color }) => (
+          <div key={label} style={{ ...S.card, textAlign: "center", marginBottom: 10 }}>
+            <div style={{ fontSize: 26, fontWeight: "bold", color }}>{value}{total ? <span style={{ fontSize: 13, color: COLORS.muted }}>/{total}</span> : ""}</div>
+            <div style={{ fontSize: 10, color: COLORS.muted, fontFamily: "monospace", marginTop: 4 }}>{label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Bar chart — last 14 days */}
+      <div style={S.card}>
+        <div style={{ fontSize: 13, fontWeight: "bold", marginBottom: 12 }}>📊 Letzte 14 Tage</div>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 80 }}>
+          {days.map(({ key, label, data }) => {
+            const h = Math.round((data.seen / maxSeen) * 76);
+            const goalH = Math.round((plan.dailyGoal / maxSeen) * 76);
+            const isToday = key === todayKey();
+            const goalReached = data.seen >= plan.dailyGoal;
+            return (
+              <div key={key} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-end", height: 76 }}>
+                  <div style={{ width: "100%", height: Math.max(h, 2), background: goalReached ? COLORS.success : isToday ? COLORS.accent : COLORS.border, borderRadius: "3px 3px 0 0", transition: "height 0.4s" }} />
+                </div>
+                <div style={{ fontSize: 8, color: isToday ? COLORS.accent : COLORS.muted, fontFamily: "monospace", textAlign: "center", lineHeight: 1.2 }}>{label}</div>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ fontSize: 10, color: COLORS.muted, fontFamily: "monospace", marginTop: 8 }}>
+          🟡 Heute  🟢 Tagesziel erreicht  ⬜ Vergangenheit
+        </div>
+      </div>
+
+      {/* Per-category progress */}
+      <div style={S.card}>
+        <div style={{ fontSize: 13, fontWeight: "bold", marginBottom: 12 }}>📚 Fortschritt nach Thema</div>
+        {Object.entries(catStats).map(([cat, { total, known: k }]) => {
+          const pct = Math.round((k / total) * 100);
+          return (
+            <div key={cat} style={{ marginBottom: 10 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                <span style={{ fontSize: 12, color: COLORS.text }}>{cat}</span>
+                <span style={{ fontSize: 11, color: COLORS.muted, fontFamily: "monospace" }}>{k}/{total} · {pct}%</span>
+              </div>
+              <div style={{ height: 5, background: COLORS.border, borderRadius: 3 }}>
+                <div style={{ width: `${pct}%`, height: "100%", background: pct === 100 ? COLORS.success : COLORS.accent, borderRadius: 3, transition: "width 0.4s" }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Weekly heatmap dots */}
+      <div style={S.card}>
+        <div style={{ fontSize: 13, fontWeight: "bold", marginBottom: 10 }}>🗓 Aktivität (30 Tage)</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+          {Array.from({ length: 30 }, (_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() - (29 - i));
+            const key = d.toISOString().slice(0, 10);
+            const s = stats[key];
+            const intensity = s ? Math.min(1, s.seen / plan.dailyGoal) : 0;
+            const color = intensity === 0 ? COLORS.border
+              : intensity < 0.5 ? COLORS.accent + "66"
+              : intensity < 1 ? COLORS.accent + "bb"
+              : COLORS.success;
+            const isToday = key === todayKey();
+            return (
+              <div key={key} title={`${key}: ${s ? s.seen : 0} Vokabeln`}
+                style={{ width: 22, height: 22, borderRadius: 5, background: color, border: isToday ? `2px solid ${COLORS.accent}` : "2px solid transparent" }} />
+            );
+          })}
+        </div>
+        <div style={{ fontSize: 10, color: COLORS.muted, fontFamily: "monospace", marginTop: 8 }}>
+          Heller = mehr gelernt · Grün = Tagesziel erreicht
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── APP ───────────────────────────────────────────────────────────────────────
 const TABS = [
   { id: "flash", label: "Flashcards", icon: "⚡" },
@@ -819,6 +1115,8 @@ const TABS = [
   { id: "grammar", label: "Grammatik", icon: "📝" },
   { id: "quiz", label: "Quiz", icon: "🎯" },
   { id: "tutor", label: "KI-Tutor", icon: "🧠" },
+  { id: "plan", label: "Lernplan", icon: "📅" },
+  { id: "stats", label: "Statistiken", icon: "📊" },
 ];
 
 function App() {
@@ -864,6 +1162,8 @@ function App() {
         {tab === "grammar" && <Grammar />}
         {tab === "quiz" && <Quiz />}
         {tab === "tutor" && <AiTutor />}
+        {tab === "plan" && <Lernplan />}
+        {tab === "stats" && <Statistiken />}
       </div>
     </div>
   );
