@@ -1,118 +1,88 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Slovenčina" />
-  <title>Slovenčina – Slowakisch lernen</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="Slovenčina"/>
+  <title>Slovenčina</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { background: #0f0e17; overscroll-behavior: none; }
-    ::-webkit-scrollbar { display: none; }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    body { background:#F7F5F0; font-family:"DM Sans",system-ui,sans-serif; overscroll-behavior:none; }
+    ::-webkit-scrollbar { display:none; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .fu { animation: fadeUp 0.28s ease both; }
+    .fi { animation: fadeIn 0.22s ease both; }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<script type="text/babel">
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+var useState   = React.useState;
+var useEffect  = React.useEffect;
+var useCallback= React.useCallback;
+var useRef     = React.useRef;
 
-  <script type="text/babel">
-    const { useState, useEffect, useCallback } = React;
+// ── COLORS ────────────────────────────────────────────────────────────────────
+var GOLD     = "#D4A937";
+var GOLDSOFT = "#D4A93715";
+var GOLDMID  = "#D4A93745";
+var BLACK    = "#111111";
+var GRAY     = "#6B6B6B";
+var LIGHT    = "#AAAAAA";
+var BG       = "#F7F5F0";
+var WHITE    = "#FFFFFF";
+var BORDER   = "#EBEBEB";
+var GREEN    = "#34C759";
+var RED      = "#FF3B30";
+var SHADOW   = "0 2px 16px rgba(0,0,0,0.06)";
+var SHADOW_SM= "0 1px 4px rgba(0,0,0,0.04)";
+var SHADOW_G = "0 2px 10px rgba(212,169,55,0.28)";
 
-
-// ── STORAGE HELPERS ──────────────────────────────────────────────────────────
-function loadProgress() {
-  try { return JSON.parse(localStorage.getItem("sk_progress") || "{}"); } catch { return {}; }
+// ── STORAGE ───────────────────────────────────────────────────────────────────
+function lsGet(k, fb) {
+  try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch(e) { return fb; }
 }
-function saveProgress(known, learning) {
-  try { localStorage.setItem("sk_progress", JSON.stringify({ known: [...known], learning: [...learning] })); } catch {}
+function lsSet(k, v) {
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {}
 }
-function loadTheme() {
-  try { return localStorage.getItem("sk_theme") || "dark"; } catch { return "dark"; }
-}
-function saveTheme(t) {
-  try { localStorage.setItem("sk_theme", t); } catch {}
-}
-function loadPlan() {
-  try { return JSON.parse(localStorage.getItem("sk_plan") || "null"); } catch { return null; }
-}
-function savePlan(plan) {
-  try { localStorage.setItem("sk_plan", JSON.stringify(plan)); } catch {}
-}
-function loadStats() {
-  try { return JSON.parse(localStorage.getItem("sk_stats") || "{}"); } catch { return {}; }
-}
-function saveStats(stats) {
-  try { localStorage.setItem("sk_stats", JSON.stringify(stats)); } catch {}
-}
-function todayKey() {
-  return new Date().toISOString().slice(0, 10);
-}
+function loadProgress()          { return lsGet("sk_prog", {}); }
+function saveProgress(kn, le)    { lsSet("sk_prog", { known:[].concat(Array.from(kn)), learning:[].concat(Array.from(le)) }); }
+function loadStats()             { return lsGet("sk_stats", {}); }
+function saveStats(s)            { lsSet("sk_stats", s); }
+function loadPlan()              { return lsGet("sk_plan", { dailyGoal:10 }); }
+function savePlan(p)             { lsSet("sk_plan", p); }
+function todayKey()              { return new Date().toISOString().slice(0,10); }
 function recordActivity(correct) {
-  const stats = loadStats();
-  const key = todayKey();
-  if (!stats[key]) stats[key] = { seen: 0, correct: 0 };
-  stats[key].seen++;
-  if (correct) stats[key].correct++;
-  // Keep only last 30 days
-  const keys = Object.keys(stats).sort();
-  if (keys.length > 30) keys.slice(0, keys.length - 30).forEach(k => delete stats[k]);
-  saveStats(stats);
+  var s = loadStats();
+  var k = todayKey();
+  if (!s[k]) s[k] = { seen:0, correct:0 };
+  s[k].seen++;
+  if (correct) s[k].correct++;
+  var keys = Object.keys(s).sort();
+  if (keys.length > 30) keys.slice(0, keys.length-30).forEach(function(key){ delete s[key]; });
+  saveStats(s);
 }
 
-
-// ── AUSSPRACHE-TIPPS ─────────────────────────────────────────────────────────
-const PRONUNC = {
-  "š": "= 'sch' wie in 'Schule'",
-  "č": "= 'tsch' wie in 'Tschüss'",
-  "ž": "= 'sh' wie im französischen 'je'",
-  "ď": "= weiches 'dj' (Zunge an Gaumen)",
-  "ť": "= weiches 'tj' (Zunge an Gaumen)",
-  "ň": "= 'nj' wie in spanisch 'mañana'",
-  "ľ": "= weiches 'lj' (Zunge an Gaumen)",
-  "á": "= langes 'a'",
-  "é": "= langes 'e'",
-  "í": "= langes 'i'",
-  "ó": "= langes 'o'",
-  "ú": "= langes 'u'",
-  "ý": "= langes 'i'",
-  "ô": "= 'uo' (Diphthong)",
-  "dz": "= 'dz' wie in 'Adze'",
-  "dž": "= 'dsch' wie in 'Dschungel'",
-};
-
-function getPronunciationTips(word) {
-  const tips = [];
-  const lower = word.toLowerCase();
-  if (lower.includes("dž")) tips.push({ ch: "dž", tip: PRONUNC["dž"] });
-  if (lower.includes("dz") && !lower.includes("dž")) tips.push({ ch: "dz", tip: PRONUNC["dz"] });
-  for (const [ch, tip] of Object.entries(PRONUNC)) {
-    if (ch === "dz" || ch === "dž") continue;
-    if (lower.includes(ch)) tips.push({ ch, tip });
-  }
-  return tips;
+// ── PRONUNCIATION ─────────────────────────────────────────────────────────────
+var PRONUNC = { "š":"sch","č":"tsch","ž":"zh","ď":"dj","ť":"tj","ň":"nj","ľ":"lj","á":"aa","é":"ee","í":"ii","ú":"uu","ý":"ii","ô":"uo" };
+function getPronTips(word) {
+  var tips = [];
+  var low = word.toLowerCase();
+  Object.keys(PRONUNC).forEach(function(ch) {
+    if (low.indexOf(ch) !== -1) tips.push(ch + "=" + PRONUNC[ch]);
+  });
+  return tips.slice(0,3);
 }
 
-const DARK = {
-  bg: "#0f0e17", surface: "#1a1928", card: "#22203a",
-  accent: "#e8c547", accentSoft: "#e8c54722", text: "#fffffe",
-  muted: "#a7a9be", success: "#4ecdc4", error: "#ff6b6b", border: "#2e2c4a",
-};
-const LIGHT = {
-  bg: "#f5f4f0", surface: "#ffffff", card: "#ffffff",
-  accent: "#b8960a", accentSoft: "#e8c54722", text: "#1a1a2e",
-  muted: "#6b6b8a", success: "#2a9d8f", error: "#e63946", border: "#dddbe8",
-};
-// COLORS is set dynamically by App via window.__COLORS__
-let COLORS = DARK;
-
-
-// ── VOCAB: ~40 cards per category ────────────────────────────────────────────
-
+// ── DATA ──────────────────────────────────────────────────────────────────────
 const VOCAB = [
   // ── Begrüßung & Höflichkeit (40) ──
   { sk: "Ahoj", de: "Hallo", cat: "Begrüßung & Höflichkeit", ex: "Ahoj, ako sa máš?" },
@@ -451,8 +421,6 @@ const VOCAB = [
   { sk: "Objednávka", de: "Bestellung", cat: "Einkaufen & Geld", ex: "Chcem podať objednávku." },
 ];
 
-const CATEGORIES = ["Alle", ...new Set(VOCAB.map(v => v.cat))];
-
 const PHRASES = [
   { sk: "Ako sa voláte?", de: "Wie heißen Sie?", context: "Kennenlernen" },
   { sk: "Volám sa...", de: "Ich heiße...", context: "Kennenlernen" },
@@ -485,692 +453,851 @@ const GRAMMAR = [
   { title: "Verneinung", description: "Wie man Nein sagt", table: [["Ja habe", "Mám"], ["Ich habe nicht", "Nemám"], ["Ich gehe", "Idem"], ["Ich gehe nicht", "Nejdem"], ["Ich bin", "Som"], ["Ich bin nicht", "Nie som"]], tip: "Die Verneinung bildet man mit 'ne-' vor dem Verb. Einfach!" },
 ];
 
-async function callClaude(messages, system) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system, messages }),
-  });
-  const data = await res.json();
-  return data.content?.map(b => b.text || "").join("") || "Fehler.";
+var CATEGORIES = ["Alle"].concat(
+  VOCAB.reduce(function(acc, v) {
+    if (acc.indexOf(v.cat) === -1) acc.push(v.cat);
+    return acc;
+  }, [])
+);
+
+// ── AUDIO ─────────────────────────────────────────────────────────────────────
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  var vs = window.speechSynthesis.getVoices();
+  var v = vs.filter(function(v){ return v.lang.indexOf("sk")===0; })[0]
+       || vs.filter(function(v){ return v.lang.indexOf("cs")===0; })[0];
+  if (v) u.voice = v;
+  u.lang = "sk-SK";
+  u.rate = 0.88;
+  window.speechSynthesis.speak(u);
 }
 
-const S = {
-  app: { minHeight: "100vh", background: COLORS.bg, color: COLORS.text, fontFamily: "'Georgia', serif", display: "flex", flexDirection: "column" },
-  header: { padding: "16px 20px 12px", borderBottom: `1px solid ${COLORS.border}`, background: COLORS.surface, display: "flex", alignItems: "center", gap: 10 },
-  title: { fontSize: 20, fontWeight: "bold", color: COLORS.accent, letterSpacing: 1, margin: 0 },
-  subtitle: { fontSize: 11, color: COLORS.muted, margin: 0, fontFamily: "monospace" },
-  nav: { display: "flex", overflowX: "auto", background: COLORS.surface, borderBottom: `1px solid ${COLORS.border}`, padding: "0 4px" },
-  navBtn: (a) => ({ padding: "11px 14px", background: "none", border: "none", cursor: "pointer", color: a ? COLORS.accent : COLORS.muted, borderBottom: a ? `2px solid ${COLORS.accent}` : "2px solid transparent", fontFamily: "monospace", fontSize: 12, whiteSpace: "nowrap", transition: "all 0.2s", display: "flex", alignItems: "center", gap: 5 }),
-  content: { flex: 1, padding: 16, maxWidth: 680, margin: "0 auto", width: "100%", boxSizing: "border-box" },
-  card: { background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 20, marginBottom: 12 },
-  btn: (v = "primary") => ({ padding: "9px 18px", borderRadius: 9, border: "none", cursor: "pointer", fontFamily: "monospace", fontSize: 13, fontWeight: "bold", background: v === "primary" ? COLORS.accent : v === "success" ? COLORS.success : v === "error" ? COLORS.error : COLORS.border, color: v === "primary" ? COLORS.bg : COLORS.text, transition: "opacity 0.2s" }),
-  badge: (c) => ({ display: "inline-block", padding: "2px 9px", borderRadius: 20, fontSize: 10, fontFamily: "monospace", background: c + "22", color: c, border: `1px solid ${c}44` }),
-  input: { width: "100%", background: COLORS.surface, border: `1px solid ${COLORS.border}`, borderRadius: 9, padding: "11px 13px", color: COLORS.text, fontFamily: "monospace", fontSize: 13, boxSizing: "border-box", outline: "none" },
-  catBtn: (a) => ({ padding: "6px 13px", borderRadius: 20, border: `1px solid ${a ? COLORS.accent : COLORS.border}`, background: a ? COLORS.accentSoft : "transparent", color: a ? COLORS.accent : COLORS.muted, cursor: "pointer", fontFamily: "monospace", fontSize: 11, whiteSpace: "nowrap", transition: "all 0.2s" }),
-};
-
-// ── FLASHCARDS ────────────────────────────────────────────────────────────────
-function FlashCards() {
-  const [cat, setCat] = useState("Alle");
-  const [dir, setDir] = useState("sk2de"); // "sk2de" or "de2sk"
-  const [flipped, setFlipped] = useState(false);
-  const [known, setKnown] = useState(() => { const p = loadProgress(); return new Set(p.known || []); });
-  const [learning, setLearning] = useState(() => { const p = loadProgress(); return new Set(p.learning || []); });
-  const [randomPool, setRandomPool] = useState(null);
-  const [idx, setIdx] = useState(0);
-  // Anki queue
-  const [srQueue, setSrQueue] = useState(() => VOCAB.map((_, i) => i).sort(() => Math.random() - 0.5));
-  const [srPos, setSrPos] = useState(0);
-  const [ankiMode, setAnkiMode] = useState(false);
-
-  const basePool = cat === "Alle" ? VOCAB : VOCAB.filter(v => v.cat === cat);
-  const pool = randomPool || basePool;
-  const card = ankiMode ? VOCAB[srQueue[srPos % srQueue.length]] : pool[idx % pool.length];
-  const currentPos = ankiMode ? srPos % srQueue.length : idx % pool.length;
-  const totalCards = ankiMode ? srQueue.length : pool.length;
-  const progress = Math.round((known.size / VOCAB.length) * 100);
-
-  // What to show on front vs back depending on direction
-  const front = dir === "sk2de" ? card.sk : card.de;
-  const back  = dir === "sk2de" ? card.de : card.sk;
-  const frontLang = dir === "sk2de" ? "🇸🇰" : "🇩🇪";
-  const backLang  = dir === "sk2de" ? "🇩🇪" : "🇸🇰";
-
-  const switchCat = (c) => { setCat(c); setIdx(0); setFlipped(false); setRandomPool(null); setAnkiMode(false); };
-
-  const startRandomMix = () => {
-    const shuffled = [...VOCAB].sort(() => Math.random() - 0.5).slice(0, 20);
-    setRandomPool(shuffled); setIdx(0); setFlipped(false); setCat("Alle"); setAnkiMode(false);
-  };
-
-  const startAnki = () => {
-    const q = VOCAB.map((_, i) => i).sort(() => Math.random() - 0.5);
-    setSrQueue(q); setSrPos(0); setAnkiMode(true); setFlipped(false); setRandomPool(null);
-  };
-
-  const next = (mark) => {
-    const cardKey = card.sk;
-    const newKnown   = mark === "known"    ? new Set([...known, cardKey])    : known;
-    const newLearning = mark === "learning" ? new Set([...learning, cardKey]) : learning;
-    if (mark === "known")    setKnown(newKnown);
-    if (mark === "learning") setLearning(newLearning);
-    saveProgress(newKnown, newLearning);
-    recordActivity(mark === "known");
-    setFlipped(false);
-
-    if (ankiMode) {
-      const currentIdx = srQueue[srPos % srQueue.length];
-      if (mark === "learning") {
-        // Unknown: reinsert after 3–10 cards
-        const interval = Math.floor(Math.random() * 8) + 3;
-        setSrQueue(q => { const nq = [...q]; nq.splice(srPos + interval, 0, currentIdx); return nq; });
-      } else {
-        // Known: reinsert after 20–30 cards for periodic review
-        const interval = Math.floor(Math.random() * 11) + 20;
-        setSrQueue(q => { const nq = [...q]; nq.splice(srPos + interval, 0, currentIdx); return nq; });
-      }
-      setTimeout(() => setSrPos(p => p + 1), 100);
-    } else {
-      setTimeout(() => setIdx(i => (i + 1) % pool.length), 100);
-    }
-  };
-
-  const resetProgress = () => { setKnown(new Set()); setLearning(new Set()); saveProgress(new Set(), new Set()); };
-
-  const isRandomMode = !!randomPool && !ankiMode;
-  const isLastCard = isRandomMode && currentPos === pool.length - 1;
-  const pronTips = getPronunciationTips(card.sk);
-
-  const speak = (text) => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    const voices = window.speechSynthesis.getVoices();
-    const skVoice = voices.find(v => v.lang.startsWith("sk")) || voices.find(v => v.lang.startsWith("cs"));
-    if (skVoice) utter.voice = skVoice;
-    utter.lang = "sk-SK";
-    utter.rate = 0.85;
-    window.speechSynthesis.speak(utter);
-  };
-
+// ── ATOMS ─────────────────────────────────────────────────────────────────────
+function Pill(props) {
   return (
-    <div>
-      {/* Direction toggle */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-        <button style={{ ...S.catBtn(dir === "sk2de"), flex: 1 }} onClick={() => { setDir("sk2de"); setFlipped(false); }}>🇸🇰 → 🇩🇪</button>
-        <button style={{ ...S.catBtn(dir === "de2sk"), flex: 1 }} onClick={() => { setDir("de2sk"); setFlipped(false); }}>🇩🇪 → 🇸🇰</button>
-      </div>
+    <button
+      onClick={props.onClick}
+      style={{
+        padding:"7px 15px", borderRadius:999, border:"none",
+        fontFamily:"inherit", whiteSpace:"nowrap", cursor:"pointer",
+        fontSize:13, fontWeight:props.active?600:400, transition:"all 0.18s",
+        background:props.active?GOLD:"transparent",
+        color:props.active?"#fff":GRAY,
+      }}
+    >{props.label}</button>
+  );
+}
 
-      {/* Category filter + Mix + Anki buttons */}
-      <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 10, marginBottom: 10 }}>
-        {CATEGORIES.map(c => (
-          <button key={c} style={S.catBtn(!isRandomMode && !ankiMode && cat === c)} onClick={() => switchCat(c)}>{c}</button>
-        ))}
-        <button onClick={startRandomMix} style={{ ...S.catBtn(isRandomMode), whiteSpace: "nowrap", borderColor: isRandomMode ? COLORS.accent : "#e8c54788", color: isRandomMode ? COLORS.accent : "#e8c54799", background: isRandomMode ? "#e8c54733" : "transparent" }}>🎲 20er Mix</button>
-        <button onClick={startAnki} style={{ ...S.catBtn(ankiMode), whiteSpace: "nowrap", borderColor: ankiMode ? COLORS.success : COLORS.success+"66", color: ankiMode ? COLORS.success : COLORS.success+"99", background: ankiMode ? COLORS.success+"22" : "transparent" }}>🧠 Anki</button>
-      </div>
+function BtnPrimary(props) {
+  return (
+    <button
+      onClick={props.onClick}
+      disabled={props.disabled}
+      style={{
+        width:"100%", padding:"15px 24px", borderRadius:999, border:"none",
+        fontFamily:"inherit", fontSize:16, fontWeight:600, cursor:props.disabled?"default":"pointer",
+        transition:"all 0.18s",
+        background:props.disabled?"#E5E5E5":GOLD,
+        color:props.disabled?"#AAA":"#fff",
+        boxShadow:props.disabled?"none":SHADOW_G,
+      }}
+    >{props.children}</button>
+  );
+}
 
-      {/* Banners */}
-      {isRandomMode && (
-        <div style={{ ...S.card, padding: "9px 14px", marginBottom: 10, background: COLORS.accentSoft, border: `1px solid ${COLORS.accent}44`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: 12, color: COLORS.accent, fontFamily: "monospace" }}>🎲 Zufalls-Mix · 20 Karten</span>
-          <button onClick={() => { setRandomPool(null); setIdx(0); setFlipped(false); }} style={{ background: "none", border: "none", color: COLORS.muted, cursor: "pointer", fontSize: 12 }}>✕</button>
-        </div>
-      )}
-      {ankiMode && (
-        <div style={{ ...S.card, padding: "9px 14px", marginBottom: 10, background: COLORS.success+"22", border: `1px solid ${COLORS.success}44`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: 12, color: COLORS.success, fontFamily: "monospace" }}>🧠 Anki · Nochmal: 3–10 Karten · Gewusst: 20–30 Karten</span>
-          <button onClick={() => { setAnkiMode(false); setIdx(0); setFlipped(false); }} style={{ background: "none", border: "none", color: COLORS.muted, cursor: "pointer", fontSize: 12 }}>✕</button>
-        </div>
-      )}
+function SpeakBtn(props) {
+  var result = useState(false);
+  var lit = result[0];
+  var setLit = result[1];
+  function tap() {
+    speak(props.text);
+    setLit(true);
+    setTimeout(function(){ setLit(false); }, 600);
+  }
+  return (
+    <button onClick={tap} style={{
+      width:38, height:38, borderRadius:999, cursor:"pointer", flexShrink:0,
+      border:"1.5px solid " + (lit ? GOLD : BORDER),
+      background: lit ? GOLDSOFT : WHITE,
+      display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.2s",
+    }}>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={lit?GOLD:GRAY} strokeWidth="2" strokeLinecap="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+      </svg>
+    </button>
+  );
+}
 
-      {/* Stats bar */}
-      <div style={{ ...S.card, padding: 12, display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-        <span style={{ fontFamily: "monospace", fontSize: 12, color: COLORS.muted }}>
-          {ankiMode ? `🧠 ${srPos + 1} / ${srQueue.length}` : `${currentPos + 1} / ${totalCards}`}
-        </span>
-        <div style={{ flex: 1, margin: "0 12px", height: 5, background: COLORS.border, borderRadius: 3 }}>
-          <div style={{ width: `${progress}%`, height: "100%", background: ankiMode ? COLORS.success : COLORS.accent, borderRadius: 3, transition: "width 0.4s" }} />
-        </div>
-        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          <span style={S.badge(COLORS.success)}>✓ {known.size}</span>
-          <span style={S.badge(COLORS.error)}>↺ {learning.size}</span>
-          {(known.size > 0 || learning.size > 0) && (
-            <button onClick={resetProgress} title="Zurücksetzen" style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: COLORS.muted }}>🗑</button>
-          )}
-        </div>
-      </div>
+function Ring(props) {
+  var size   = props.size   || 72;
+  var stroke = props.stroke || 5;
+  var color  = props.color  || GOLD;
+  var pct    = Math.min(props.pct || 0, 100);
+  var r      = (size - stroke) / 2;
+  var circ   = 2 * Math.PI * r;
+  var offset = circ * (1 - pct / 100);
+  return (
+    <svg width={size} height={size} style={{transform:"rotate(-90deg)"}}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={BORDER} strokeWidth={stroke}/>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
+        strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
+        style={{transition:"stroke-dashoffset 0.6s"}}/>
+    </svg>
+  );
+}
 
-      {/* Flashcard */}
-      <div onClick={() => setFlipped(f => !f)} style={{ ...S.card, minHeight: 200, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", textAlign: "center", border: `1px solid ${flipped ? COLORS.accent+"77" : COLORS.border}`, transition: "border 0.3s", position: "relative" }}>
-        {/* Lang indicator */}
-        <div style={{ position: "absolute", top: 12, left: 14, fontSize: 16 }}>{flipped ? backLang : frontLang}</div>
-        {/* Speaker — always speaks Slovak */}
-        <button onClick={e => { e.stopPropagation(); speak(card.sk); }} title="Slowakisch vorlesen"
-          style={{ position: "absolute", top: 12, right: 12, background: COLORS.accentSoft, border: `1px solid ${COLORS.accent}44`, borderRadius: 8, padding: "5px 9px", cursor: "pointer", fontSize: 16, lineHeight: 1 }}>🔊</button>
-        <span style={S.badge(COLORS.accent)}>{card.cat}</span>
-        <div style={{ fontSize: 34, fontWeight: "bold", margin: "14px 0 6px", color: flipped ? COLORS.muted : COLORS.text, padding: "0 40px" }}>
-          {flipped ? back : front}
-        </div>
-        {!flipped && <div style={{ color: COLORS.muted, fontSize: 12, fontStyle: "italic" }}>Tippen zum Umdrehen</div>}
-        {flipped && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, marginTop: 8 }}>
-            <div style={{ color: COLORS.accent, fontSize: 13, fontFamily: "monospace", maxWidth: 300 }}>📝 {card.ex}</div>
-            <button onClick={e => { e.stopPropagation(); speak(card.ex); }} style={{ background: COLORS.accentSoft, border: `1px solid ${COLORS.accent}44`, borderRadius: 7, padding: "4px 10px", cursor: "pointer", fontSize: 11, color: COLORS.accent, fontFamily: "monospace" }}>🔊 Beispiel</button>
-            {pronTips.length > 0 && (
-              <div style={{ marginTop: 4, padding: "8px 12px", background: COLORS.surface, borderRadius: 8, border: `1px solid ${COLORS.border}`, maxWidth: 300, width: "100%" }}>
-                <div style={{ fontSize: 10, color: COLORS.muted, fontFamily: "monospace", marginBottom: 4 }}>🔤 AUSSPRACHE</div>
-                {pronTips.map(({ch, tip}) => (
-                  <div key={ch} style={{ fontSize: 11, fontFamily: "monospace", color: COLORS.text, lineHeight: 1.6 }}>
-                    <span style={{ color: COLORS.accent, fontWeight: "bold" }}>{ch}</span> {tip}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {flipped ? (
-        <div style={{ display: "flex", gap: 10 }}>
-          <button style={{ ...S.btn("error"), flex: 1, padding: 13 }} onClick={() => next("learning")}>↺ Nochmal</button>
-          <button style={{ ...S.btn("success"), flex: 1, padding: 13 }} onClick={() => next("known")}>✓ Gewusst</button>
-        </div>
-      ) : (
-        <div style={{ display: "flex", gap: 10 }}>
-          <button style={{ ...S.btn(), flex: 1, padding: 13 }} onClick={() => setFlipped(true)}>Lösung anzeigen</button>
-          <button onClick={() => speak(card.sk)} style={{ ...S.btn("ghost"), padding: "13px 16px", fontSize: 18 }}>🔊</button>
-        </div>
-      )}
-
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}>
-        <button style={S.btn("ghost")} onClick={() => { setFlipped(false); setIdx(i => (i - 1 + pool.length) % pool.length); }}>← Zurück</button>
-        {isRandomMode && isLastCard && flipped
-          ? <button style={{ ...S.btn("primary"), padding: "9px 18px" }} onClick={startRandomMix}>🎲 Neuer Mix</button>
-          : <button style={S.btn("ghost")} onClick={() => { setFlipped(false); ankiMode ? setSrPos(p => p+1) : setIdx(i => (i+1) % pool.length); }}>Weiter →</button>
-        }
-      </div>
-
-      {isRandomMode && isLastCard && flipped && (
-        <div style={{ ...S.card, marginTop: 12, background: COLORS.accentSoft, border: `1px solid ${COLORS.accent}55`, textAlign: "center" }}>
-          <div style={{ fontSize: 22, marginBottom: 6 }}>🎉</div>
-          <div style={{ fontWeight: "bold", color: COLORS.accent, marginBottom: 4 }}>Mix abgeschlossen!</div>
-          <div style={{ fontSize: 12, color: COLORS.muted, fontFamily: "monospace" }}>{known.size} gewusst · {learning.size} nochmal üben</div>
-        </div>
-      )}
+function Card(props) {
+  return (
+    <div style={Object.assign({ background:WHITE, borderRadius:20, boxShadow:SHADOW, padding:20 }, props.style||{})}>
+      {props.children}
     </div>
   );
 }
 
-// ── PHRASES ───────────────────────────────────────────────────────────────────
-function Phrases() {
-  const [filter, setFilter] = useState("Alle");
-  const contexts = ["Alle", ...new Set(PHRASES.map(p => p.context))];
-  const filtered = filter === "Alle" ? PHRASES : PHRASES.filter(p => p.context === filter);
+function SectionLabel(props) {
   return (
-    <div>
-      <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 10, marginBottom: 10 }}>
-        {contexts.map(c => <button key={c} style={S.catBtn(filter === c)} onClick={() => setFilter(c)}>{c}</button>)}
-      </div>
-      {filtered.map((p, i) => (
-        <div key={i} style={{ ...S.card, marginBottom: 8 }}>
-          <span style={S.badge(COLORS.accent)}>{p.context}</span>
-          <div style={{ fontSize: 18, fontWeight: "bold", margin: "8px 0 4px" }}>{p.sk}</div>
-          <div style={{ color: COLORS.muted, fontFamily: "monospace", fontSize: 13 }}>{p.de}</div>
-        </div>
-      ))}
+    <div style={{fontSize:11, fontWeight:600, letterSpacing:0.8, color:LIGHT, textTransform:"uppercase", marginBottom:8}}>
+      {props.children}
     </div>
   );
 }
 
-// ── GRAMMAR ───────────────────────────────────────────────────────────────────
-function Grammar() {
-  const [open, setOpen] = useState(0);
-  return (
-    <div>
-      {GRAMMAR.map((g, i) => (
-        <div key={i} style={{ ...S.card, marginBottom: 8 }}>
-          <div style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }} onClick={() => setOpen(open === i ? -1 : i)}>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: "bold" }}>{g.title}</div>
-              <div style={{ color: COLORS.muted, fontSize: 12, marginTop: 2 }}>{g.description}</div>
-            </div>
-            <span style={{ color: COLORS.accent }}>{open === i ? "▲" : "▼"}</span>
-          </div>
-          {open === i && (
-            <div style={{ marginTop: 14 }}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <tbody>
-                  {g.table.map(([de, sk], j) => (
-                    <tr key={j} style={{ borderBottom: `1px solid ${COLORS.border}` }}>
-                      <td style={{ padding: "7px 0", color: COLORS.muted, fontFamily: "monospace", fontSize: 12 }}>{de}</td>
-                      <td style={{ padding: "7px 0", fontWeight: "bold", fontSize: 15, color: COLORS.accent }}>{sk}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div style={{ marginTop: 12, padding: "9px 13px", background: COLORS.accentSoft, borderRadius: 8, fontSize: 12, color: COLORS.accent, borderLeft: `3px solid ${COLORS.accent}` }}>💡 {g.tip}</div>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
+// ── LEARN SCREEN ──────────────────────────────────────────────────────────────
+function LearnScreen(props) {
+  var prog  = loadProgress();
+  var known = new Set(prog.known || []);
+  var plan  = loadPlan();
+  var stats = loadStats();
+  var tod   = stats[todayKey()] || { seen:0, correct:0 };
+  var pct   = Math.min(100, Math.round(tod.seen / plan.dailyGoal * 100));
+  var done  = tod.seen >= plan.dailyGoal;
+  var hour  = new Date().getHours();
+  var greeting = hour < 12 ? "Dobré ráno 👋" : hour < 18 ? "Dobrý deň 👋" : "Dobrý večer 👋";
 
-// ── QUIZ ──────────────────────────────────────────────────────────────────────
-function Quiz() {
-  const [cat, setCat] = useState("Alle");
-  const [dir, setDir] = useState("sk2de"); // "sk2de" or "de2sk"
-  const [q, setQ] = useState(null);
-  const [chosen, setChosen] = useState(null);
-  const [score, setScore] = useState({ right: 0, wrong: 0 });
-
-  const pool = cat === "Alle" ? VOCAB : VOCAB.filter(v => v.cat === cat);
-
-  const generate = useCallback(() => {
-    if (pool.length < 4) return;
-    const correct = pool[Math.floor(Math.random() * pool.length)];
-    if (dir === "sk2de") {
-      const wrongs = pool.filter(v => v.sk !== correct.sk).sort(() => Math.random() - 0.5).slice(0, 3).map(v => v.de);
-      const options = [...wrongs, correct.de].sort(() => Math.random() - 0.5);
-      setQ({ question: correct.sk, answer: correct.de, options, correct });
-    } else {
-      const wrongs = pool.filter(v => v.sk !== correct.sk).sort(() => Math.random() - 0.5).slice(0, 3).map(v => v.sk);
-      const options = [...wrongs, correct.sk].sort(() => Math.random() - 0.5);
-      setQ({ question: correct.de, answer: correct.sk, options, correct });
-    }
-    setChosen(null);
-  }, [cat, dir, pool.length]);
-
-  useEffect(() => { generate(); }, [cat, dir]);
-
-  const pick = (opt) => {
-    if (chosen) return;
-    setChosen(opt);
-    const correct = opt === q.answer;
-    if (correct) setScore(s => ({ ...s, right: s.right + 1 }));
-    else setScore(s => ({ ...s, wrong: s.wrong + 1 }));
-    recordActivity(correct);
-  };
-  const total = score.right + score.wrong;
-  const pct = total ? Math.round((score.right / total) * 100) : 0;
-
-  return (
-    <div>
-      {/* Direction toggle */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-        <button style={{ ...S.catBtn(dir === "sk2de"), flex: 1 }} onClick={() => { setDir("sk2de"); setScore({ right: 0, wrong: 0 }); }}>🇸🇰 → 🇩🇪 Slowakisch → Deutsch</button>
-        <button style={{ ...S.catBtn(dir === "de2sk"), flex: 1 }} onClick={() => { setDir("de2sk"); setScore({ right: 0, wrong: 0 }); }}>🇩🇪 → 🇸🇰 Deutsch → Slowakisch</button>
-      </div>
-      <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 10, marginBottom: 10 }}>
-        {CATEGORIES.map(c => <button key={c} style={S.catBtn(cat === c)} onClick={() => { setCat(c); setScore({ right: 0, wrong: 0 }); setTimeout(generate, 50); }}>{c}</button>)}
-      </div>
-      <div style={{ ...S.card, padding: 12, display: "flex", justifyContent: "space-between" }}>
-        <span style={S.badge(COLORS.success)}>✓ {score.right}</span>
-        <span style={{ fontFamily: "monospace", fontSize: 13, color: COLORS.accent }}>{pct}% richtig</span>
-        <span style={S.badge(COLORS.error)}>✗ {score.wrong}</span>
-      </div>
-      {q && <>
-        <div style={{ ...S.card, textAlign: "center", minHeight: 100, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 6, fontFamily: "monospace" }}>
-            {dir === "sk2de" ? "Was bedeutet auf Deutsch…" : "Wie heißt das auf Slowakisch…"}
-          </div>
-          <div style={{ fontSize: 32, fontWeight: "bold", color: COLORS.accent, padding: "0 12px" }}>{q.question}</div>
-          <span style={{ ...S.badge(COLORS.muted), marginTop: 8, fontSize: 10 }}>{q.correct.cat}</span>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-          {q.options.map(opt => {
-            const isC = opt === q.answer, isP = chosen === opt;
-            return (
-              <button key={opt} onClick={() => pick(opt)} style={{ padding: "13px 8px", background: chosen ? (isC ? COLORS.success+"22" : isP ? COLORS.error+"22" : COLORS.card) : COLORS.card, border: `1px solid ${chosen ? (isC ? COLORS.success : isP ? COLORS.error : COLORS.border) : COLORS.border}`, borderRadius: 10, color: COLORS.text, cursor: chosen ? "default" : "pointer", fontFamily: "Georgia", fontSize: 13, transition: "all 0.2s" }}>
-                {chosen && isC ? "✓ " : ""}{opt}
-              </button>
-            );
-          })}
-        </div>
-        {chosen && (
-          <div style={{ marginTop: 12 }}>
-            <div style={{ ...S.card, background: (chosen === q.answer ? COLORS.success : COLORS.error)+"22", border: `1px solid ${chosen === q.answer ? COLORS.success : COLORS.error}`, textAlign: "center", padding: 12, fontSize: 13 }}>
-              {chosen === q.answer
-                ? `🎉 Richtig! "${q.correct.sk}" = "${q.correct.de}"`
-                : `✗ Falsch. Die Antwort war: "${q.answer}"`}
-            </div>
-            <button style={{ ...S.btn(), width: "100%", padding: 13, marginTop: 8 }} onClick={generate}>Nächste Frage →</button>
-          </div>
-        )}
-      </>}
-    </div>
-  );
-}
-
-// ── AI TUTOR ──────────────────────────────────────────────────────────────────
-function AiTutor() {
-  const [msgs, setMsgs] = useState([{ role: "assistant", content: "Ahoj! Ich bin dein Slowakisch-Tutor 🇸🇰 Stelle mir Fragen auf Deutsch, übe Sätze — ich korrigiere und erkläre alles!" }]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const send = async () => {
-    if (!input.trim() || loading) return;
-    const userMsg = { role: "user", content: input };
-    const history = [...msgs, userMsg];
-    setMsgs(history); setInput(""); setLoading(true);
-    try {
-      const reply = await callClaude(history.map(m => ({ role: m.role, content: m.content })),
-        `Du bist ein freundlicher Slowakisch-Sprachlehrer für deutschsprachige Anfänger. Antworte auf Deutsch. Korrigiere slowakische Sätze freundlich. Erkläre Grammatik einfach mit Beispielen. Hebe slowakische Wörter mit ** hervor.`);
-      setMsgs(h => [...h, { role: "assistant", content: reply }]);
-    } catch { setMsgs(h => [...h, { role: "assistant", content: "Verbindungsfehler. Bitte nochmal versuchen." }]); }
-    setLoading(false);
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      <div style={{ ...S.card, maxHeight: 400, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
-        {msgs.map((m, i) => (
-          <div key={i} style={{ alignSelf: m.role === "user" ? "flex-end" : "flex-start", maxWidth: "85%", padding: "9px 13px", borderRadius: m.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px", background: m.role === "user" ? COLORS.accent : COLORS.surface, color: m.role === "user" ? COLORS.bg : COLORS.text, fontSize: 13, lineHeight: 1.5 }}>
-            {m.content.split("**").map((p, j) => j % 2 === 1 ? <strong key={j} style={{ color: m.role === "user" ? COLORS.bg : COLORS.accent }}>{p}</strong> : p)}
-          </div>
-        ))}
-        {loading && <div style={{ alignSelf: "flex-start", padding: "9px 13px", background: COLORS.surface, borderRadius: "14px 14px 14px 4px", color: COLORS.muted, fontSize: 12 }}>✍️ Schreibe...</div>}
-      </div>
-      <div style={{ display: "flex", gap: 8 }}>
-        <input style={S.input} value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} placeholder="Frage stellen oder Satz üben..." />
-        <button style={{ ...S.btn(), padding: "11px 16px" }} onClick={send} disabled={loading}>→</button>
-      </div>
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-        {["Wie sage ich 'Ich bin müde'?", "Erkläre die Verneinung", "Übe Konversation mit mir", "Was sind die häufigsten Verben?"].map(s => (
-          <button key={s} style={{ ...S.catBtn(false), fontSize: 10, padding: "5px 9px" }} onClick={() => setInput(s)}>{s}</button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-
-// ── LERNPLAN ──────────────────────────────────────────────────────────────────
-function Lernplan() {
-  const [plan, setPlan] = useState(() => loadPlan() || { dailyGoal: 10, categories: [], startDate: todayKey() });
-  const [saved, setSaved] = useState(false);
-  const stats = loadStats();
-  const today = todayKey();
-  const todayStats = stats[today] || { seen: 0, correct: 0 };
-  const progress = Math.min(100, Math.round((todayStats.seen / plan.dailyGoal) * 100));
-  const done = todayStats.seen >= plan.dailyGoal;
-
-  const save = () => {
-    savePlan(plan);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  };
-
-  const toggleCat = (cat) => {
-    setPlan(p => ({
-      ...p,
-      categories: p.categories.includes(cat)
-        ? p.categories.filter(c => c !== cat)
-        : [...p.categories, cat]
-    }));
-  };
-
-  // Compute streak
-  let streak = 0;
-  const d = new Date();
+  var streak = 0;
+  var d2 = new Date();
   while (true) {
-    const key = d.toISOString().slice(0, 10);
-    const s = stats[key];
-    if (s && s.seen >= plan.dailyGoal) { streak++; d.setDate(d.getDate() - 1); }
-    else break;
+    var k = d2.toISOString().slice(0,10);
+    var s = stats[k];
+    if (s && s.seen >= plan.dailyGoal) { streak++; d2.setDate(d2.getDate()-1); } else break;
   }
 
-  return (
-    <div>
-      {/* Today's progress */}
-      <div style={{ ...S.card, textAlign: "center" }}>
-        <div style={{ fontSize: 13, color: COLORS.muted, fontFamily: "monospace", marginBottom: 8 }}>HEUTE</div>
-        <div style={{ fontSize: 42, fontWeight: "bold", color: done ? COLORS.success : COLORS.accent }}>
-          {todayStats.seen} <span style={{ fontSize: 18, color: COLORS.muted }}>/ {plan.dailyGoal}</span>
-        </div>
-        <div style={{ fontSize: 12, color: COLORS.muted, fontFamily: "monospace", marginBottom: 12 }}>
-          Vokabeln gelernt · {todayStats.correct} richtig
-        </div>
-        <div style={{ height: 8, background: COLORS.border, borderRadius: 4, overflow: "hidden" }}>
-          <div style={{ width: `${progress}%`, height: "100%", background: done ? COLORS.success : COLORS.accent, borderRadius: 4, transition: "width 0.5s" }} />
-        </div>
-        {done && <div style={{ marginTop: 10, color: COLORS.success, fontSize: 13, fontFamily: "monospace" }}>🎉 Tagesziel erreicht!</div>}
-      </div>
-
-      {/* Streak */}
-      <div style={{ ...S.card, display: "flex", alignItems: "center", gap: 16 }}>
-        <div style={{ fontSize: 36 }}>🔥</div>
-        <div>
-          <div style={{ fontSize: 24, fontWeight: "bold", color: COLORS.accent }}>{streak} {streak === 1 ? "Tag" : "Tage"}</div>
-          <div style={{ fontSize: 12, color: COLORS.muted, fontFamily: "monospace" }}>aktuelle Serie</div>
-        </div>
-        <div style={{ marginLeft: "auto", textAlign: "right" }}>
-          <div style={{ fontSize: 18, fontWeight: "bold", color: COLORS.text }}>{Object.keys(stats).length}</div>
-          <div style={{ fontSize: 11, color: COLORS.muted, fontFamily: "monospace" }}>Lerntage gesamt</div>
-        </div>
-      </div>
-
-      {/* Daily goal setting */}
-      <div style={S.card}>
-        <div style={{ fontSize: 14, fontWeight: "bold", marginBottom: 12 }}>📅 Tagesziel</div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {[5, 10, 15, 20, 30].map(n => (
-            <button key={n} style={{ ...S.catBtn(plan.dailyGoal === n), flex: 1, minWidth: 50 }}
-              onClick={() => setPlan(p => ({ ...p, dailyGoal: n }))}>{n}</button>
-          ))}
-        </div>
-        <div style={{ fontSize: 11, color: COLORS.muted, fontFamily: "monospace", marginTop: 8 }}>
-          Vokabeln pro Tag
-        </div>
-      </div>
-
-      {/* Category focus */}
-      <div style={S.card}>
-        <div style={{ fontSize: 14, fontWeight: "bold", marginBottom: 4 }}>🎯 Themen-Fokus</div>
-        <div style={{ fontSize: 11, color: COLORS.muted, fontFamily: "monospace", marginBottom: 10 }}>
-          Leer = alle Themen · Auswahl = nur diese
-        </div>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-          {CATEGORIES.filter(c => c !== "Alle").map(cat => (
-            <button key={cat} style={{ ...S.catBtn(plan.categories.includes(cat)), fontSize: 10, padding: "5px 10px" }}
-              onClick={() => toggleCat(cat)}>{cat}</button>
-          ))}
-        </div>
-      </div>
-
-      <button style={{ ...S.btn(), width: "100%", padding: 14 }} onClick={save}>
-        {saved ? "✓ Gespeichert!" : "Lernplan speichern"}
-      </button>
-    </div>
-  );
-}
-
-// ── STATISTIKEN ───────────────────────────────────────────────────────────────
-function Statistiken() {
-  const stats = loadStats();
-  const progress = loadProgress();
-  const known = new Set(progress.known || []);
-  const learning = new Set(progress.learning || []);
-  const plan = loadPlan() || { dailyGoal: 10 };
-
-  // Last 14 days
-  const days = [];
-  for (let i = 13; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
-    const label = i === 0 ? "Heute" : i === 1 ? "Gestern" : d.toLocaleDateString("de", { weekday: "short" });
-    days.push({ key, label, data: stats[key] || { seen: 0, correct: 0 } });
-  }
-
-  const totalSeen = Object.values(stats).reduce((s, d) => s + d.seen, 0);
-  const totalCorrect = Object.values(stats).reduce((s, d) => s + d.correct, 0);
-  const accuracy = totalSeen ? Math.round((totalCorrect / totalSeen) * 100) : 0;
-  const maxSeen = Math.max(...days.map(d => d.data.seen), plan.dailyGoal, 1);
-
-  // Category breakdown
-  const catStats = {};
-  VOCAB.forEach(v => {
-    if (!catStats[v.cat]) catStats[v.cat] = { total: 0, known: 0 };
-    catStats[v.cat].total++;
-    if (known.has(v.sk)) catStats[v.cat].known++;
-  });
+  var cats = CATEGORIES.filter(function(c){ return c !== "Alle"; }).slice(0,6);
 
   return (
-    <div>
-      {/* Summary cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 0 }}>
-        {[
-          { label: "Vokabeln gelernt", value: known.size, total: VOCAB.length, color: COLORS.success },
-          { label: "Noch üben", value: learning.size, total: VOCAB.length, color: COLORS.error },
-          { label: "Gesamt gesehen", value: totalSeen, color: COLORS.accent },
-          { label: "Trefferquote", value: accuracy + "%", color: COLORS.success },
-        ].map(({ label, value, total, color }) => (
-          <div key={label} style={{ ...S.card, textAlign: "center", marginBottom: 10 }}>
-            <div style={{ fontSize: 26, fontWeight: "bold", color }}>{value}{total ? <span style={{ fontSize: 13, color: COLORS.muted }}>/{total}</span> : ""}</div>
-            <div style={{ fontSize: 10, color: COLORS.muted, fontFamily: "monospace", marginTop: 4 }}>{label}</div>
+    <div style={{padding:"32px 20px 24px"}}>
+      {/* Greeting */}
+      <div className="fu" style={{marginBottom:24}}>
+        <div style={{fontSize:28, fontWeight:300, fontFamily:"'DM Serif Display',serif", color:BLACK, marginBottom:4}}>{greeting}</div>
+        <div style={{fontSize:15, color:GRAY}}>Bereit für deine nächste Lerneinheit?</div>
+      </div>
+
+      {/* Today card */}
+      <Card style={{display:"flex", alignItems:"center", gap:20, marginBottom:20}}>
+        <div style={{position:"relative", flexShrink:0}}>
+          <Ring pct={pct} size={76} stroke={5}/>
+          <div style={{position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column"}}>
+            <div style={{fontSize:20, fontWeight:600, color:done?GREEN:BLACK, lineHeight:1}}>{tod.seen}</div>
+            <div style={{fontSize:10, color:LIGHT}}>/{plan.dailyGoal}</div>
           </div>
-        ))}
+        </div>
+        <div style={{flex:1}}>
+          <div style={{fontSize:13, color:GRAY, marginBottom:2}}>Tagesziel</div>
+          <div style={{fontSize:15, fontWeight:500, color:BLACK}}>{done ? "Ziel erreicht! 🎉" : "Noch " + (plan.dailyGoal - tod.seen) + " Wörter"}</div>
+          {streak > 0 && <div style={{fontSize:12, color:GOLD, marginTop:4}}>🔥 {streak} {streak===1?"Tag":"Tage"} Serie</div>}
+        </div>
+      </Card>
+
+      {/* CTA */}
+      <div style={{marginBottom:24}}>
+        <BtnPrimary onClick={function(){ props.onGo("flash"); }}>Weiterlernen</BtnPrimary>
       </div>
 
-      {/* Bar chart — last 14 days */}
-      <div style={S.card}>
-        <div style={{ fontSize: 13, fontWeight: "bold", marginBottom: 12 }}>📊 Letzte 14 Tage</div>
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 80 }}>
-          {days.map(({ key, label, data }) => {
-            const h = Math.round((data.seen / maxSeen) * 76);
-            const goalH = Math.round((plan.dailyGoal / maxSeen) * 76);
-            const isToday = key === todayKey();
-            const goalReached = data.seen >= plan.dailyGoal;
-            return (
-              <div key={key} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
-                <div style={{ width: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-end", height: 76 }}>
-                  <div style={{ width: "100%", height: Math.max(h, 2), background: goalReached ? COLORS.success : isToday ? COLORS.accent : COLORS.border, borderRadius: "3px 3px 0 0", transition: "height 0.4s" }} />
-                </div>
-                <div style={{ fontSize: 8, color: isToday ? COLORS.accent : COLORS.muted, fontFamily: "monospace", textAlign: "center", lineHeight: 1.2 }}>{label}</div>
-              </div>
-            );
-          })}
-        </div>
-        <div style={{ fontSize: 10, color: COLORS.muted, fontFamily: "monospace", marginTop: 8 }}>
-          🟡 Heute  🟢 Tagesziel erreicht  ⬜ Vergangenheit
-        </div>
+      {/* Themen */}
+      <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12}}>
+        <SectionLabel>Themen</SectionLabel>
+        <span style={{fontSize:13, color:GOLD, cursor:"pointer"}} onClick={function(){ props.onGo("know"); }}>Alle anzeigen</span>
       </div>
-
-      {/* Per-category progress */}
-      <div style={S.card}>
-        <div style={{ fontSize: 13, fontWeight: "bold", marginBottom: 12 }}>📚 Fortschritt nach Thema</div>
-        {Object.entries(catStats).map(([cat, { total, known: k }]) => {
-          const pct = Math.round((k / total) * 100);
+      <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8}}>
+        {cats.map(function(cat) {
+          var tot = VOCAB.filter(function(v){ return v.cat===cat; }).length;
+          var kk  = VOCAB.filter(function(v){ return v.cat===cat && known.has(v.sk); }).length;
+          var p   = Math.round(kk/tot*100);
           return (
-            <div key={cat} style={{ marginBottom: 10 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ fontSize: 12, color: COLORS.text }}>{cat}</span>
-                <span style={{ fontSize: 11, color: COLORS.muted, fontFamily: "monospace" }}>{k}/{total} · {pct}%</span>
-              </div>
-              <div style={{ height: 5, background: COLORS.border, borderRadius: 3 }}>
-                <div style={{ width: `${pct}%`, height: "100%", background: pct === 100 ? COLORS.success : COLORS.accent, borderRadius: 3, transition: "width 0.4s" }} />
+            <div key={cat} onClick={function(){ props.onGo("flash"); }}
+              style={{background:WHITE, borderRadius:14, padding:"12px 10px", boxShadow:SHADOW_SM, cursor:"pointer"}}>
+              <div style={{fontSize:11, fontWeight:500, color:BLACK, lineHeight:1.3, marginBottom:4}}>{cat.split(" ")[0]}</div>
+              <div style={{fontSize:11, color:LIGHT, marginBottom:6}}>{kk}/{tot}</div>
+              <div style={{height:2, background:BORDER, borderRadius:1}}>
+                <div style={{height:"100%", width:p+"%", background:GOLD, borderRadius:1}}/>
               </div>
             </div>
           );
         })}
       </div>
+    </div>
+  );
+}
 
-      {/* Weekly heatmap dots */}
-      <div style={S.card}>
-        <div style={{ fontSize: 13, fontWeight: "bold", marginBottom: 10 }}>🗓 Aktivität (30 Tage)</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-          {Array.from({ length: 30 }, (_, i) => {
-            const d = new Date();
-            d.setDate(d.getDate() - (29 - i));
-            const key = d.toISOString().slice(0, 10);
-            const s = stats[key];
-            const intensity = s ? Math.min(1, s.seen / plan.dailyGoal) : 0;
-            const color = intensity === 0 ? COLORS.border
-              : intensity < 0.5 ? COLORS.accent + "66"
-              : intensity < 1 ? COLORS.accent + "bb"
-              : COLORS.success;
-            const isToday = key === todayKey();
+// ── FLASH SCREEN ──────────────────────────────────────────────────────────────
+function FlashScreen() {
+  var s1 = useState("Alle");  var cat = s1[0]; var setCat = s1[1];
+  var s2 = useState("sk2de"); var dir = s2[0]; var setDir = s2[1];
+  var s3 = useState(false);   var flipped = s3[0]; var setFlipped = s3[1];
+  var s4 = useState(0);       var fkey = s4[0]; var setFkey = s4[1];
+  var s5 = useState(function(){ var p=loadProgress(); return new Set(p.known||[]); });
+  var known = s5[0]; var setKnown = s5[1];
+  var s6 = useState(function(){ var p=loadProgress(); return new Set(p.learning||[]); });
+  var learning = s6[0]; var setLearning = s6[1];
+  var s7 = useState(0); var idx = s7[0]; var setIdx = s7[1];
+  var s8 = useState(false); var ankiMode = s8[0]; var setAnkiMode = s8[1];
+  var s9 = useState(function(){ return VOCAB.map(function(_,i){return i;}).sort(function(){return Math.random()-0.5;}); });
+  var srQ = s9[0]; var setSrQ = s9[1];
+  var s10 = useState(0); var srPos = s10[0]; var setSrPos = s10[1];
+
+  var pool = cat==="Alle" ? VOCAB : VOCAB.filter(function(v){ return v.cat===cat; });
+  var card = ankiMode ? VOCAB[srQ[srPos % srQ.length]] : pool[idx % pool.length];
+  var cur  = ankiMode ? srPos % srQ.length : idx % pool.length;
+  var tot  = ankiMode ? srQ.length : pool.length;
+  var front = dir==="sk2de" ? card.sk : card.de;
+  var back  = dir==="sk2de" ? card.de : card.sk;
+  var tips  = getPronTips(card.sk);
+  var gPct  = Math.round(known.size / VOCAB.length * 100);
+  var barW  = Math.round((cur+1)/tot*100) + "%";
+
+  function flip() { setFkey(function(k){return k+1;}); setFlipped(function(f){return !f;}); }
+
+  function nextCard(mark) {
+    var newKnown    = mark==="known"    ? new Set([].concat(Array.from(known),    [card.sk])) : known;
+    var newLearning = mark==="learning" ? new Set([].concat(Array.from(learning), [card.sk])) : learning;
+    if (mark==="known")    setKnown(newKnown);
+    if (mark==="learning") setLearning(newLearning);
+    saveProgress(newKnown, newLearning);
+    recordActivity(mark==="known");
+    setFlipped(false);
+    setFkey(function(k){return k+1;});
+    if (ankiMode) {
+      var ci = srQ[srPos % srQ.length];
+      var iv = mark==="known" ? Math.floor(Math.random()*11)+20 : Math.floor(Math.random()*8)+3;
+      setSrQ(function(q){
+        var nq = q.slice();
+        nq.splice(srPos + iv, 0, ci);
+        return nq;
+      });
+      setTimeout(function(){ setSrPos(function(p){return p+1;}); }, 120);
+    } else {
+      var plen = pool.length;
+      setTimeout(function(){ setIdx(function(i){return (i+1)%plen;}); }, 120);
+    }
+  }
+
+  function startAnki() {
+    setSrQ(VOCAB.map(function(_,i){return i;}).sort(function(){return Math.random()-0.5;}));
+    setSrPos(0); setAnkiMode(true); setFlipped(false); setFkey(function(k){return k+1;});
+  }
+
+  return (
+    <div style={{padding:"20px 20px 8px", display:"flex", flexDirection:"column"}}>
+      {/* Direction + Anki */}
+      <div style={{display:"flex", gap:6, marginBottom:12, alignItems:"center"}}>
+        <Pill label="🇸🇰 → 🇩🇪" active={dir==="sk2de"} onClick={function(){ setDir("sk2de"); setFlipped(false); setFkey(function(k){return k+1;}); }}/>
+        <Pill label="🇩🇪 → 🇸🇰" active={dir==="de2sk"} onClick={function(){ setDir("de2sk"); setFlipped(false); setFkey(function(k){return k+1;}); }}/>
+        <button onClick={startAnki} style={{
+          marginLeft:"auto", padding:"7px 14px", borderRadius:999, border:"none",
+          fontFamily:"inherit", fontSize:13, fontWeight:500, cursor:"pointer",
+          background:ankiMode?GOLDSOFT:"transparent", color:ankiMode?GOLD:GRAY,
+        }}>🧠 Anki</button>
+      </div>
+
+      {/* Category filter */}
+      <div style={{display:"flex", gap:6, overflowX:"auto", paddingBottom:10, marginBottom:10}}>
+        {CATEGORIES.map(function(c) {
+          return <Pill key={c} label={c} active={!ankiMode && cat===c} onClick={function(){ setCat(c); setIdx(0); setFlipped(false); setFkey(function(k){return k+1;}); setAnkiMode(false); }}/>;
+        })}
+      </div>
+
+      {/* Progress bar */}
+      <div style={{display:"flex", alignItems:"center", gap:10, marginBottom:16}}>
+        <div style={{flex:1, height:3, background:BORDER, borderRadius:2}}>
+          <div style={{height:"100%", width:barW, background:GOLD, borderRadius:2, transition:"width 0.4s"}}/>
+        </div>
+        <span style={{fontSize:12, color:LIGHT, flexShrink:0}}>{cur+1}/{tot}</span>
+      </div>
+
+      {/* Card */}
+      <div key={fkey} className="fi" onClick={flip} style={{
+        background:WHITE, borderRadius:28, boxShadow:SHADOW, cursor:"pointer",
+        padding:"32px 24px", textAlign:"center", position:"relative",
+        display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+        minHeight:240, marginBottom:16,
+      }}>
+        <div style={{position:"absolute", top:14, left:14}}>
+          <span style={{fontSize:11, fontWeight:500, color:LIGHT, background:BORDER, padding:"3px 9px", borderRadius:999}}>
+            {dir==="sk2de" ? (flipped?"🇩🇪":"🇸🇰") : (flipped?"🇸🇰":"🇩🇪")}
+          </span>
+        </div>
+        <div style={{position:"absolute", top:12, right:12}} onClick={function(e){e.stopPropagation();}}>
+          <SpeakBtn text={card.sk}/>
+        </div>
+        <div style={{fontSize:11, fontWeight:500, color:GOLD, background:GOLDSOFT, padding:"3px 10px", borderRadius:999, marginBottom:16}}>{card.cat}</div>
+        <div style={{
+          fontSize: front.length > 14 ? 28 : 42,
+          fontWeight:300, fontFamily:"'DM Serif Display',serif",
+          color: flipped ? GRAY : BLACK, lineHeight:1.25, marginBottom:8,
+        }}>{flipped ? back : front}</div>
+        {!flipped && <div style={{fontSize:13, color:LIGHT}}>Tippe zum Umdrehen</div>}
+        {flipped && <div style={{fontSize:14, color:GRAY, fontStyle:"italic", marginTop:4, maxWidth:260}}>„{card.ex}"</div>}
+        {flipped && tips.length > 0 && (
+          <div style={{display:"flex", gap:6, flexWrap:"wrap", justifyContent:"center", marginTop:8}}>
+            {tips.map(function(t){ return <span key={t} style={{fontSize:11, color:GOLD, background:GOLDSOFT, padding:"2px 8px", borderRadius:999}}>{t}</span>; })}
+          </div>
+        )}
+      </div>
+
+      {/* Action buttons */}
+      {flipped ? (
+        <div style={{display:"flex", gap:10, marginBottom:12}}>
+          <button onClick={function(){ nextCard("learning"); }} style={{
+            flex:1, padding:"14px", borderRadius:999, fontFamily:"inherit",
+            border:"1.5px solid rgba(255,59,48,0.2)", background:"rgba(255,59,48,0.05)",
+            color:RED, fontSize:15, fontWeight:500, cursor:"pointer",
+          }}>✕ Schwer</button>
+          <button onClick={function(){ nextCard("known"); }} style={{
+            flex:2, padding:"14px", borderRadius:999, fontFamily:"inherit",
+            border:"none", background:GOLD, color:"#fff",
+            fontSize:15, fontWeight:600, cursor:"pointer", boxShadow:SHADOW_G,
+          }}>Einfach ✓</button>
+        </div>
+      ) : (
+        <div style={{marginBottom:12}}>
+          <BtnPrimary onClick={flip}>Lösung anzeigen</BtnPrimary>
+        </div>
+      )}
+
+      {/* Micro stats */}
+      <div style={{display:"flex", justifyContent:"center", gap:32, paddingBottom:4}}>
+        <div style={{textAlign:"center"}}>
+          <div style={{fontSize:16, fontWeight:600, color:GREEN}}>{known.size}</div>
+          <div style={{fontSize:11, color:LIGHT}}>Gelernt</div>
+        </div>
+        <div style={{textAlign:"center"}}>
+          <div style={{fontSize:16, fontWeight:600, color:GOLD}}>{gPct}%</div>
+          <div style={{fontSize:11, color:LIGHT}}>Gesamt</div>
+        </div>
+        <div style={{textAlign:"center"}}>
+          <div style={{fontSize:16, fontWeight:600, color:RED}}>{learning.size}</div>
+          <div style={{fontSize:11, color:LIGHT}}>Üben</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── QUIZ SCREEN ───────────────────────────────────────────────────────────────
+function QuizScreen() {
+  var s1 = useState("Alle");  var cat = s1[0]; var setCat = s1[1];
+  var s2 = useState("sk2de"); var dir = s2[0]; var setDir = s2[1];
+  var s3 = useState(null);    var q = s3[0]; var setQ = s3[1];
+  var s4 = useState(null);    var chosen = s4[0]; var setChosen = s4[1];
+  var s5 = useState({r:0,w:0}); var score = s5[0]; var setScore = s5[1];
+  var s6 = useState(0);       var qkey = s6[0]; var setQkey = s6[1];
+
+  var pool = cat==="Alle" ? VOCAB : VOCAB.filter(function(v){ return v.cat===cat; });
+
+  function gen() {
+    if (pool.length < 4) return;
+    var c = pool[Math.floor(Math.random() * pool.length)];
+    var ws, opts;
+    if (dir==="sk2de") {
+      ws   = pool.filter(function(v){return v.sk!==c.sk;}).sort(function(){return Math.random()-0.5;}).slice(0,3).map(function(v){return v.de;});
+      opts = ws.concat([c.de]).sort(function(){return Math.random()-0.5;});
+      setQ({ question:c.sk, answer:c.de, options:opts, card:c });
+    } else {
+      ws   = pool.filter(function(v){return v.sk!==c.sk;}).sort(function(){return Math.random()-0.5;}).slice(0,3).map(function(v){return v.sk;});
+      opts = ws.concat([c.sk]).sort(function(){return Math.random()-0.5;});
+      setQ({ question:c.de, answer:c.sk, options:opts, card:c });
+    }
+    setChosen(null);
+    setQkey(function(k){return k+1;});
+  }
+
+  useEffect(function(){ gen(); }, [cat, dir]);
+
+  function pick(opt) {
+    if (chosen !== null) return;
+    setChosen(opt);
+    var ok = opt === q.answer;
+    if (ok) setScore(function(s){return {r:s.r+1,w:s.w};});
+    else    setScore(function(s){return {r:s.r,w:s.w+1};});
+    recordActivity(ok);
+  }
+
+  var tot = score.r + score.w;
+  var pct = tot ? Math.round(score.r/tot*100) : 0;
+
+  return (
+    <div style={{padding:"20px 20px 24px"}}>
+      {/* Direction */}
+      <div style={{display:"flex", gap:6, marginBottom:12}}>
+        <Pill label="🇸🇰 → 🇩🇪" active={dir==="sk2de"} onClick={function(){ setDir("sk2de"); setScore({r:0,w:0}); }}/>
+        <Pill label="🇩🇪 → 🇸🇰" active={dir==="de2sk"} onClick={function(){ setDir("de2sk"); setScore({r:0,w:0}); }}/>
+      </div>
+
+      {/* Category */}
+      <div style={{display:"flex", gap:6, overflowX:"auto", paddingBottom:8, marginBottom:16}}>
+        {CATEGORIES.map(function(c) {
+          return <Pill key={c} label={c} active={cat===c} onClick={function(){ setCat(c); setScore({r:0,w:0}); }}/>;
+        })}
+      </div>
+
+      {/* Score */}
+      <div style={{display:"flex", gap:10, marginBottom:16}}>
+        {[{v:score.r,l:"Richtig",col:GREEN},{v:pct+"%",l:"Quote",col:GOLD},{v:score.w,l:"Falsch",col:RED}].map(function(item){
+          return (
+            <div key={item.l} style={{flex:1, background:WHITE, borderRadius:14, padding:"12px 8px", textAlign:"center", boxShadow:SHADOW_SM}}>
+              <div style={{fontSize:20, fontWeight:600, color:item.col}}>{item.v}</div>
+              <div style={{fontSize:11, color:LIGHT}}>{item.l}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      {q && (
+        <div key={qkey}>
+          {/* Question */}
+          <Card style={{textAlign:"center", padding:"28px 20px", marginBottom:16}}>
+            <div style={{fontSize:12, color:LIGHT, marginBottom:12}}>
+              {dir==="sk2de" ? "Was bedeutet auf Deutsch…" : "Wie heißt auf Slowakisch…"}
+            </div>
+            <div style={{fontSize:36, fontWeight:300, fontFamily:"'DM Serif Display',serif", color:BLACK, lineHeight:1.2, marginBottom:8}}>{q.question}</div>
+            <span style={{fontSize:11, color:GOLD, background:GOLDSOFT, padding:"3px 10px", borderRadius:999}}>{q.card.cat}</span>
+          </Card>
+
+          {/* Options */}
+          <div style={{display:"flex", flexDirection:"column", gap:10, marginBottom:16}}>
+            {q.options.map(function(opt) {
+              var isC = opt === q.answer;
+              var isP = chosen === opt;
+              var bg  = chosen ? (isC ? "rgba(52,199,89,0.08)"  : isP ? "rgba(255,59,48,0.07)" : WHITE) : WHITE;
+              var bdr = chosen ? (isC ? GREEN : isP ? RED : BORDER) : BORDER;
+              var col = chosen ? (isC ? GREEN : isP ? RED : BLACK) : BLACK;
+              return (
+                <button key={opt} onClick={function(){ pick(opt); }} style={{
+                  padding:"16px 20px", borderRadius:14, fontFamily:"inherit",
+                  background:bg, border:"1.5px solid "+bdr, color:col,
+                  fontSize:15, fontWeight:chosen&&isC?600:400,
+                  cursor:chosen?"default":"pointer", textAlign:"left",
+                  boxShadow:SHADOW_SM, transition:"all 0.18s",
+                }}>
+                  {chosen && isC ? "✓ " : ""}{chosen && isP && !isC ? "✕ " : ""}{opt}
+                </button>
+              );
+            })}
+            {!chosen && (
+              <button onClick={function(){ pick(""); }} style={{fontSize:13, color:LIGHT, background:"none", border:"none", cursor:"pointer", fontFamily:"inherit", textAlign:"center", padding:8}}>Ich weiß es nicht</button>
+            )}
+          </div>
+
+          {chosen && (
+            <div className="fu">
+              <div style={{
+                background: chosen===q.answer ? "rgba(52,199,89,0.08)" : "rgba(255,59,48,0.07)",
+                border: "1px solid " + (chosen===q.answer ? "rgba(52,199,89,0.25)" : "rgba(255,59,48,0.2)"),
+                borderRadius:14, padding:"14px 20px", textAlign:"center", marginBottom:12,
+              }}>
+                <div style={{fontSize:15, fontWeight:600, color:chosen===q.answer?GREEN:RED}}>
+                  {chosen===q.answer ? "Richtig! 🎉" : "Leider falsch."}
+                </div>
+                <div style={{fontSize:13, color:GRAY, marginTop:4}}>{q.card.sk} = {q.card.de}</div>
+              </div>
+              <BtnPrimary onClick={gen}>Weiter</BtnPrimary>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── KNOWLEDGE SCREEN ──────────────────────────────────────────────────────────
+function KnowledgeScreen() {
+  var s1 = useState("Grammatik"); var sec = s1[0]; var setSec = s1[1];
+  var s2 = useState(0);           var open = s2[0]; var setOpen = s2[1];
+  var s3 = useState("Alle");      var pf = s3[0]; var setPf = s3[1];
+  var s4 = useState([{role:"assistant",content:"Ahoj! Ich bin dein KI-Tutor 🇸🇰 Womit kann ich helfen?"}]);
+  var msgs = s4[0]; var setMsgs = s4[1];
+  var s5 = useState(""); var inp = s5[0]; var setInp = s5[1];
+  var s6 = useState(false); var load = s6[0]; var setLoad = s6[1];
+  var chatRef = useRef(null);
+
+  var secs = ["Grammatik","Phrasen","KI-Tutor"];
+  var pfCtxRaw = PHRASES.reduce(function(acc,p){ if(acc.indexOf(p.context)===-1) acc.push(p.context); return acc; }, []);
+  var pfCtx = ["Alle"].concat(pfCtxRaw);
+  var fp = pf==="Alle" ? PHRASES : PHRASES.filter(function(p){ return p.context===pf; });
+
+  useEffect(function(){
+    if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
+  }, [msgs]);
+
+  function sendMsg() {
+    if (!inp.trim() || load) return;
+    var m = {role:"user", content:inp};
+    var h = msgs.concat([m]);
+    setMsgs(h); setInp(""); setLoad(true);
+    fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514", max_tokens:700,
+        system:"Du bist ein freundlicher Slowakisch-Lehrer für Deutschsprachige. Antworte kurz auf Deutsch. Hebe slowakische Wörter mit **Fettschrift** hervor.",
+        messages:h.map(function(m){ return {role:m.role,content:m.content}; })
+      })
+    }).then(function(r){ return r.json(); }).then(function(d){
+      var reply = (d.content||[]).map(function(b){ return b.text||""; }).join("") || "Fehler.";
+      setMsgs(function(hh){ return hh.concat([{role:"assistant",content:reply}]); });
+      setLoad(false);
+    }).catch(function(){
+      setMsgs(function(hh){ return hh.concat([{role:"assistant",content:"Verbindungsfehler."}]); });
+      setLoad(false);
+    });
+  }
+
+  return (
+    <div style={{display:"flex", flexDirection:"column", height:"100%"}}>
+      {/* Section tabs */}
+      <div style={{padding:"16px 20px 0", display:"flex", borderBottom:"1px solid "+BORDER}}>
+        {secs.map(function(s){
+          return (
+            <button key={s} onClick={function(){ setSec(s); }} style={{
+              padding:"10px 16px", background:"none", fontFamily:"inherit",
+              borderBottom:"2px solid "+(sec===s?GOLD:"transparent"),
+              color:sec===s?GOLD:GRAY, fontSize:14, fontWeight:sec===s?600:400,
+              cursor:"pointer", transition:"all 0.18s", border:"none",
+              borderBottomWidth:2, borderBottomStyle:"solid", borderBottomColor:sec===s?GOLD:"transparent",
+            }}>{s}</button>
+          );
+        })}
+      </div>
+
+      <div style={{flex:1, overflowY:"auto", padding:"16px 20px 32px"}}>
+        {sec==="Grammatik" && (
+          <div>
+            {GRAMMAR.map(function(g,i){
+              return (
+                <div key={i} style={{background:WHITE, borderRadius:16, overflow:"hidden", boxShadow:SHADOW_SM, marginBottom:10}}>
+                  <div onClick={function(){ setOpen(open===i?-1:i); }} style={{padding:"16px 20px", display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer"}}>
+                    <div>
+                      <div style={{fontSize:15, fontWeight:500, color:BLACK}}>{g.title}</div>
+                      <div style={{fontSize:12, color:GRAY, marginTop:2}}>{g.description}</div>
+                    </div>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={LIGHT} strokeWidth="2" strokeLinecap="round"
+                      style={{transform:open===i?"rotate(180deg)":"none", transition:"0.2s", flexShrink:0}}>
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                  </div>
+                  {open===i && (
+                    <div style={{padding:"0 20px 20px", borderTop:"1px solid "+BORDER}}>
+                      <table style={{width:"100%", borderCollapse:"collapse", marginTop:12}}>
+                        <tbody>
+                          {g.table.map(function(row,j){
+                            return (
+                              <tr key={j} style={{borderBottom:"1px solid "+BORDER}}>
+                                <td style={{padding:"8px 0", fontSize:13, color:GRAY}}>{row[0]}</td>
+                                <td style={{padding:"8px 0", fontSize:16, fontWeight:500, color:BLACK, textAlign:"right"}}>{row[1]}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                      <div style={{marginTop:12, padding:"10px 14px", background:GOLDSOFT, borderRadius:10, borderLeft:"3px solid "+GOLD}}>
+                        <div style={{fontSize:12, color:GOLD}}>💡 {g.tip}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {sec==="Phrasen" && (
+          <div>
+            <div style={{display:"flex", gap:6, overflowX:"auto", paddingBottom:10, marginBottom:10}}>
+              {pfCtx.map(function(c){ return <Pill key={c} label={c} active={pf===c} onClick={function(){ setPf(c); }}/>; })}
+            </div>
+            {fp.map(function(p,i){
+              return (
+                <div key={i} style={{background:WHITE, borderRadius:14, padding:"14px 16px", boxShadow:SHADOW_SM, display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10}}>
+                  <div>
+                    <div style={{fontSize:16, color:BLACK}}>{p.sk}</div>
+                    <div style={{fontSize:13, color:GRAY, marginTop:2}}>{p.de}</div>
+                  </div>
+                  <SpeakBtn text={p.sk}/>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {sec==="KI-Tutor" && (
+          <div style={{display:"flex", flexDirection:"column", gap:12}}>
+            <div ref={chatRef} style={{display:"flex", flexDirection:"column", gap:10, maxHeight:360, overflowY:"auto"}}>
+              {msgs.map(function(m,i){
+                return (
+                  <div key={i} style={{
+                    alignSelf:m.role==="user"?"flex-end":"flex-start",
+                    maxWidth:"80%", padding:"10px 14px", fontSize:14, lineHeight:1.5,
+                    borderRadius:m.role==="user"?"18px 18px 4px 18px":"18px 18px 18px 4px",
+                    background:m.role==="user"?GOLD:WHITE,
+                    color:m.role==="user"?"#fff":BLACK,
+                    boxShadow:SHADOW_SM,
+                  }}>
+                    {m.content.split("**").map(function(p,j){
+                      return j%2===1 ? <strong key={j} style={{color:m.role==="user"?"#fff":GOLD}}>{p}</strong> : p;
+                    })}
+                  </div>
+                );
+              })}
+              {load && <div style={{alignSelf:"flex-start", padding:"10px 14px", background:WHITE, borderRadius:"18px 18px 18px 4px", color:LIGHT, fontSize:13, boxShadow:SHADOW_SM}}>✍️ …</div>}
+            </div>
+            <div style={{display:"flex", gap:8}}>
+              <input value={inp} onChange={function(e){setInp(e.target.value);}} onKeyDown={function(e){if(e.key==="Enter")sendMsg();}}
+                placeholder="Nachricht…"
+                style={{flex:1, padding:"12px 16px", borderRadius:999, border:"1.5px solid "+BORDER, fontSize:14, outline:"none", fontFamily:"inherit", background:WHITE, color:BLACK}}/>
+              <button onClick={sendMsg} disabled={load} style={{width:44,height:44,borderRadius:999,background:GOLD,border:"none",cursor:"pointer",color:"#fff",fontSize:20,flexShrink:0}}>›</button>
+            </div>
+            <div style={{display:"flex", gap:6, flexWrap:"wrap"}}>
+              {["Wie sage ich 'Ich bin müde'?","Erkläre die Verneinung","Übe mit mir"].map(function(s){
+                return <button key={s} onClick={function(){setInp(s);}} style={{fontSize:12,color:GOLD,background:GOLDSOFT,border:"none",borderRadius:999,padding:"6px 12px",cursor:"pointer",fontFamily:"inherit"}}>{s}</button>;
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── PROGRESS SCREEN ───────────────────────────────────────────────────────────
+function ProgressScreen() {
+  var stats  = loadStats();
+  var prog   = loadProgress();
+  var known  = new Set(prog.known || []);
+  var plan   = loadPlan();
+  var tod    = stats[todayKey()] || {seen:0,correct:0};
+  var s1 = useState(plan.dailyGoal); var goal = s1[0]; var setGoal = s1[1];
+  var s2 = useState(false); var saved = s2[0]; var setSaved = s2[1];
+
+  var totalSeen = Object.values(stats).reduce(function(s,d){return s+d.seen;},0);
+  var totalOk   = Object.values(stats).reduce(function(s,d){return s+d.correct;},0);
+  var acc  = totalSeen ? Math.round(totalOk/totalSeen*100) : 0;
+  var kPct = Math.round(known.size/VOCAB.length*100);
+
+  var streak=0; var d2=new Date();
+  while(true){
+    var k=d2.toISOString().slice(0,10);
+    var ss=stats[k];
+    if(ss&&ss.seen>=plan.dailyGoal){streak++;d2.setDate(d2.getDate()-1);}else break;
+  }
+
+  var days = [];
+  for (var i=0; i<14; i++) {
+    var dd = new Date(); dd.setDate(dd.getDate()-(13-i));
+    var dkey = dd.toISOString().slice(0,10);
+    var lbl  = i===13?"Heute":dd.toLocaleDateString("de",{weekday:"short"}).slice(0,2);
+    days.push({key:dkey, lbl:lbl, data:stats[dkey]||{seen:0,correct:0}});
+  }
+  var maxS = Math.max.apply(null, days.map(function(d){return d.data.seen;}).concat([plan.dailyGoal,1]));
+
+  var catS = {};
+  VOCAB.forEach(function(v){
+    if(!catS[v.cat]) catS[v.cat]={t:0,k:0};
+    catS[v.cat].t++;
+    if(known.has(v.sk)) catS[v.cat].k++;
+  });
+
+  function saveG() {
+    savePlan(Object.assign({},plan,{dailyGoal:goal}));
+    setSaved(true);
+    setTimeout(function(){setSaved(false);},2000);
+  }
+
+  return (
+    <div style={{padding:"24px 20px 48px"}}>
+      <div style={{fontSize:26, fontWeight:300, fontFamily:"'DM Serif Display',serif", color:BLACK, marginBottom:24}}>Fortschritt</div>
+
+      {/* Ring summary */}
+      <Card style={{display:"flex", alignItems:"center", gap:20, marginBottom:16}}>
+        <div style={{position:"relative", flexShrink:0}}>
+          <Ring pct={kPct} size={88} stroke={7}/>
+          <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}}>
+            <div style={{fontSize:20,fontWeight:600,color:BLACK}}>{kPct}%</div>
+          </div>
+        </div>
+        <div style={{flex:1}}>
+          <div style={{fontSize:22,fontWeight:600,color:BLACK}}>{known.size} <span style={{fontSize:14,fontWeight:400,color:LIGHT}}>/ {VOCAB.length}</span></div>
+          <div style={{fontSize:13,color:GRAY,marginTop:2}}>Wörter gelernt</div>
+          <div style={{display:"flex",gap:20,marginTop:12}}>
+            <div>
+              <div style={{display:"flex",alignItems:"center",gap:4}}>
+                <span>🔥</span><span style={{fontSize:18,fontWeight:600,color:BLACK}}>{streak}</span>
+              </div>
+              <div style={{fontSize:11,color:LIGHT}}>Serie</div>
+            </div>
+            <div>
+              <div style={{fontSize:18,fontWeight:600,color:BLACK}}>{tod.seen}</div>
+              <div style={{fontSize:11,color:LIGHT}}>Heute</div>
+            </div>
+            <div>
+              <div style={{fontSize:18,fontWeight:600,color:GREEN}}>{acc}%</div>
+              <div style={{fontSize:11,color:LIGHT}}>Genauigkeit</div>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Heatmap */}
+      <Card style={{marginBottom:16}}>
+        <SectionLabel>Letzte 30 Tage</SectionLabel>
+        <div style={{display:"flex", flexWrap:"wrap", gap:5}}>
+          {(function(){
+            var dots = [];
+            for(var ii=0;ii<30;ii++){
+              var dd2=new Date(); dd2.setDate(dd2.getDate()-(29-ii));
+              var hkey=dd2.toISOString().slice(0,10);
+              var hs=stats[hkey];
+              var iv2=hs?Math.min(1,hs.seen/plan.dailyGoal):0;
+              var bg2=iv2===0?BORDER:iv2<0.5?GOLDMID:iv2<1?GOLD:GREEN;
+              var isT=hkey===todayKey();
+              dots.push(<div key={hkey} title={hkey} style={{width:24,height:24,borderRadius:6,background:bg2,border:"2px solid "+(isT?GOLD:"transparent"),transition:"background 0.3s"}}/>);
+            }
+            return dots;
+          })()}
+        </div>
+      </Card>
+
+      {/* Bar chart */}
+      <Card style={{marginBottom:16}}>
+        <SectionLabel>Letzte 14 Tage</SectionLabel>
+        <div style={{display:"flex", alignItems:"flex-end", gap:4, height:72}}>
+          {days.map(function(day){
+            var h=Math.round(day.data.seen/maxS*68);
+            var goalR=day.data.seen>=plan.dailyGoal;
+            var isT=day.key===todayKey();
             return (
-              <div key={key} title={`${key}: ${s ? s.seen : 0} Vokabeln`}
-                style={{ width: 22, height: 22, borderRadius: 5, background: color, border: isToday ? `2px solid ${COLORS.accent}` : "2px solid transparent" }} />
+              <div key={day.key} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
+                <div style={{width:"100%",display:"flex",flexDirection:"column",justifyContent:"flex-end",height:68}}>
+                  <div style={{width:"100%",height:Math.max(h,2),background:goalR?GREEN:isT?GOLD:BORDER,borderRadius:"3px 3px 0 0",transition:"height 0.4s"}}/>
+                </div>
+                <div style={{fontSize:9,color:isT?GOLD:LIGHT,fontFamily:"monospace"}}>{day.lbl}</div>
+              </div>
             );
           })}
         </div>
-        <div style={{ fontSize: 10, color: COLORS.muted, fontFamily: "monospace", marginTop: 8 }}>
-          Heller = mehr gelernt · Grün = Tagesziel erreicht
+      </Card>
+
+      {/* Category progress */}
+      <Card style={{marginBottom:16}}>
+        <SectionLabel>Nach Thema</SectionLabel>
+        {Object.keys(catS).map(function(cat){
+          var ct=catS[cat]; var p=Math.round(ct.k/ct.t*100);
+          return (
+            <div key={cat} style={{marginBottom:14}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
+                <span style={{fontSize:13,color:BLACK}}>{cat}</span>
+                <span style={{fontSize:12,color:LIGHT}}>{ct.k}/{ct.t}</span>
+              </div>
+              <div style={{height:4,background:BORDER,borderRadius:2}}>
+                <div style={{height:"100%",width:p+"%",background:p===100?GREEN:GOLD,borderRadius:2,transition:"width 0.4s"}}/>
+              </div>
+            </div>
+          );
+        })}
+      </Card>
+
+      {/* Goal setting */}
+      <Card>
+        <SectionLabel>Tagesziel</SectionLabel>
+        <div style={{display:"flex", gap:8, marginBottom:16}}>
+          {[5,10,15,20,30].map(function(n){
+            return (
+              <button key={n} onClick={function(){setGoal(n);}} style={{
+                flex:1, padding:"10px 4px", borderRadius:12, fontFamily:"inherit",
+                background:goal===n?GOLD:"transparent",
+                border:"1.5px solid "+(goal===n?GOLD:BORDER),
+                color:goal===n?"#fff":GRAY,
+                fontSize:14, fontWeight:goal===n?600:400, cursor:"pointer", transition:"all 0.18s",
+              }}>{n}</button>
+            );
+          })}
         </div>
-      </div>
+        <BtnPrimary onClick={saveG}>{saved ? "✓ Gespeichert!" : "Ziel speichern"}</BtnPrimary>
+      </Card>
+    </div>
+  );
+}
+
+// ── TAB BAR ───────────────────────────────────────────────────────────────────
+function TabBar(props) {
+  var tab    = props.tab;
+  var setTab = props.setTab;
+
+  function TabBtn(tbProps) {
+    var active = tab === tbProps.id;
+    return (
+      <button onClick={function(){ setTab(tbProps.id); }} style={{
+        flex:1, padding:"10px 0 12px", background:"none", border:"none",
+        cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:3, fontFamily:"inherit",
+      }}>
+        {tbProps.icon(active ? GOLD : LIGHT)}
+        <span style={{fontSize:9, fontWeight:active?600:400, color:active?GOLD:LIGHT}}>{tbProps.label}</span>
+      </button>
+    );
+  }
+
+  return (
+    <div style={{display:"flex", background:WHITE, borderTop:"1px solid "+BORDER, paddingBottom:"env(safe-area-inset-bottom)", flexShrink:0}}>
+      <TabBtn id="learn" label="Lernen" icon={function(col){
+        return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={col} strokeWidth="1.8" strokeLinecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>;
+      }}/>
+      <TabBtn id="flash" label="Flashcards" icon={function(col){
+        return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={col} strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>;
+      }}/>
+      <TabBtn id="quiz" label="Quiz" icon={function(col){
+        return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={col} strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17" strokeWidth="3"/></svg>;
+      }}/>
+      <TabBtn id="know" label="Wissen" icon={function(col){
+        return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={col} strokeWidth="1.8" strokeLinecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>;
+      }}/>
+      <TabBtn id="prog" label="Fortschritt" icon={function(col){
+        return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={col} strokeWidth="1.8" strokeLinecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>;
+      }}/>
     </div>
   );
 }
 
 // ── APP ───────────────────────────────────────────────────────────────────────
-const TABS = [
-  { id: "flash", label: "Flashcards", icon: "⚡" },
-  { id: "phrases", label: "Phrasen", icon: "💬" },
-  { id: "grammar", label: "Grammatik", icon: "📝" },
-  { id: "quiz", label: "Quiz", icon: "🎯" },
-  { id: "tutor", label: "KI-Tutor", icon: "🧠" },
-  { id: "plan", label: "Lernplan", icon: "📅" },
-  { id: "stats", label: "Statistiken", icon: "📊" },
-];
-
 function App() {
-  const [tab, setTab] = useState("flash");
-  const [theme, setTheme] = useState(loadTheme);
-
-  useEffect(() => {
-    COLORS = theme === "dark" ? DARK : LIGHT;
-    document.body.style.background = COLORS.bg;
-    saveTheme(theme);
-  }, [theme]);
-
-  // Force re-render when theme changes by passing it as key to children
-  COLORS = theme === "dark" ? DARK : LIGHT;
-
-  const S_live = {
-    ...S,
-    app: { ...S.app, background: COLORS.bg, color: COLORS.text },
-    header: { ...S.header, background: COLORS.surface, borderBottom: `1px solid ${COLORS.border}` },
-    nav: { ...S.nav, background: COLORS.surface, borderBottom: `1px solid ${COLORS.border}` },
-  };
-
+  var s1 = useState("learn"); var tab = s1[0]; var setTab = s1[1];
   return (
-    <div style={S_live.app}>
-      <div style={S_live.header}>
-        <span style={{ fontSize: 26 }}>🇸🇰</span>
-        <div style={{ flex: 1 }}>
-          <p style={S.title}>Slovenčina</p>
-          <p style={S.subtitle}>{VOCAB.length} Vokabeln · {CATEGORIES.length - 1} Themen · KI-Tutor</p>
-        </div>
-        <button
-          onClick={() => setTheme(t => t === "dark" ? "light" : "dark")}
-          title="Hell/Dunkel umschalten"
-          style={{ background: COLORS.accentSoft, border: `1px solid ${COLORS.accent}44`, borderRadius: 10, padding: "7px 11px", cursor: "pointer", fontSize: 18, lineHeight: 1 }}
-        >{theme === "dark" ? "☀️" : "🌙"}</button>
+    <div style={{display:"flex", flexDirection:"column", height:"100dvh", maxWidth:480, margin:"0 auto", background:BG, overflow:"hidden"}}>
+      <div style={{height:"env(safe-area-inset-top)", background:WHITE, flexShrink:0}}/>
+      <div style={{flex:1, overflowY:"auto"}}>
+        {tab==="learn" && <LearnScreen onGo={setTab}/>}
+        {tab==="flash" && <FlashScreen/>}
+        {tab==="quiz"  && <QuizScreen/>}
+        {tab==="know"  && <KnowledgeScreen/>}
+        {tab==="prog"  && <ProgressScreen/>}
       </div>
-      <nav style={S_live.nav}>
-        {TABS.map(t => <button key={t.id} style={S.navBtn(tab === t.id)} onClick={() => setTab(t.id)}>{t.icon} {t.label}</button>)}
-      </nav>
-      <div style={S.content} key={theme}>
-        {tab === "flash" && <FlashCards />}
-        {tab === "phrases" && <Phrases />}
-        {tab === "grammar" && <Grammar />}
-        {tab === "quiz" && <Quiz />}
-        {tab === "tutor" && <AiTutor />}
-        {tab === "plan" && <Lernplan />}
-        {tab === "stats" && <Statistiken />}
-      </div>
+      <TabBar tab={tab} setTab={setTab}/>
     </div>
   );
 }
 
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
 </body>
 </html>
