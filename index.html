@@ -2,923 +2,910 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DAILY</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-  <meta name="apple-mobile-web-app-title" content="DAILY"/>
-  <meta name="theme-color" content="#0D0D0D"/>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230D0D0D'/><text y='67' x='50' text-anchor='middle' font-family='Georgia,serif' font-size='28' letter-spacing='6' fill='%23EDE0CC'>DAILY</text></svg>"/>
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'><rect width='1024' height='1024' rx='220' fill='%230D0D0D'/><text y='620' x='512' text-anchor='middle' font-family='Georgia,serif' font-size='280' letter-spacing='60' fill='%23EDE0CC'>DAILY</text></svg>"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400&display=swap" rel="stylesheet"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="Slovenčina"/>
+  <title>Slovenčina</title>
+  <link rel="apple-touch-icon" href="data:image/png;base64,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"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg:     #F0EDE8;
-      --ink:    #1C1917;
-      --muted:  #6B6560;
-      --faint:  #AAA49D;
-      --accent: #8B5E3C;
-    }
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--ink);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      transition: background 0.9s ease, color 0.9s ease;
-    }
-    body { font-family: 'Inter', -apple-system, sans-serif; font-weight: 300; }
-
-    /* ── SVG background — full bleed, behind everything ── */
-    #bg-svg {
-      position: fixed;
-      inset: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 0;
-      transition: opacity 0.9s ease;
-    }
-
-    /* ── Shell ── */
-    #shell {
-      position: relative;
-      z-index: 1;
-      min-height: 100vh;
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      padding: 36px 52px 36px;
-      max-width: 820px;
-    }
-
-    /* ── Header ── */
-    #header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      flex-shrink: 0;
-    }
-    #logo {
-      font-size: 10px;
-      font-weight: 400;
-      letter-spacing: 0.24em;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-    #timer {
-      font-size: 10px;
-      font-weight: 300;
-      letter-spacing: 0.08em;
-      color: var(--faint);
-      font-variant-numeric: tabular-nums;
-      min-width: 80px;
-      text-align: right;
-    }
-
-    /* ── Content ── */
-    #content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 52px 0 16px;
-    }
-    #prompt-wrap {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.55s ease, transform 0.55s ease;
-    }
-    #prompt-wrap.out { opacity: 0; transform: translateY(14px); }
-
-    #prompt {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: clamp(36px, 5.8vw, 70px);
-      font-weight: 500;
-      line-height: 1.1;
-      letter-spacing: -0.01em;
-      color: var(--ink);
-      margin-bottom: 36px;
-    }
-    .rule {
-      width: 30px; height: 1.5px;
-      background: var(--muted);
-      opacity: 0.4;
-      margin-bottom: 26px;
-    }
-    #reflection {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: clamp(15px, 1.9vw, 20px);
-      font-weight: 400;
-      line-height: 1.55;
-      color: var(--muted);
-      max-width: 400px;
-      margin-bottom: 52px;
-    }
-    #quote-block { max-width: 420px; }
-    #quote-mark {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 26px;
-      color: var(--accent);
-      line-height: 1;
-      margin-bottom: 10px;
-      opacity: 0.8;
-    }
-    #quote-text {
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: clamp(14px, 1.75vw, 18px);
-      font-weight: 400;
-      font-style: italic;
-      line-height: 1.65;
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
-    #quote-author {
-      font-size: 9px;
-      font-weight: 400;
-      letter-spacing: 0.2em;
-      color: var(--faint);
-      text-transform: uppercase;
-    }
-    #quote-author::before { content: "— "; }
-
-    /* ── Footer ── */
-    #footer {
-      flex-shrink: 0;
-      padding-top: 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-    #date-label {
-      font-size: 9px;
-      font-weight: 300;
-      letter-spacing: 0.14em;
-      color: var(--faint);
-      opacity: 0.6;
-    }
-    #dot {
-      width: 4px; height: 4px;
-      border-radius: 50%;
-      background: var(--ink);
-      opacity: 0.15;
-    }
-
-    @media (max-width: 600px) {
-      #shell   { padding: 28px 30px 28px; }
-      #content { padding: 44px 0 12px; }
-      #prompt  { margin-bottom: 28px; }
-      #reflection { margin-bottom: 40px; }
-    }
-    @media (max-width: 380px) {
-      #shell { padding: 24px 22px 22px; }
-    }
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    body{background:#F7F5F0;font-family:"DM Sans",system-ui,sans-serif;overscroll-behavior:none;}
+    ::-webkit-scrollbar{display:none;}
+    @keyframes fi{from{opacity:0}to{opacity:1}}
+    .fi{animation:fi 0.2s ease both;}
   </style>
 </head>
 <body>
-
-<!-- Full-bleed SVG background — redrawn each day -->
-<svg id="bg-svg" viewBox="0 0 390 844" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-  <g id="bg-layer"></g>
-</svg>
-
-<div id="shell">
-  <div id="header">
-    <span id="logo">Daily</span>
-    <span id="timer">—</span>
-  </div>
-  <div id="content">
-    <div id="prompt-wrap">
-      <p id="prompt"></p>
-      <div class="rule"></div>
-      <p id="reflection"></p>
-      <div id="quote-block">
-        <div id="quote-mark">"</div>
-        <p id="quote-text"></p>
-        <span id="quote-author"></span>
-      </div>
-    </div>
-  </div>
-  <div id="footer">
-    <span id="date-label"></span>
-    <div id="dot"></div>
-  </div>
-</div>
-
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script>
-'use strict';
+// No Babel needed - pure vanilla React.createElement
 
-// ═══════════════════════════════════════════════════════════════════════════
-// DATA — add new entries to any array to extend the app
-// ═══════════════════════════════════════════════════════════════════════════
+var h = React.createElement;
+var useState = React.useState;
+var useEffect = React.useEffect;
+var useRef = React.useRef;
 
-const subjects = [
-  "eine Spiegelung","einen Schatten","eine Linie","eine Struktur","eine Bewegung",
-  "eine Lichtquelle","ein Detail","eine Silhouette","ein Muster","eine leere Fläche",
-  "einen Übergang","einen Kontrast","eine Form","etwas Alltägliches","eine Textur",
-  "einen Moment des Wartens","eine Hand","ein Fenster","eine Tür","einen Weg",
-  "ein Gesicht das sich abwendet","eine Geste","einen Rand","etwas Vergängliches",
-  "eine Grenze","einen Anfang","ein Ende","etwas Verborgenes","einen Zwischenraum",
-  "eine Stille","ein Gewicht","etwas Kaputtes","einen Blick","eine Begegnung","etwas Fremdes",
-];
+// ── COLORS ────────────────────────────────────────────────────────────────────
+var GOLD="#D4A937",GS="#D4A93715",GM="#D4A93745",BLK="#111",GR="#6B6B6B",LT="#AAAAAA";
+var BG="#F7F5F0",WH="#FFFFFF",BR="#EBEBEB",GRN="#34C759",RD="#FF3B30";
+var SH="0 2px 16px rgba(0,0,0,0.06)",SSH="0 1px 4px rgba(0,0,0,0.04)",SGH="0 2px 10px rgba(212,169,55,0.28)";
 
-const lightings = [
-  { phrase:"im Morgenlicht",          mood:"warm"    },
-  { phrase:"im Abendlicht",           mood:"warm"    },
-  { phrase:"im Gegenlicht",           mood:"neutral" },
-  { phrase:"im diffusen Licht",       mood:"neutral" },
-  { phrase:"im Neonlicht",            mood:"cool"    },
-  { phrase:"im künstlichen Licht",    mood:"cool"    },
-  { phrase:"im Mittagslicht",         mood:"warm"    },
-  { phrase:"im weichen Licht",        mood:"neutral" },
-  { phrase:"im Schatten",             mood:"cold"    },
-  { phrase:"im Halbdunkel",           mood:"cold"    },
-  { phrase:"bei Regen",               mood:"cold"    },
-  { phrase:"bei bewölktem Himmel",    mood:"neutral" },
-  { phrase:"im Kerzenlicht",          mood:"warm"    },
-  { phrase:"im Scheinwerferlicht",    mood:"cool"    },
-  { phrase:"in der Dämmerung",        mood:"neutral" },
-  { phrase:"bei Nacht",               mood:"cold"    },
-];
+// ── STORAGE ───────────────────────────────────────────────────────────────────
+function lsGet(k,fb){try{var v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function loadProgress(){return lsGet("sk_prog",{});}
+function saveProgress(kn,le){
+  var ka=[],la=[];
+  kn.forEach(function(v){ka.push(v);}); le.forEach(function(v){la.push(v);});
+  lsSet("sk_prog",{known:ka,learning:la});
+}
+function loadStats(){return lsGet("sk_stats",{});}
+function saveStats(s){lsSet("sk_stats",s);}
+function loadPlan(){return lsGet("sk_plan",{dailyGoal:10});}
+function savePlan(p){lsSet("sk_plan",p);}
+function todayKey(){return new Date().toISOString().slice(0,10);}
+function recordActivity(ok){
+  var s=loadStats(),k=todayKey();
+  if(!s[k])s[k]={seen:0,correct:0};
+  s[k].seen++;if(ok)s[k].correct++;
+  var keys=Object.keys(s).sort();
+  if(keys.length>30)keys.slice(0,keys.length-30).forEach(function(k2){delete s[k2];});
+  saveStats(s);
+}
+function shuffle(arr){
+  var a=arr.slice(),i=a.length,j,t;
+  while(i--){j=Math.floor(Math.random()*(i+1));t=a[i];a[i]=a[j];a[j]=t;}
+  return a;
+}
+function setArr(s){var a=[];s.forEach(function(v){a.push(v);});return a;}
+function objSum(o,key){var t=0;Object.keys(o).forEach(function(k){t+=o[k][key]||0;});return t;}
 
-const perspectives = [
-  "aus der Froschperspektive","aus der Vogelperspektive","auf Augenhöhe",
-  "aus extremer Nähe","durch etwas hindurch","mit viel Abstand",
-  "diagonal komponiert","symmetrisch","aus der Hüfte",
-  "vom Boden aus","von oben","dicht an der Wand",
-  "aus dem Augenwinkel","hinter etwas hervor","aus dem Inneren heraus",
-  "mit einem einzigen Blickpunkt",
-];
-
-const compositions = [
-  "mit viel negativem Raum","mit Symmetrie","mit diagonalen Linien",
-  "mit minimalistischem Bildaufbau","mit Vordergrund und Hintergrund",
-  "mit Wiederholungen","mit natürlichem Rahmen","mit Isolation",
-  "mit zentraler Komposition","mit asymmetrischer Balance",
-  "mit einem einzigen Punkt im Bild","mit Bewegung im Hintergrund",
-  "ohne Horizont","mit einer einzigen Lichtquelle",
-  "am Rand des Bildes","fast außerhalb des Rahmens",
-  "mit Unschärfe als Aussage","mit dem Motiv klein im Bild",
-];
-
-const templates = [
-  (s,l,p,c) => `Fotografiere heute\n${s}\n${l}\n${c}.`,
-  (s,l,p,c) => `Fotografiere heute\n${s}\n${p}\n${l}.`,
-  (s,l,p,c) => `Geh heute raus\nund such\n${s}\n${c}.`,
-  (s,l,p,c) => `Heute nur das:\n${s}\n${l}.`,
-  (s,l,p,c) => `Sieh heute genau hin.\n${s}\n${p}\n${c}.`,
-];
-
-const reflections = [
-  "Beobachte zuerst das Licht,\nbevor du fotografierst.",
-  "Lass große Flächen leer und\nkonzentriere dich auf ein einziges Element.",
-  "Suche nach ruhigen Formen\nund vermeide Ablenkungen.",
-  "Achte darauf,\nwie Schatten das Bild verändern.",
-  "Halte das Motiv klein\nund gib der Umgebung Raum.",
-  "Geh näher als du denkst.\nDann noch einen Schritt weiter.",
-  "Warte, bis das Licht\ngenau richtig liegt.",
-  "Weniger ist fast immer mehr.",
-  "Mach einen Schritt zurück.\nBeobachte das Ganze.",
-  "Suche nach dem einen Moment\nder Stille im Bild.",
-  "Atme einmal durch,\ndann drücke ab.",
-  "Lass dich von Licht leiten,\nnicht von Motiven.",
-  "Sieh zuerst. Denk dann.\nDrücke zuletzt ab.",
-  "Nicht jede Aufnahme muss\netwas sagen. Manchmal genügt sie.",
-];
-
-const quotes = [
-  // Fotografen
-  { text:"Your first 10,000 photographs are your worst.", author:"Henri Cartier-Bresson" },
-  { text:"To photograph is to hold one's breath, when all faculties converge to capture fleeting reality.", author:"Henri Cartier-Bresson" },
-  { text:"In photography, the smallest thing can be a great subject.", author:"Henri Cartier-Bresson" },
-  { text:"Thinking should be done before and after, not during photographing.", author:"Henri Cartier-Bresson" },
-  { text:"The photograph itself doesn't interest me. I want only to capture a minute part of reality.", author:"Henri Cartier-Bresson" },
-  { text:"To me, photography is the simultaneous recognition, in a fraction of a second, of the significance of an event.", author:"Henri Cartier-Bresson" },
-  { text:"You don't take a photograph, you make it.", author:"Ansel Adams" },
-  { text:"There are no rules for good photographs, there are only good photographs.", author:"Ansel Adams" },
-  { text:"A great photograph is one that fully expresses what one feels, in the deepest sense, about what is being photographed.", author:"Ansel Adams" },
-  { text:"When words become unclear, I shall focus with photographs.", author:"Ansel Adams" },
-  { text:"Not everybody trusts paintings but people believe photographs.", author:"Ansel Adams" },
-  { text:"There are things nobody would see if I didn't photograph them.", author:"Diane Arbus" },
-  { text:"A photograph is a secret about a secret. The more it tells you, the less you know.", author:"Diane Arbus" },
-  { text:"I never have taken a picture I've intended. They're always better or worse.", author:"Diane Arbus" },
-  { text:"The camera is a kind of license. A lot of people with cameras are invisible.", author:"Diane Arbus" },
-  { text:"My favorite thing is to go where I've never been.", author:"Diane Arbus" },
-  { text:"I don't pay attention to the world enough except through my camera.", author:"Saul Leiter" },
-  { text:"I only know how to approach a place by walking.", author:"Saul Leiter" },
-  { text:"In order to build a body of work you have to preserve a great deal of time for doing nothing.", author:"Saul Leiter" },
-  { text:"I have a feeling that I make things up and then go out and find them.", author:"Saul Leiter" },
-  { text:"There is never enough time to explore what we want to explore.", author:"Saul Leiter" },
-  { text:"The camera is an instrument that teaches people how to see without a camera.", author:"Dorothea Lange" },
-  { text:"Pick a theme and work it to exhaustion — the subject must be something you truly love or truly hate.", author:"Dorothea Lange" },
-  { text:"One should really use the camera as though tomorrow you'd be stricken blind.", author:"Dorothea Lange" },
-  { text:"A camera is a tool for learning how to see without a camera.", author:"Dorothea Lange" },
-  { text:"When people look at my pictures I want them to feel the way they do when they want to read a line of a poem twice.", author:"Robert Frank" },
-  { text:"There is one thing the photograph must contain, the humanity of the moment.", author:"Robert Frank" },
-  { text:"Black and white are the colors of photography. To me they symbolize the alternatives of hope and despair.", author:"Robert Frank" },
-  { text:"I have been frequently accused of deliberately twisting subject matter to my point of view.", author:"Robert Frank" },
-  { text:"You have to be able to see the picture before it's there.", author:"Vivian Maier" },
-  { text:"I am sort of a spy.", author:"Vivian Maier" },
-  { text:"I keep on going, as long as the black car isn't following me.", author:"Vivian Maier" },
-  { text:"I am merely one eye in the city's thousand eyes.", author:"Daido Moriyama" },
-  { text:"For me, photography is not a means of documenting places or events but an expression of desire.", author:"Daido Moriyama" },
-  { text:"I keep taking photographs because I want to know what the world looks like.", author:"Daido Moriyama" },
-  { text:"The street is my home and I am a stray dog wandering through it.", author:"Daido Moriyama" },
-  { text:"I photograph to find out what something looks like photographed.", author:"Josef Koudelka" },
-  { text:"I have no home. My home is this camera and my life.", author:"Josef Koudelka" },
-  { text:"Work, work, work. That is what photography is.", author:"Josef Koudelka" },
-  { text:"Stare. It is the way to educate your eye, and more. Stare, pry, listen, eavesdrop.", author:"Walker Evans" },
-  { text:"The thing I'm trying to find is the image that is clean, simple, and meaningful.", author:"Walker Evans" },
-  { text:"There are really very few photographers. Most people with cameras are just shooting.", author:"Walker Evans" },
-  { text:"It is the instinctive choice of a visual mind.", author:"Walker Evans" },
-  { text:"I photograph to find out what something will look like photographed.", author:"Garry Winogrand" },
-  { text:"There is nothing as mysterious as a fact clearly described.", author:"Garry Winogrand" },
-  { text:"I like to think of photographing as a two-way act of respect.", author:"Garry Winogrand" },
-  { text:"All the mistakes are there, waiting to be made.", author:"Garry Winogrand" },
-  { text:"I am at war with the obvious.", author:"William Eggleston" },
-  { text:"I had this notion of what I called a democratic way of looking around.", author:"William Eggleston" },
-  { text:"Everything is a subject. Every subject has a rhythm.", author:"William Eggleston" },
-  { text:"I am not interested in shooting new things. I am interested to see things new.", author:"Ernst Haas" },
-  { text:"A picture is the expression of an impression.", author:"Ernst Haas" },
-  { text:"There is only you and your camera. The limitations in your photography are in yourself.", author:"Ernst Haas" },
-  { text:"Photography is not objective. It is deeply subjective.", author:"Sebastião Salgado" },
-  { text:"The camera is my tool. Through it I give a reason to everything around me.", author:"Sebastião Salgado" },
-  { text:"Each photograph is a certificate of presence.", author:"Sebastião Salgado" },
-  { text:"I am an image hunter. I hunt images like one hunts animals.", author:"Ed van der Elsken" },
-  { text:"Life is beautiful and terrible at the same time.", author:"Ed van der Elsken" },
-  { text:"I photograph the world as I see it. Nothing more, nothing less.", author:"Ed van der Elsken" },
-  { text:"A photo is a moment lived twice — once in reality, once in memory.", author:"Fan Ho" },
-  { text:"Light is the language I speak.", author:"Fan Ho" },
-  { text:"I search for simplicity in the city. It is always there, waiting.", author:"Fan Ho" },
-  // Schriftsteller / Filmemacher
-  { text:"I live my life in widening circles that reach out across the world.", author:"Rainer Maria Rilke" },
-  { text:"Perhaps all the dragons in our lives are princesses who are only waiting to see us act with beauty and courage.", author:"Rainer Maria Rilke" },
-  { text:"The only journey is the one within.", author:"Rainer Maria Rilke" },
-  { text:"I want to be with those who know secret things or else alone.", author:"Rainer Maria Rilke" },
-  { text:"Everything is far and long gone by.", author:"Rainer Maria Rilke" },
-  { text:"Beauty is nothing but the beginning of terror.", author:"Rainer Maria Rilke" },
-  { text:"We need, in love, to practice only this: letting each other go.", author:"Rainer Maria Rilke" },
-  { text:"Go into yourself and see how deep the place is from which your life flows.", author:"Rainer Maria Rilke" },
-  { text:"I'm the gap between my desire and what life has made of me.", author:"Fernando Pessoa" },
-  { text:"To live is to be other. It isn't even possible to feel, if one feels today what one felt yesterday.", author:"Fernando Pessoa" },
-  { text:"Literature is the most agreeable way of ignoring life.", author:"Fernando Pessoa" },
-  { text:"Everything is worthwhile if the soul is not small.", author:"Fernando Pessoa" },
-  { text:"To know nothing is everything. To feel nothing is health.", author:"Fernando Pessoa" },
-  { text:"I was not made for reality, but I get along with it.", author:"Fernando Pessoa" },
-  { text:"I'm the space between what I want and what life has allowed me.", author:"Fernando Pessoa" },
-  { text:"In the depths of winter, I finally learned that within me there lay an invincible summer.", author:"Albert Camus" },
-  { text:"You will never be happy if you continue to search for what happiness consists of.", author:"Albert Camus" },
-  { text:"In order to understand the world, one has to turn away from it on occasion.", author:"Albert Camus" },
-  { text:"A man's work is nothing but this slow trek to rediscover, through the detours of art, those two or three great and simple images in whose presence his heart first opened.", author:"Albert Camus" },
-  { text:"Autumn is a second spring when every leaf is a flower.", author:"Albert Camus" },
-  { text:"The absurd is the essential concept and the first truth.", author:"Albert Camus" },
-  { text:"The only way to deal with an unfree world is to become so absolutely free that your very existence is an act of rebellion.", author:"Albert Camus" },
-  { text:"The allotted function of art is not to put across ideas, to propagate thoughts, to serve as example. The aim of art is to prepare a person for death, to plough and harrow his soul.", author:"Andrei Tarkovsky" },
-  { text:"Ultimately, the moral sense of art is the sense of the eternal.", author:"Andrei Tarkovsky" },
-  { text:"I think that what a person normally goes to the cinema for is time — for time lost or spent or not yet had.", author:"Andrei Tarkovsky" },
-  { text:"The image is not a certain meaning, expressed by the director, but an entire world reflected as in a drop of water.", author:"Andrei Tarkovsky" },
-  { text:"Sculpting in time. That is what a film is.", author:"Andrei Tarkovsky" },
-  { text:"The beautiful is hidden from the eyes of those who do not search for the truth.", author:"Andrei Tarkovsky" },
-  { text:"What is Art? Art is like a declaration of love: consciousness of our dependence on each other.", author:"Andrei Tarkovsky" },
-  { text:"Time, printed in its visible forms.", author:"Andrei Tarkovsky" },
-  { text:"Photography is a certificate of presence.", author:"Roland Barthes" },
-  { text:"What the photograph reproduces to infinity has occurred only once: the photograph mechanically repeats what could never be repeated existentially.", author:"Roland Barthes" },
-  { text:"The photograph is violent: not because it shows violent things, but because on each occasion it fills the sight by force.", author:"Roland Barthes" },
-  { text:"The punctum of a photograph is that accident which pricks me, bruises me, is poignant to me.", author:"Roland Barthes" },
-  { text:"A photograph's noise is its silence.", author:"Roland Barthes" },
-  { text:"To scrutinize means to turn the photograph over, to enter the paper's depth, to reach its other side.", author:"Roland Barthes" },
-  { text:"In the photograph, Time's immobilization assumes only an excessive, monstrous mode.", author:"Roland Barthes" },
-  { text:"I have an incredible longing to see things I've never seen before.", author:"Wim Wenders" },
-  { text:"Images should be like dreams. And the best dreams are the ones you can't quite remember.", author:"Wim Wenders" },
-  { text:"Every road is a story. Every image is a question.", author:"Wim Wenders" },
-  { text:"The more I photograph, the less I know.", author:"Wim Wenders" },
-  { text:"Every photograph is a certificate of presence.", author:"Wim Wenders" },
-  { text:"I think the best photographs are the ones that have something of the quality of a dream.", author:"Wim Wenders" },
-  { text:"To photograph is to appropriate the thing photographed.", author:"Susan Sontag" },
-  { text:"The camera makes everyone a tourist in other people's reality, and eventually in one's own.", author:"Susan Sontag" },
-  { text:"Photographs are a way of imprisoning reality.", author:"Susan Sontag" },
-  { text:"Nobody ever discovers ugliness through photographs. But many, through photographs, have discovered beauty.", author:"Susan Sontag" },
-  { text:"Life is not about significant details, illuminated in a flash, fixed forever. Photographs are.", author:"Susan Sontag" },
-  { text:"In teaching us a new visual code, photographs alter and enlarge our notions of what is worth looking at.", author:"Susan Sontag" },
-  { text:"Photography implies that we know about the world if we accept it as the camera records it.", author:"Susan Sontag" },
-  { text:"There is infinite hope, but not for us.", author:"Franz Kafka" },
-  { text:"I am a cage, in search of a bird.", author:"Franz Kafka" },
-  { text:"Don't bend; don't water it down; don't try to make it logical; don't edit your own soul according to the fashion.", author:"Franz Kafka" },
-  { text:"In the fight between you and the world, back the world.", author:"Franz Kafka" },
-  { text:"A book must be the axe for the frozen sea within us.", author:"Franz Kafka" },
-  { text:"The real voyage of discovery consists not in seeking new landscapes, but in having new eyes.", author:"Marcel Proust" },
-  { text:"Happiness is beneficial for the body, but it is grief that develops the powers of the mind.", author:"Marcel Proust" },
-  { text:"Time passes, and little by little everything that we have spoken in falsehood becomes true.", author:"Marcel Proust" },
-  { text:"We are not provided with wisdom, we must discover it for ourselves, after a journey through the wilderness.", author:"Marcel Proust" },
-  { text:"Let us be grateful to the people who make us happy; they are the charming gardeners who make our souls blossom.", author:"Marcel Proust" },
-  { text:"I feel more and more as if time did not exist at all, only various spaces interlocking according to the rules of a higher form of stereometry.", author:"W.G. Sebald" },
-  { text:"The world is full of things and people that are almost invisible.", author:"W.G. Sebald" },
-  { text:"How little we can hold in mind, how everything is constantly lapsing into oblivion.", author:"W.G. Sebald" },
-  { text:"How often our perspective depends on where we stand.", author:"W.G. Sebald" },
-  { text:"No one can explain exactly what happens within us when the doors behind which our childhood terrors lurk are flung open.", author:"W.G. Sebald" },
-  { text:"All memories are traces of tears.", author:"Wong Kar-wai" },
-  { text:"Emotions don't die. They just go somewhere else.", author:"Wong Kar-wai" },
-  { text:"I don't believe in complete darkness. There is always a little light somewhere.", author:"Wong Kar-wai" },
-  { text:"The best images happen when you are not trying.", author:"Wong Kar-wai" },
-  { text:"No art passes our conscience in the way film does, and goes directly to our feelings, deep down into the dark rooms of our souls.", author:"Ingmar Bergman" },
-  { text:"Film as dream, film as music. No art passes our conscience in the way film does.", author:"Ingmar Bergman" },
-  { text:"I create images that frighten me, that disturb me, that I try to understand.", author:"Ingmar Bergman" },
-  { text:"The demons are innumerable, arrive at the most inappropriate times and create panic and terror.", author:"Ingmar Bergman" },
-  { text:"I hope I never get so old I get religious.", author:"Ingmar Bergman" },
-  { text:"I will have spent my life trying to understand the function of remembering, which is not the opposite of forgetting, but rather its lining.", author:"Chris Marker" },
-  { text:"A photograph is not necessarily a lie, but it isn't the truth either.", author:"Chris Marker" },
-  { text:"Memory is the enemy of time.", author:"Chris Marker" },
-  { text:"I wonder how you tell the difference between what you actually remember and what you only think you remember.", author:"Chris Marker" },
-  { text:"The world is outside language, but the world speaks.", author:"Peter Handke" },
-  { text:"Nothing is as comforting as the small particulars.", author:"Peter Handke" },
-  { text:"The moment I am alone, I begin to observe.", author:"Peter Handke" },
-  { text:"Slowness is a form of attention.", author:"Peter Handke" },
-  { text:"There is a kind of seeing that is like touching. And a kind of touching that is like seeing.", author:"Marguerite Duras" },
-  { text:"Solitude means being with oneself. It is not loneliness.", author:"Marguerite Duras" },
-  { text:"Writing is not recounting. It is the opposite.", author:"Marguerite Duras" },
-  { text:"The light of the afternoon is the most beautiful light.", author:"Marguerite Duras" },
-  { text:"You have to be very fond of men. Very, very fond. You have to be very fond of them to love them. Otherwise they're simply unbearable.", author:"Marguerite Duras" },
-  { text:"Writing is the act of giving shape to what is shapeless.", author:"Annie Ernaux" },
-  { text:"I see my life as a territory to explore.", author:"Annie Ernaux" },
-  { text:"Nothing ever disappears completely. Only transforms.", author:"Annie Ernaux" },
-  { text:"Memory is not a way of forgetting. It is a way of making things exist twice.", author:"Annie Ernaux" },
-  { text:"To walk is to lack a place. It is to be without a roof over your head.", author:"Robert Walser" },
-  { text:"The world is beautiful, even when it rains.", author:"Robert Walser" },
-  { text:"I am a kind of artisan of the small.", author:"Robert Walser" },
-  { text:"Slowness is reverence.", author:"Robert Walser" },
-  { text:"We construct a narrative for ourselves, and that's the thread that we follow from one day to the next.", author:"Paul Auster" },
-  { text:"You can't make art without resistance in the material.", author:"Paul Auster" },
-  { text:"Every life is inexplicable. I keep that in mind whenever I try to explain my own.", author:"Paul Auster" },
-  { text:"The world is a complicated machine, and each of us has a role to play in keeping it going.", author:"Paul Auster" },
-  { text:"The eye wants to fall in love with what it sees.", author:"Teju Cole" },
-  { text:"Photography is always already about time. It says: this was.", author:"Teju Cole" },
-  { text:"The best photographs are full of what they don't show.", author:"Teju Cole" },
-  { text:"To look is an act of choice.", author:"Teju Cole" },
-  { text:"Every photograph is a theory of light.", author:"Teju Cole" },
-  { text:"The camera relieves us of the burden of memory.", author:"John Berger" },
-  { text:"A photograph is a record of seeing, not of knowledge.", author:"John Berger" },
-  { text:"What makes photography a strange invention is that its primary raw materials are light and time.", author:"John Berger" },
-  { text:"Every image embodies a way of seeing.", author:"John Berger" },
-  { text:"Paintings are like music. Photographs are like memories.", author:"John Berger" },
-  { text:"To look is to cross that small distance between you and the thing you see.", author:"John Berger" },
-  { text:"The camera introduces us to unconscious optics as does psychoanalysis to unconscious impulses.", author:"Walter Benjamin" },
-  { text:"To dwell means to leave traces.", author:"Walter Benjamin" },
-  { text:"Not to find one's way in a city may well be uninteresting. But to lose oneself in a city as one loses oneself in a forest demands practice.", author:"Walter Benjamin" },
-  { text:"There is no document of civilization which is not at the same time a document of barbarism.", author:"Walter Benjamin" },
-  { text:"The art of storytelling is reaching its end because the epic side of truth — wisdom — is dying out.", author:"Walter Benjamin" },
-  { text:"Exhaust the habitual. Question the evident. Find what is so taken for granted that no one notices it anymore.", author:"Georges Perec" },
-  { text:"I would like there to exist places that are stable, unmoving, intangible, untouched and almost untouchable.", author:"Georges Perec" },
-  { text:"Make an inventory of everything you see.", author:"Georges Perec" },
-  { text:"The infra-ordinary: what happens when nothing happens.", author:"Georges Perec" },
-];
-
-// ── Mood backgrounds ──────────────────────────────────────────────────────────
-const moodBg = {
-  cold:    "#ECF0F2",
-  warm:    "#F2EDE4",
-  cool:    "#EBEDF0",
-  neutral: "#F0EDE8",
-};
-// Ink color per mood (always dark enough for legibility)
-const moodInk = {
-  cold: "#1C2028", warm: "#1C1714", cool: "#1A1C22", neutral: "#1C1917",
-};
-
-// ═══════════════════════════════════════════════════════════════════════════
-// SEED SYSTEM
-// ═══════════════════════════════════════════════════════════════════════════
-
-function getViennaDateString() {
-  const now = new Date();
-  const s = now.toLocaleString('en-CA', {
-    timeZone:'Europe/Vienna', hour12:false,
-    year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'
-  });
-  const [dp, tp] = s.split(', ');
-  const [year, month, day] = dp.split('-').map(Number);
-  const [hour] = tp.split(':').map(Number);
-  if (hour < 6) {
-    const d = new Date(Date.UTC(year, month-1, day-1));
-    return d.toISOString().slice(0,10);
-  }
-  return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+// ── PRONUNCIATION ─────────────────────────────────────────────────────────────
+var PRONUNC={"š":"sch","č":"tsch","ž":"zh","ď":"dj","ť":"tj","ň":"nj","ľ":"lj","á":"aa","é":"ee","í":"ii","ú":"uu","ý":"ii","ô":"uo"};
+function getPronTips(word){
+  var tips=[],low=word.toLowerCase();
+  Object.keys(PRONUNC).forEach(function(ch){if(low.indexOf(ch)!==-1)tips.push(ch+"="+PRONUNC[ch]);});
+  return tips.slice(0,2);
 }
 
-function makeRng(seed) {
-  let h = 5381;
-  for (let i = 0; i < seed.length; i++) { h = ((h << 5) + h) + seed.charCodeAt(i); h |= 0; }
-  return () => { h = Math.imul(1664525, h) + 1013904223 | 0; return (h >>> 0) / 0xFFFFFFFF; };
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const VOCAB = [
+  // ── Begrüßung & Höflichkeit (40) ──
+  { sk: "Ahoj", de: "Hallo", cat: "Grundlagen", ex: "Ahoj, ako sa máš?" },
+  { sk: "Dobrý deň", de: "Guten Tag", cat: "Grundlagen", ex: "Dobrý deň, pán Novák." },
+  { sk: "Dobré ráno", de: "Guten Morgen", cat: "Grundlagen", ex: "Dobré ráno, dobre si spal?" },
+  { sk: "Dobrý večer", de: "Guten Abend", cat: "Grundlagen", ex: "Dobrý večer, vitajte!" },
+  { sk: "Dovidenia", de: "Auf Wiedersehen", cat: "Grundlagen", ex: "Dovidenia, zajtra!" },
+  { sk: "Čau", de: "Tschüss / Hi", cat: "Grundlagen", ex: "Čau, uvidíme sa!" },
+  { sk: "Dobrú noc", de: "Gute Nacht", cat: "Grundlagen", ex: "Dobrú noc, sladké sny." },
+  { sk: "Ďakujem", de: "Danke", cat: "Grundlagen", ex: "Ďakujem veľmi pekne!" },
+  { sk: "Veľmi pekne ďakujem", de: "Vielen herzlichen Dank", cat: "Grundlagen", ex: "Veľmi pekne ďakujem za pomoc." },
+  { sk: "Prosím", de: "Bitte / Gern geschehen", cat: "Grundlagen", ex: "Prosím, pomôžte mi." },
+  { sk: "Prepáčte", de: "Entschuldigung (formal)", cat: "Grundlagen", ex: "Prepáčte, kde je záchod?" },
+  { sk: "Pardon", de: "Entschuldigung (kurz)", cat: "Grundlagen", ex: "Pardon, môžem prejsť?" },
+  { sk: "Ospravedlňujem sa", de: "Es tut mir leid", cat: "Grundlagen", ex: "Ospravedlňujem sa za meškanie." },
+  { sk: "Áno", de: "Ja", cat: "Grundlagen", ex: "Áno, rozumiem." },
+  { sk: "Nie", de: "Nein", cat: "Grundlagen", ex: "Nie, ďakujem." },
+  { sk: "Možno", de: "Vielleicht", cat: "Grundlagen", ex: "Možno prídem zajtra." },
+  { sk: "Samozrejme", de: "Natürlich / Selbstverständlich", cat: "Grundlagen", ex: "Samozrejme, pomôžem ti." },
+  { sk: "Nech sa páči", de: "Bitte sehr / Hier bitte", cat: "Grundlagen", ex: "Nech sa páči, váš káva." },
+  { sk: "Ako sa máš?", de: "Wie geht es dir?", cat: "Grundlagen", ex: "Ahoj, ako sa máš?" },
+  { sk: "Dobre, ďakujem", de: "Gut, danke", cat: "Grundlagen", ex: "Dobre, ďakujem, a ty?" },
+  { sk: "Výborne", de: "Ausgezeichnet", cat: "Grundlagen", ex: "Cítim sa výborne." },
+  { sk: "Nie veľmi dobre", de: "Nicht so gut", cat: "Grundlagen", ex: "Dnes sa cítim nie veľmi dobre." },
+  { sk: "Vitajte", de: "Willkommen", cat: "Grundlagen", ex: "Vitajte v Bratislave!" },
+  { sk: "Na zdravie", de: "Gesundheit / Prost", cat: "Grundlagen", ex: "Na zdravie! — Ďakujem." },
+  { sk: "Šťastnú cestu", de: "Gute Reise", cat: "Grundlagen", ex: "Šťastnú cestu a opatruj sa." },
+  { sk: "Veľa šťastia", de: "Viel Glück", cat: "Grundlagen", ex: "Veľa šťastia na skúške!" },
+  { sk: "Všetko najlepšie", de: "Alles Gute", cat: "Grundlagen", ex: "Všetko najlepšie k narodeninám!" },
+  { sk: "Teší ma", de: "Freut mich (Sie kennenzulernen)", cat: "Grundlagen", ex: "Teší ma, som Anna." },
+  { sk: "Ako sa voláš?", de: "Wie heißt du?", cat: "Grundlagen", ex: "Ahoj, ako sa voláš?" },
+  { sk: "Volám sa...", de: "Ich heiße...", cat: "Grundlagen", ex: "Volám sa Marek." },
+  { sk: "Odkiaľ si?", de: "Woher bist du?", cat: "Grundlagen", ex: "Odkiaľ si? Som z Viedne." },
+  { sk: "Koľko máš rokov?", de: "Wie alt bist du?", cat: "Grundlagen", ex: "Koľko máš rokov? Mám 30." },
+  { sk: "Hovoríš po slovensky?", de: "Sprichst du Slowakisch?", cat: "Grundlagen", ex: "Hovoríš po slovensky? Trochu." },
+  { sk: "Nerozumiem", de: "Ich verstehe nicht", cat: "Grundlagen", ex: "Prepáčte, nerozumiem." },
+  { sk: "Môžete to zopakovať?", de: "Können Sie das wiederholen?", cat: "Grundlagen", ex: "Môžete to zopakovať pomalšie?" },
+  { sk: "Hovorite po nemecky?", de: "Sprechen Sie Deutsch?", cat: "Grundlagen", ex: "Hovorite po nemecky? Áno, trochu." },
+  { sk: "Pomaly, prosím", de: "Langsam, bitte", cat: "Grundlagen", ex: "Hovorte pomaly, prosím." },
+  { sk: "Rozumiem", de: "Ich verstehe", cat: "Grundlagen", ex: "Áno, teraz rozumiem." },
+  { sk: "Zabudol som", de: "Ich habe vergessen", cat: "Grundlagen", ex: "Zabudol som slovo." },
+  { sk: "Neviem", de: "Ich weiß nicht", cat: "Grundlagen", ex: "Neviem, kde je stanica." },
+
+  // ── Familie & Menschen (40) ──
+  { sk: "Rodina", de: "Familie", cat: "Grundlagen", ex: "Mám veľkú rodinu." },
+  { sk: "Mama", de: "Mama / Mutter", cat: "Grundlagen", ex: "Moja mama je učiteľka." },
+  { sk: "Otec", de: "Vater", cat: "Grundlagen", ex: "Môj otec pracuje v Bratislave." },
+  { sk: "Syn", de: "Sohn", cat: "Grundlagen", ex: "Môj syn má päť rokov." },
+  { sk: "Dcéra", de: "Tochter", cat: "Grundlagen", ex: "Naša dcéra chodí do školy." },
+  { sk: "Brat", de: "Bruder", cat: "Grundlagen", ex: "Môj brat býva v Košiciach." },
+  { sk: "Sestra", de: "Schwester", cat: "Grundlagen", ex: "Mám jednu sestru." },
+  { sk: "Starý otec", de: "Großvater / Opa", cat: "Grundlagen", ex: "Starý otec rozpráva príbehy." },
+  { sk: "Stará mama", de: "Großmutter / Oma", cat: "Grundlagen", ex: "Stará mama pečie koláče." },
+  { sk: "Strýko", de: "Onkel", cat: "Grundlagen", ex: "Strýko príde cez víkend." },
+  { sk: "Teta", de: "Tante", cat: "Grundlagen", ex: "Teta Marta je veselá." },
+  { sk: "Bratranec", de: "Cousin (männlich)", cat: "Grundlagen", ex: "Môj bratranec je lekár." },
+  { sk: "Sesternica", de: "Cousine (weiblich)", cat: "Grundlagen", ex: "Sesternica žije v zahraničí." },
+  { sk: "Manžel", de: "Ehemann", cat: "Grundlagen", ex: "Môj manžel varí výborne." },
+  { sk: "Manželka", de: "Ehefrau", cat: "Grundlagen", ex: "Manželka pracuje v nemocnici." },
+  { sk: "Priateľ", de: "Freund / Freundin (m)", cat: "Grundlagen", ex: "Môj priateľ je vtipný." },
+  { sk: "Priateľka", de: "Freundin (f)", cat: "Grundlagen", ex: "Moja priateľka býva blízko." },
+  { sk: "Sused", de: "Nachbar (m)", cat: "Grundlagen", ex: "Sused je veľmi milý." },
+  { sk: "Suseda", de: "Nachbarin (f)", cat: "Grundlagen", ex: "Suseda nám pomohla." },
+  { sk: "Kolega", de: "Kollege", cat: "Grundlagen", ex: "Môj kolega je z Poľska." },
+  { sk: "Šéf", de: "Chef / Boss", cat: "Grundlagen", ex: "Šéf prišiel neskoro." },
+  { sk: "Dieťa", de: "Kind", cat: "Grundlagen", ex: "Toto dieťa je roztomilé." },
+  { sk: "Chlapec", de: "Junge / Bub", cat: "Grundlagen", ex: "Ten chlapec hrá futbal." },
+  { sk: "Dievča", de: "Mädchen", cat: "Grundlagen", ex: "Dievča spieva krásne." },
+  { sk: "Muž", de: "Mann", cat: "Grundlagen", ex: "Ten muž je vysoký." },
+  { sk: "Žena", de: "Frau", cat: "Grundlagen", ex: "Táto žena je lekárka." },
+  { sk: "Starý", de: "Alt", cat: "Grundlagen", ex: "Môj dedko je starý, ale zdravý." },
+  { sk: "Mladý", de: "Jung", cat: "Grundlagen", ex: "Je ešte mladý." },
+  { sk: "Svokra", de: "Schwiegermutter", cat: "Grundlagen", ex: "Svokra nás navštívi v sobotu." },
+  { sk: "Svokor", de: "Schwiegervater", cat: "Grundlagen", ex: "Svokor rád číta." },
+  { sk: "Zať", de: "Schwiegersohn", cat: "Grundlagen", ex: "Zať pracuje v Viedni." },
+  { sk: "Nevesta", de: "Schwiegertochter / Braut", cat: "Grundlagen", ex: "Nevesta je veľmi milá." },
+  { sk: "Dvojčatá", de: "Zwillinge", cat: "Grundlagen", ex: "Majú dvojčatá." },
+  { sk: "Jedináček", de: "Einzelkind", cat: "Grundlagen", ex: "Som jedináček." },
+  { sk: "Rozvedený", de: "Geschieden", cat: "Grundlagen", ex: "Je rozvedený." },
+  { sk: "Slobodný", de: "Ledig", cat: "Grundlagen", ex: "Som slobodný." },
+  { sk: "Ženatý / Vydatá", de: "Verheiratet", cat: "Grundlagen", ex: "Sme ženatí päť rokov." },
+  { sk: "Milý", de: "Lieb / Nett", cat: "Grundlagen", ex: "Je veľmi milý človek." },
+  { sk: "Sympatický", de: "Sympathisch", cat: "Grundlagen", ex: "Moja kolegyňa je sympatická." },
+  { sk: "Adoptovaný", de: "Adoptiert", cat: "Grundlagen", ex: "Je adoptovaný." },
+
+  // ── Zahlen, Zeit & Datum (40) ──
+  { sk: "Jeden", de: "Eins (1)", cat: "Zahlen & Zeit", ex: "Mám jeden brat." },
+  { sk: "Dva", de: "Zwei (2)", cat: "Zahlen & Zeit", ex: "Dva kávy, prosím." },
+  { sk: "Tri", de: "Drei (3)", cat: "Zahlen & Zeit", ex: "Tri dni." },
+  { sk: "Štyri", de: "Vier (4)", cat: "Zahlen & Zeit", ex: "Štyri hodiny." },
+  { sk: "Päť", de: "Fünf (5)", cat: "Zahlen & Zeit", ex: "Päť minút." },
+  { sk: "Šesť", de: "Sechs (6)", cat: "Zahlen & Zeit", ex: "O šesť hodín." },
+  { sk: "Sedem", de: "Sieben (7)", cat: "Zahlen & Zeit", ex: "Sedem dní v týždni." },
+  { sk: "Osem", de: "Acht (8)", cat: "Zahlen & Zeit", ex: "Osem euro." },
+  { sk: "Deväť", de: "Neun (9)", cat: "Zahlen & Zeit", ex: "Deväť ráno." },
+  { sk: "Desať", de: "Zehn (10)", cat: "Zahlen & Zeit", ex: "Desať minút." },
+  { sk: "Dvadsať", de: "Zwanzig (20)", cat: "Zahlen & Zeit", ex: "Dvadsať rokov." },
+  { sk: "Päťdesiat", de: "Fünfzig (50)", cat: "Zahlen & Zeit", ex: "Päťdesiat centov." },
+  { sk: "Sto", de: "Hundert (100)", cat: "Zahlen & Zeit", ex: "Sto euro." },
+  { sk: "Tisíc", de: "Tausend (1000)", cat: "Zahlen & Zeit", ex: "Tisíc kilometrov." },
+  { sk: "Prvý", de: "Erste/r/s", cat: "Zahlen & Zeit", ex: "Prvý január." },
+  { sk: "Druhý", de: "Zweite/r/s", cat: "Zahlen & Zeit", ex: "Druhý poschodie." },
+  { sk: "Dnes", de: "Heute", cat: "Zahlen & Zeit", ex: "Dnes je pondelok." },
+  { sk: "Zajtra", de: "Morgen", cat: "Zahlen & Zeit", ex: "Zajtra prídem." },
+  { sk: "Včera", de: "Gestern", cat: "Zahlen & Zeit", ex: "Včera som bol chorý." },
+  { sk: "Teraz", de: "Jetzt / Gerade", cat: "Zahlen & Zeit", ex: "Teraz idem domov." },
+  { sk: "Neskôr", de: "Später", cat: "Zahlen & Zeit", ex: "Zavolám neskôr." },
+  { sk: "Skôr", de: "Früher / Eher", cat: "Zahlen & Zeit", ex: "Príď skôr." },
+  { sk: "Ráno", de: "Morgen (Tageszeit)", cat: "Zahlen & Zeit", ex: "Ráno pijem kávu." },
+  { sk: "Poludnie", de: "Mittag", cat: "Zahlen & Zeit", ex: "Na poludnie ideme jesť." },
+  { sk: "Večer", de: "Abend", cat: "Zahlen & Zeit", ex: "Večer pozeráme film." },
+  { sk: "Noc", de: "Nacht", cat: "Zahlen & Zeit", ex: "V noci je ticho." },
+  { sk: "Hodina", de: "Stunde / Uhr", cat: "Zahlen & Zeit", ex: "Koľko je hodín?" },
+  { sk: "Minúta", de: "Minute", cat: "Zahlen & Zeit", ex: "Päť minút." },
+  { sk: "Deň", de: "Tag", cat: "Zahlen & Zeit", ex: "Každý deň." },
+  { sk: "Týždeň", de: "Woche", cat: "Zahlen & Zeit", ex: "Tento týždeň." },
+  { sk: "Mesiac", de: "Monat", cat: "Zahlen & Zeit", ex: "Budúci mesiac." },
+  { sk: "Rok", de: "Jahr", cat: "Zahlen & Zeit", ex: "Tento rok." },
+  { sk: "Pondelok", de: "Montag", cat: "Zahlen & Zeit", ex: "V pondelok mám stretnutie." },
+  { sk: "Streda", de: "Mittwoch", cat: "Zahlen & Zeit", ex: "V stredu prídem." },
+  { sk: "Piatok", de: "Freitag", cat: "Zahlen & Zeit", ex: "V piatok ideme von." },
+  { sk: "Sobota", de: "Samstag", cat: "Zahlen & Zeit", ex: "V sobotu relaxujem." },
+  { sk: "Nedeľa", de: "Sonntag", cat: "Zahlen & Zeit", ex: "V nedeľu sme doma." },
+  { sk: "Január", de: "Jänner / Januar", cat: "Zahlen & Zeit", ex: "V januári je zima." },
+  { sk: "Júl", de: "Juli", cat: "Zahlen & Zeit", ex: "V júli ideme na dovolenku." },
+  { sk: "December", de: "Dezember", cat: "Zahlen & Zeit", ex: "V decembri je Vianoce." },
+
+  // ── Essen & Restaurant (40) ──
+  { sk: "Jedlo", de: "Essen / Speise", cat: "Essen & Reisen", ex: "Jedlo je výborné." },
+  { sk: "Voda", de: "Wasser", cat: "Essen & Reisen", ex: "Dajte mi vodu, prosím." },
+  { sk: "Káva", de: "Kaffee", cat: "Essen & Reisen", ex: "Jednu kávu, prosím." },
+  { sk: "Čaj", de: "Tee", cat: "Essen & Reisen", ex: "Chcem čaj s citrónom." },
+  { sk: "Pivo", de: "Bier", cat: "Essen & Reisen", ex: "Dve pivá, prosím." },
+  { sk: "Víno", de: "Wein", cat: "Essen & Reisen", ex: "Červené alebo biele víno?" },
+  { sk: "Džús", de: "Saft", cat: "Essen & Reisen", ex: "Pomarančový džús." },
+  { sk: "Chlieb", de: "Brot", cat: "Essen & Reisen", ex: "Kúpil som chlieb." },
+  { sk: "Mäso", de: "Fleisch", cat: "Essen & Reisen", ex: "Njem mäso." },
+  { sk: "Kura", de: "Hühnchen", cat: "Essen & Reisen", ex: "Kura s ryžou." },
+  { sk: "Ryba", de: "Fisch", cat: "Essen & Reisen", ex: "Dnes mám rybu." },
+  { sk: "Polievka", de: "Suppe", cat: "Essen & Reisen", ex: "Tanier polievky, prosím." },
+  { sk: "Šalát", de: "Salat", cat: "Essen & Reisen", ex: "Grécky šalát." },
+  { sk: "Cestoviny", de: "Nudeln / Pasta", cat: "Essen & Reisen", ex: "Milujem cestoviny." },
+  { sk: "Ryža", de: "Reis", cat: "Essen & Reisen", ex: "Ryža s kuracím mäsom." },
+  { sk: "Zemiaky", de: "Kartoffeln", cat: "Essen & Reisen", ex: "Pečené zemiaky." },
+  { sk: "Zelenina", de: "Gemüse", cat: "Essen & Reisen", ex: "Čerstvá zelenina." },
+  { sk: "Ovocie", de: "Obst", cat: "Essen & Reisen", ex: "Čerstvé ovocie." },
+  { sk: "Jablko", de: "Apfel", cat: "Essen & Reisen", ex: "Jedno jablko." },
+  { sk: "Banán", de: "Banane", cat: "Essen & Reisen", ex: "Banán je zdravý." },
+  { sk: "Syr", de: "Käse", cat: "Essen & Reisen", ex: "Sandwich so syrom." },
+  { sk: "Vajce", de: "Ei", cat: "Essen & Reisen", ex: "Vajce na tvrdo." },
+  { sk: "Maslo", de: "Butter", cat: "Essen & Reisen", ex: "Chlieb s maslom." },
+  { sk: "Soľ", de: "Salz", cat: "Essen & Reisen", ex: "Dajte mi soľ, prosím." },
+  { sk: "Cukor", de: "Zucker", cat: "Essen & Reisen", ex: "Káva bez cukru." },
+  { sk: "Jedálny lístok", de: "Speisekarte", cat: "Essen & Reisen", ex: "Môžem mať jedálny lístok?" },
+  { sk: "Čašník", de: "Kellner", cat: "Essen & Reisen", ex: "Čašník, prosím!" },
+  { sk: "Účet", de: "Rechnung", cat: "Essen & Reisen", ex: "Môžem mať účet?" },
+  { sk: "Rezervácia", de: "Reservierung", cat: "Essen & Reisen", ex: "Mám rezerváciu na osem hodín." },
+  { sk: "Stôl", de: "Tisch", cat: "Essen & Reisen", ex: "Stôl pre dvoch, prosím." },
+  { sk: "Vegetarián", de: "Vegetarier/in", cat: "Essen & Reisen", ex: "Som vegetarián." },
+  { sk: "Alergický na", de: "Allergisch auf", cat: "Essen & Reisen", ex: "Som alergický na orechy." },
+  { sk: "Chutné", de: "Lecker / Schmackhaft", cat: "Essen & Reisen", ex: "Jedlo je veľmi chutné." },
+  { sk: "Horúce", de: "Heiß / Scharf", cat: "Essen & Reisen", ex: "Je to príliš horúce." },
+  { sk: "Studené", de: "Kalt", cat: "Essen & Reisen", ex: "Polievka je studená." },
+  { sk: "Dezert", de: "Dessert / Nachtisch", cat: "Essen & Reisen", ex: "Dáte si dezert?" },
+  { sk: "Torta", de: "Torte / Kuchen", cat: "Essen & Reisen", ex: "Čokoládová torta." },
+  { sk: "Zmrzlina", de: "Eis / Speiseeis", cat: "Essen & Reisen", ex: "Dve gule zmrzliny." },
+  { sk: "Pohár", de: "Glas", cat: "Essen & Reisen", ex: "Pohár vody." },
+  { sk: "Fľaša", de: "Flasche", cat: "Essen & Reisen", ex: "Fľaša vína." },
+
+  // ── Wohnen & Alltag (40) ──
+  { sk: "Dom", de: "Haus", cat: "Alltag & Einkaufen", ex: "Môj dom je veľký." },
+  { sk: "Byt", de: "Wohnung", cat: "Alltag & Einkaufen", ex: "Hľadám byt v centre." },
+  { sk: "Izba", de: "Zimmer", cat: "Alltag & Einkaufen", ex: "Mám dve izby." },
+  { sk: "Kuchyňa", de: "Küche", cat: "Alltag & Einkaufen", ex: "Varím v kuchyni." },
+  { sk: "Kúpeľňa", de: "Badezimmer", cat: "Alltag & Einkaufen", ex: "Kúpeľňa je vpravo." },
+  { sk: "Záchod", de: "Toilette / WC", cat: "Alltag & Einkaufen", ex: "Kde je záchod?" },
+  { sk: "Spálňa", de: "Schlafzimmer", cat: "Alltag & Einkaufen", ex: "Spálňa je tichá." },
+  { sk: "Obývačka", de: "Wohnzimmer", cat: "Alltag & Einkaufen", ex: "Sedíme v obývačke." },
+  { sk: "Balkón", de: "Balkon", cat: "Alltag & Einkaufen", ex: "Máme krásny balkón." },
+  { sk: "Záhrada", de: "Garten", cat: "Alltag & Einkaufen", ex: "Záhrada je plná kvetov." },
+  { sk: "Dvere", de: "Tür", cat: "Alltag & Einkaufen", ex: "Zatvor dvere, prosím." },
+  { sk: "Okno", de: "Fenster", cat: "Alltag & Einkaufen", ex: "Otvor okno." },
+  { sk: "Kľúč", de: "Schlüssel", cat: "Alltag & Einkaufen", ex: "Zabudol som kľúč." },
+  { sk: "Nájom", de: "Miete", cat: "Alltag & Einkaufen", ex: "Koľko je nájom?" },
+  { sk: "Poschodie", de: "Stockwerk / Etage", cat: "Alltag & Einkaufen", ex: "Bývam na treťom poschodí." },
+  { sk: "Výťah", de: "Aufzug / Lift", cat: "Alltag & Einkaufen", ex: "Výťah nefunguje." },
+  { sk: "Schody", de: "Treppe / Stufen", cat: "Alltag & Einkaufen", ex: "Idem po schodoch." },
+  { sk: "Susedia", de: "Nachbarn", cat: "Alltag & Einkaufen", ex: "Susedia sú hlučí." },
+  { sk: "Posteľ", de: "Bett", cat: "Alltag & Einkaufen", ex: "Idem do postele." },
+  { sk: "Stolička", de: "Stuhl", cat: "Alltag & Einkaufen", ex: "Sadni si na stoličku." },
+  { sk: "Stôl", de: "Tisch", cat: "Alltag & Einkaufen", ex: "Stôl je pri okne." },
+  { sk: "Skriňa", de: "Schrank", cat: "Alltag & Einkaufen", ex: "Oblečenie je v skrini." },
+  { sk: "Lampa", de: "Lampe", cat: "Alltag & Einkaufen", ex: "Zapni lampu." },
+  { sk: "Práčka", de: "Waschmaschine", cat: "Alltag & Einkaufen", ex: "Práčka je plná." },
+  { sk: "Chladnička", de: "Kühlschrank", cat: "Alltag & Einkaufen", ex: "Daj mlieko do chladničky." },
+  { sk: "Sporák", de: "Herd", cat: "Alltag & Einkaufen", ex: "Varím na sporáku." },
+  { sk: "Televízor", de: "Fernseher", cat: "Alltag & Einkaufen", ex: "Pozeráme televízor." },
+  { sk: "Počítač", de: "Computer", cat: "Alltag & Einkaufen", ex: "Pracujem na počítači." },
+  { sk: "Mobil", de: "Handy / Mobiltelefon", cat: "Alltag & Einkaufen", ex: "Kde je môj mobil?" },
+  { sk: "Nabíjačka", de: "Ladekabel / Ladegerät", cat: "Alltag & Einkaufen", ex: "Potrebujem nabíjačku." },
+  { sk: "Odpad", de: "Müll / Abfall", cat: "Alltag & Einkaufen", ex: "Vynes odpad." },
+  { sk: "Upratovanie", de: "Putzen / Aufräumen", cat: "Alltag & Einkaufen", ex: "V sobotu robím upratovanie." },
+  { sk: "Umývanie riadu", de: "Geschirrspülen", cat: "Alltag & Einkaufen", ex: "Umývam riad." },
+  { sk: "Nákup", de: "Einkauf", cat: "Alltag & Einkaufen", ex: "Idem na nákup." },
+  { sk: "Práca", de: "Arbeit", cat: "Alltag & Einkaufen", ex: "Idem do práce." },
+  { sk: "Škola", de: "Schule", cat: "Alltag & Einkaufen", ex: "Deti idú do školy." },
+  { sk: "Nemocnica", de: "Krankenhaus", cat: "Alltag & Einkaufen", ex: "Idem do nemocnice." },
+  { sk: "Lekáreň", de: "Apotheke", cat: "Alltag & Einkaufen", ex: "Kde je lekáreň?" },
+  { sk: "Pošta", de: "Post / Postamt", cat: "Alltag & Einkaufen", ex: "Idem na poštu." },
+  { sk: "Banka", de: "Bank", cat: "Alltag & Einkaufen", ex: "Kde je najbližšia banka?" },
+
+  // ── Reisen & Transport (40) ──
+  { sk: "Vlak", de: "Zug", cat: "Essen & Reisen", ex: "Vlak má meškanie." },
+  { sk: "Autobus", de: "Bus", cat: "Essen & Reisen", ex: "Autobus číslo päť." },
+  { sk: "Auto", de: "Auto", cat: "Essen & Reisen", ex: "Mám nové auto." },
+  { sk: "Taxík", de: "Taxi", cat: "Essen & Reisen", ex: "Zavolajte mi taxík." },
+  { sk: "Lietadlo", de: "Flugzeug", cat: "Essen & Reisen", ex: "Lietadlo odlieta o ôsmej." },
+  { sk: "Loď", de: "Schiff / Boot", cat: "Essen & Reisen", ex: "Plavíme sa na lodi." },
+  { sk: "Bicykel", de: "Fahrrad", cat: "Essen & Reisen", ex: "Idem na bicykli." },
+  { sk: "Stanica", de: "Bahnhof", cat: "Essen & Reisen", ex: "Kde je stanica?" },
+  { sk: "Letisko", de: "Flughafen", cat: "Essen & Reisen", ex: "Letisko je ďaleko." },
+  { sk: "Zastávka", de: "Haltestelle", cat: "Essen & Reisen", ex: "Kde je najbližšia zastávka?" },
+  { sk: "Lístok", de: "Ticket / Fahrkarte", cat: "Essen & Reisen", ex: "Jeden lístok do Bratislavy." },
+  { sk: "Cestovný pas", de: "Reisepass", cat: "Essen & Reisen", ex: "Potrebujem cestovný pas." },
+  { sk: "Víza", de: "Visum", cat: "Essen & Reisen", ex: "Potrebujem víza?" },
+  { sk: "Hotel", de: "Hotel", cat: "Essen & Reisen", ex: "Hľadám hotel." },
+  { sk: "Izba", de: "Zimmer", cat: "Essen & Reisen", ex: "Izba pre dvoch." },
+  { sk: "Recepcia", de: "Rezeption", cat: "Essen & Reisen", ex: "Zaregistrujem sa na recepcii." },
+  { sk: "Mapu", de: "Karte / Stadtplan", cat: "Essen & Reisen", ex: "Máte mapu mesta?" },
+  { sk: "Adresa", de: "Adresse", cat: "Essen & Reisen", ex: "Aká je vaša adresa?" },
+  { sk: "Ulica", de: "Straße", cat: "Essen & Reisen", ex: "Na ktorej ulici?" },
+  { sk: "Náměstie", de: "Platz", cat: "Essen & Reisen", ex: "Hlavné námestie." },
+  { sk: "Most", de: "Brücke", cat: "Essen & Reisen", ex: "Prejdite cez most." },
+  { sk: "Rieka", de: "Fluss", cat: "Essen & Reisen", ex: "Dunaj je veľká rieka." },
+  { sk: "Vpravo", de: "Rechts", cat: "Essen & Reisen", ex: "Odbočte vpravo." },
+  { sk: "Vľavo", de: "Links", cat: "Essen & Reisen", ex: "Odbočte vľavo." },
+  { sk: "Rovno", de: "Geradeaus", cat: "Essen & Reisen", ex: "Choďte rovno." },
+  { sk: "Ďaleko", de: "Weit", cat: "Essen & Reisen", ex: "Je to ďaleko?" },
+  { sk: "Blízko", de: "Nah", cat: "Essen & Reisen", ex: "Je to blízko." },
+  { sk: "Odchod", de: "Abfahrt / Abflug", cat: "Essen & Reisen", ex: "Kedy je odchod vlaku?" },
+  { sk: "Príchod", de: "Ankunft", cat: "Essen & Reisen", ex: "Príchod o 14:00." },
+  { sk: "Meškanie", de: "Verspätung", cat: "Essen & Reisen", ex: "Vlak má meškanie." },
+  { sk: "Benzín", de: "Benzin", cat: "Essen & Reisen", ex: "Potrebujem benzín." },
+  { sk: "Parkovisko", de: "Parkplatz", cat: "Essen & Reisen", ex: "Kde je parkovisko?" },
+  { sk: "Diaľnica", de: "Autobahn", cat: "Essen & Reisen", ex: "Jazdia sme po diaľnici." },
+  { sk: "Semafor", de: "Ampel", cat: "Essen & Reisen", ex: "Zastavte na semafore." },
+  { sk: "Colnica", de: "Zoll", cat: "Essen & Reisen", ex: "Máme prejsť cez colnicu." },
+  { sk: "Batožina", de: "Gepäck", cat: "Essen & Reisen", ex: "Moja batožina je ťažká." },
+  { sk: "Cestovanie", de: "Reisen / Reise", cat: "Essen & Reisen", ex: "Milujem cestovanie." },
+  { sk: "Dovolenka", de: "Urlaub", cat: "Essen & Reisen", ex: "Ideme na dovolenku." },
+  { sk: "Turistika", de: "Tourismus / Wandern", cat: "Essen & Reisen", ex: "Rád robím turistiku." },
+  { sk: "Výlet", de: "Ausflug", cat: "Essen & Reisen", ex: "Plánujeme výlet." },
+
+  // ── Körper & Gesundheit (40) ──
+  { sk: "Telo", de: "Körper", cat: "Gesundheit & Notfall", ex: "Zdravé telo." },
+  { sk: "Hlava", de: "Kopf", cat: "Gesundheit & Notfall", ex: "Bolí ma hlava." },
+  { sk: "Tvár", de: "Gesicht", cat: "Gesundheit & Notfall", ex: "Umyte si tvár." },
+  { sk: "Oči", de: "Augen", cat: "Gesundheit & Notfall", ex: "Má modré oči." },
+  { sk: "Uši", de: "Ohren", cat: "Gesundheit & Notfall", ex: "Bolí ma ucho." },
+  { sk: "Nos", de: "Nase", cat: "Gesundheit & Notfall", ex: "Tečie mi z nosa." },
+  { sk: "Ústa", de: "Mund", cat: "Gesundheit & Notfall", ex: "Otvorte ústa." },
+  { sk: "Zuby", de: "Zähne", cat: "Gesundheit & Notfall", ex: "Bolí ma zub." },
+  { sk: "Hrdlo", de: "Hals / Kehle", cat: "Gesundheit & Notfall", ex: "Bolí ma hrdlo." },
+  { sk: "Rameno", de: "Schulter", cat: "Gesundheit & Notfall", ex: "Bolí ma rameno." },
+  { sk: "Ruka", de: "Hand / Arm", cat: "Gesundheit & Notfall", ex: "Zlomil som si ruku." },
+  { sk: "Prst", de: "Finger", cat: "Gesundheit & Notfall", ex: "Rezol som si prst." },
+  { sk: "Brucho", de: "Bauch", cat: "Gesundheit & Notfall", ex: "Bolí ma brucho." },
+  { sk: "Chrbát", de: "Rücken", cat: "Gesundheit & Notfall", ex: "Mám bolesti chrbáta." },
+  { sk: "Noha", de: "Bein / Fuß", cat: "Gesundheit & Notfall", ex: "Bolí ma noha." },
+  { sk: "Koleno", de: "Knie", cat: "Gesundheit & Notfall", ex: "Mám problémy s kolenom." },
+  { sk: "Srdce", de: "Herz", cat: "Gesundheit & Notfall", ex: "Mám zdravé srdce." },
+  { sk: "Pľúca", de: "Lunge", cat: "Gesundheit & Notfall", ex: "Fajčenie škodí pľúcam." },
+  { sk: "Chorý", de: "Krank", cat: "Gesundheit & Notfall", ex: "Cítim sa chorý." },
+  { sk: "Zdravý", de: "Gesund", cat: "Gesundheit & Notfall", ex: "Som zdravý." },
+  { sk: "Horúčka", de: "Fieber", cat: "Gesundheit & Notfall", ex: "Mám horúčku." },
+  { sk: "Kašeľ", de: "Husten", cat: "Gesundheit & Notfall", ex: "Mám silný kašeľ." },
+  { sk: "Nádcha", de: "Schnupfen", cat: "Gesundheit & Notfall", ex: "Mám nádchu." },
+  { sk: "Bolesť", de: "Schmerz", cat: "Gesundheit & Notfall", ex: "Mám bolesť." },
+  { sk: "Liek", de: "Medikament", cat: "Gesundheit & Notfall", ex: "Potrebujem liek." },
+  { sk: "Lekár", de: "Arzt / Ärztin", cat: "Gesundheit & Notfall", ex: "Idem k lekárovi." },
+  { sk: "Nemocnica", de: "Krankenhaus", cat: "Gesundheit & Notfall", ex: "Odvezme ma do nemocnice." },
+  { sk: "Sanitka", de: "Krankenwagen", cat: "Gesundheit & Notfall", ex: "Zavolajte sanitku!" },
+  { sk: "Alergia", de: "Allergie", cat: "Gesundheit & Notfall", ex: "Mám alergiu na peľ." },
+  { sk: "Operácia", de: "Operation", cat: "Gesundheit & Notfall", ex: "Potrebujem operáciu." },
+  { sk: "Recept", de: "Rezept", cat: "Gesundheit & Notfall", ex: "Lekár mi dal recept." },
+  { sk: "Poistenie", de: "Versicherung", cat: "Gesundheit & Notfall", ex: "Mám zdravotné poistenie." },
+  { sk: "Únava", de: "Müdigkeit / Erschöpfung", cat: "Gesundheit & Notfall", ex: "Cítim veľkú únavu." },
+  { sk: "Stres", de: "Stress", cat: "Gesundheit & Notfall", ex: "Mám veľa stresu." },
+  { sk: "Spánok", de: "Schlaf", cat: "Gesundheit & Notfall", ex: "Potrebujem viac spánku." },
+  { sk: "Cvičenie", de: "Sport / Übung", cat: "Gesundheit & Notfall", ex: "Každý deň cvičím." },
+  { sk: "Diéta", de: "Diät", cat: "Gesundheit & Notfall", ex: "Držím diétu." },
+  { sk: "Váha", de: "Gewicht", cat: "Gesundheit & Notfall", ex: "Chcem schudnúť." },
+  { sk: "Krv", de: "Blut", cat: "Gesundheit & Notfall", ex: "Odber krvi." },
+  { sk: "Zranenie", de: "Verletzung", cat: "Gesundheit & Notfall", ex: "Mám zranenie." },
+
+  // ── Einkaufen & Geld (40) ──
+  { sk: "Obchod", de: "Geschäft / Laden", cat: "Alltag & Einkaufen", ex: "Kde je obchod?" },
+  { sk: "Supermarket", de: "Supermarkt", cat: "Alltag & Einkaufen", ex: "Idem do supermarketu." },
+  { sk: "Cena", de: "Preis", cat: "Alltag & Einkaufen", ex: "Aká je cena?" },
+  { sk: "Koľko stojí?", de: "Was kostet es?", cat: "Alltag & Einkaufen", ex: "Koľko stojí toto?" },
+  { sk: "Lacný", de: "Günstig / Billig", cat: "Alltag & Einkaufen", ex: "Je to veľmi lacné." },
+  { sk: "Drahý", de: "Teuer", cat: "Alltag & Einkaufen", ex: "Je to príliš drahé." },
+  { sk: "Zľava", de: "Rabatt / Ermäßigung", cat: "Alltag & Einkaufen", ex: "Máte nejakú zľavu?" },
+  { sk: "Výpredaj", de: "Ausverkauf / Sale", cat: "Alltag & Einkaufen", ex: "Je výpredaj!" },
+  { sk: "Pokladňa", de: "Kasse", cat: "Alltag & Einkaufen", ex: "Platím pri pokladni." },
+  { sk: "Účtenka", de: "Kassenbon / Quittung", cat: "Alltag & Einkaufen", ex: "Môžem dostať účtenku?" },
+  { sk: "Hotovosť", de: "Bargeld", cat: "Alltag & Einkaufen", ex: "Platím hotovosťou." },
+  { sk: "Karta", de: "Karte / EC-Karte", cat: "Alltag & Einkaufen", ex: "Môžem platiť kartou?" },
+  { sk: "Euro", de: "Euro", cat: "Alltag & Einkaufen", ex: "Dvadsať euro." },
+  { sk: "Cent", de: "Cent", cat: "Alltag & Einkaufen", ex: "Päťdesiat centov." },
+  { sk: "Minca", de: "Münze", cat: "Alltag & Einkaufen", ex: "Mám len mince." },
+  { sk: "Bankovka", de: "Geldschein", cat: "Alltag & Einkaufen", ex: "Mám päťdesiat-eurovú bankovku." },
+  { sk: "Bankomat", de: "Geldautomat / ATM", cat: "Alltag & Einkaufen", ex: "Kde je bankomat?" },
+  { sk: "Výmena peňazí", de: "Geldwechsel", cat: "Alltag & Einkaufen", ex: "Kde vymeniam peniaze?" },
+  { sk: "Oblečenie", de: "Kleidung", cat: "Alltag & Einkaufen", ex: "Kupujem nové oblečenie." },
+  { sk: "Veľkosť", de: "Größe", cat: "Alltag & Einkaufen", ex: "Akú máte veľkosť?" },
+  { sk: "Skúšobňa", de: "Umkleidekabine", cat: "Alltag & Einkaufen", ex: "Kde je skúšobňa?" },
+  { sk: "Topánky", de: "Schuhe", cat: "Alltag & Einkaufen", ex: "Tieto topánky sú pohodlné." },
+  { sk: "Nákupné centrum", de: "Einkaufszentrum", cat: "Alltag & Einkaufen", ex: "Ideme do nákupného centra." },
+  { sk: "Trhnica", de: "Markt", cat: "Alltag & Einkaufen", ex: "Na trhnici je čerstvé ovocie." },
+  { sk: "Vrátenie tovaru", de: "Rückgabe", cat: "Alltag & Einkaufen", ex: "Chcem vrátiť tovar." },
+  { sk: "Záruka", de: "Garantie", cat: "Alltag & Einkaufen", ex: "Aká je záruka?" },
+  { sk: "Dar", de: "Geschenk", cat: "Alltag & Einkaufen", ex: "Hľadám dar pre priateľa." },
+  { sk: "Taška", de: "Tasche / Tüte", cat: "Alltag & Einkaufen", ex: "Môžem dostať tašku?" },
+  { sk: "Nákupný zoznam", de: "Einkaufsliste", cat: "Alltag & Einkaufen", ex: "Napísal som nákupný zoznam." },
+  { sk: "Zákazník", de: "Kunde / Kundin", cat: "Alltag & Einkaufen", ex: "Zákazník má vždy pravdu." },
+  { sk: "Predajca", de: "Verkäufer/in", cat: "Alltag & Einkaufen", ex: "Predajca mi pomohol." },
+  { sk: "Otvorené", de: "Geöffnet / Offen", cat: "Alltag & Einkaufen", ex: "Obchod je otvorený." },
+  { sk: "Zatvorené", de: "Geschlossen", cat: "Alltag & Einkaufen", ex: "Obchod je zatvorený." },
+  { sk: "Otváracie hodiny", de: "Öffnungszeiten", cat: "Alltag & Einkaufen", ex: "Aké sú otváracie hodiny?" },
+  { sk: "Ušetriť", de: "Sparen", cat: "Alltag & Einkaufen", ex: "Chcem ušetriť peniaze." },
+  { sk: "Platiť", de: "Zahlen / Bezahlen", cat: "Alltag & Einkaufen", ex: "Chcem platiť." },
+  { sk: "Požičať", de: "Leihen / Ausleihen", cat: "Alltag & Einkaufen", ex: "Môžeš mi požičať peniaze?" },
+  { sk: "Dlh", de: "Schulden", cat: "Alltag & Einkaufen", ex: "Mám dlh." },
+  { sk: "Potvrdenie", de: "Bestätigung / Beleg", cat: "Alltag & Einkaufen", ex: "Pošlite mi potvrdenie." },
+  { sk: "Objednávka", de: "Bestellung", cat: "Alltag & Einkaufen", ex: "Chcem podať objednávku." },
+];
+const PHRASES = [
+  { sk: "Ako sa voláte?", de: "Wie heißen Sie?", context: "Kennenlernen" },
+  { sk: "Volám sa...", de: "Ich heiße...", context: "Kennenlernen" },
+  { sk: "Odkiaľ ste?", de: "Woher kommen Sie?", context: "Kennenlernen" },
+  { sk: "Som z Rakúska.", de: "Ich bin aus Österreich.", context: "Kennenlernen" },
+  { sk: "Ako sa máte?", de: "Wie geht es Ihnen?", context: "Begrüßung" },
+  { sk: "Dobre, ďakujem.", de: "Gut, danke.", context: "Begrüßung" },
+  { sk: "Nerozumiem.", de: "Ich verstehe nicht.", context: "Sprachprobleme" },
+  { sk: "Hovoríte po nemecky?", de: "Sprechen Sie Deutsch?", context: "Sprachprobleme" },
+  { sk: "Môžete to zopakovať?", de: "Können Sie das wiederholen?", context: "Sprachprobleme" },
+  { sk: "Koľko to stojí?", de: "Was kostet das?", context: "Einkaufen" },
+  { sk: "Kde je zastávka?", de: "Wo ist die Haltestelle?", context: "Orientierung" },
+  { sk: "Pomôžte mi, prosím.", de: "Bitte helfen Sie mir.", context: "Hilfe" },
+  { sk: "Zavolajte políciu!", de: "Rufen Sie die Polizei!", context: "Notfall" },
+  { sk: "Potrebujem lekára.", de: "Ich brauche einen Arzt.", context: "Notfall" },
+  { sk: "Kde je nemocnica?", de: "Wo ist das Krankenhaus?", context: "Notfall" },
+  { sk: "Mám rezerváciu.", de: "Ich habe eine Reservierung.", context: "Hotel" },
+  { sk: "Kedy je raňajky?", de: "Wann gibt es Frühstück?", context: "Hotel" },
+  { sk: "Chcem zaplatiť.", de: "Ich möchte zahlen.", context: "Restaurant" },
+  { sk: "Bez mäsa, prosím.", de: "Ohne Fleisch, bitte.", context: "Restaurant" },
+  { sk: "Je tu voľné miesto?", de: "Ist hier noch frei?", context: "Restaurant" },
+];
+const GRAMMAR = [
+  { title: "Persönliche Fürwörter", description: "Die Grundpronomen im Slowakischen", table: [["Ich", "ja"], ["Du", "ty"], ["Er/Sie/Es", "on/ona/ono"], ["Wir", "my"], ["Ihr", "vy"], ["Sie (formal)", "Vy"], ["Sie", "oni/ony"]], tip: "Das formelle 'Vy' wird großgeschrieben, ähnlich wie das deutsche 'Sie'." },
+  { title: "Verb 'byť' (sein)", description: "Das wichtigste Verb — sein", table: [["Ich bin", "ja som"], ["Du bist", "ty si"], ["Er/Sie ist", "on/ona je"], ["Wir sind", "my sme"], ["Ihr seid", "vy ste"], ["Sie sind", "oni sú"]], tip: "Merke: 'som' klingt ähnlich wie 'some' — ich BIN etwas." },
+  { title: "Verb 'mať' (haben)", description: "Ich habe — auf Slowakisch", table: [["Ich habe", "ja mám"], ["Du hast", "ty máš"], ["Er/Sie hat", "on/ona má"], ["Wir haben", "my máme"], ["Ihr habt", "vy máte"], ["Sie haben", "oni majú"]], tip: "Gut merken: 'mám' = ich habe. Sehr häufig im Alltag!" },
+  { title: "Verb 'ísť' (gehen)", description: "Ich gehe — Bewegungsverb", table: [["Ich gehe", "ja idem"], ["Du gehst", "ty ideš"], ["Er/Sie geht", "on/ona ide"], ["Wir gehen", "my ideme"], ["Ihr geht", "vy idete"], ["Sie gehen", "oni idú"]], tip: "'Idem domov' = Ich gehe nach Hause. Sehr alltäglich!" },
+  { title: "Zahlen 1–20", description: "Slowakische Zahlen", table: [["1", "jeden"], ["2", "dva"], ["3", "tri"], ["4", "štyri"], ["5", "päť"], ["6", "šesť"], ["7", "sedem"], ["8", "osem"], ["9", "deväť"], ["10", "desať"], ["11", "jedenásť"], ["15", "pätnásť"], ["20", "dvadsať"]], tip: "Ab 11 endet die Zahl auf '-násť' (entspricht dem deutschen '-zehn')." },
+  { title: "Verneinung", description: "Wie man Nein sagt", table: [["Ja habe", "Mám"], ["Ich habe nicht", "Nemám"], ["Ich gehe", "Idem"], ["Ich gehe nicht", "Nejdem"], ["Ich bin", "Som"], ["Ich bin nicht", "Nie som"]], tip: "Die Verneinung bildet man mit 'ne-' vor dem Verb. Einfach!" },
+];
+var CATS=["Alle","Grundlagen","Zahlen & Zeit","Essen & Reisen","Alltag & Einkaufen","Gesundheit & Notfall"];
+
+// ── AUDIO ─────────────────────────────────────────────────────────────────────
+function speak(text){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(text),vs=window.speechSynthesis.getVoices(),found=null;
+  for(var i=0;i<vs.length;i++){if(vs[i].lang.indexOf("sk")===0){found=vs[i];break;}}
+  if(!found)for(var i=0;i<vs.length;i++){if(vs[i].lang.indexOf("cs")===0){found=vs[i];break;}}
+  if(found)u.voice=found;u.lang="sk-SK";u.rate=0.88;
+  window.speechSynthesis.speak(u);
 }
 
-// Salted pick — each category fully independent
-function saltedPick(arr, ds, salt) {
-  const rng = makeRng(ds + '|' + salt);
-  return arr[Math.floor(rng() * arr.length)];
+// ── STYLE HELPERS ─────────────────────────────────────────────────────────────
+function s(){var o={};for(var i=0;i<arguments.length;i++){var a=arguments[i];if(a)Object.keys(a).forEach(function(k){o[k]=a[k];});}return o;}
+function card(extra){return s({background:WH,borderRadius:20,boxShadow:SH,padding:20},extra);}
+function pill(active){return s({padding:"7px 15px",borderRadius:999,border:"none",fontFamily:"inherit",whiteSpace:"nowrap",cursor:"pointer",fontSize:13,fontWeight:active?600:400,background:active?GOLD:"transparent",color:active?"#fff":GR});}
+function label(){return{fontSize:11,fontWeight:600,letterSpacing:0.8,color:LT,textTransform:"uppercase",marginBottom:8};}
+
+// ── SVG ICONS ─────────────────────────────────────────────────────────────────
+function IconLearn(col){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:1.8,strokeLinecap:"round"},h("path",{d:"M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"}),h("path",{d:"M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"}));}
+function IconFlash(col){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:1.8,strokeLinecap:"round"},h("rect",{x:2,y:3,width:20,height:14,rx:2}),h("path",{d:"M8 21h8M12 17v4"}));}
+function IconQuiz(col){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:1.8,strokeLinecap:"round"},h("circle",{cx:12,cy:12,r:10}),h("path",{d:"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"}),h("line",{x1:12,y1:17,x2:12.01,y2:17,strokeWidth:3}));}
+function IconKnow(col){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:1.8,strokeLinecap:"round"},h("path",{d:"M12 2L2 7l10 5 10-5-10-5z"}),h("path",{d:"M2 17l10 5 10-5"}),h("path",{d:"M2 12l10 5 10-5"}));}
+function IconProg(col){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:1.8,strokeLinecap:"round"},h("line",{x1:18,y1:20,x2:18,y2:10}),h("line",{x1:12,y1:20,x2:12,y2:4}),h("line",{x1:6,y1:20,x2:6,y2:14}));}
+function IconSpeak(col){return h("svg",{width:15,height:15,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:2,strokeLinecap:"round"},h("polygon",{points:"11 5 6 9 2 9 2 15 6 15 11 19 11 5"}),h("path",{d:"M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"}));}
+function IconDown(col){return h("svg",{width:15,height:15,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:2,strokeLinecap:"round"},h("path",{d:"M6 9l6 6 6-6"}));}
+
+// ── RING ──────────────────────────────────────────────────────────────────────
+function Ring(props){
+  var size=props.size||72,stroke=props.stroke||5,color=props.color||GOLD;
+  var pct=Math.min(props.pct||0,100),r=(size-stroke)/2,circ=2*Math.PI*r;
+  return h("svg",{width:size,height:size,style:{transform:"rotate(-90deg)"}},
+    h("circle",{cx:size/2,cy:size/2,r:r,fill:"none",stroke:BR,strokeWidth:stroke}),
+    h("circle",{cx:size/2,cy:size/2,r:r,fill:"none",stroke:color,strokeWidth:stroke,
+      strokeDasharray:circ,strokeDashoffset:circ*(1-pct/100),strokeLinecap:"round",
+      style:{transition:"stroke-dashoffset 0.6s"}}));
 }
 
-// Multiple salted floats for graphic generation
-function saltedFloats(ds, salt, count) {
-  const rng = makeRng(ds + '|' + salt);
-  return Array.from({length: count}, () => rng());
+// ── LEARN SCREEN ──────────────────────────────────────────────────────────────
+function LearnScreen(props){
+  var prog=loadProgress(),known=new Set(prog.known||[]);
+  var plan=loadPlan(),stats=loadStats();
+  var tod=stats[todayKey()]||{seen:0,correct:0};
+  var pct=Math.min(100,Math.round(tod.seen/plan.dailyGoal*100));
+  var done=tod.seen>=plan.dailyGoal;
+  var hour=new Date().getHours();
+  var greeting=hour<12?"Dobré ráno 👋":hour<18?"Dobrý deň 👋":"Dobrý večer 👋";
+  var streak=0,d2=new Date();
+  while(true){var k=d2.toISOString().slice(0,10),ss=stats[k];if(ss&&ss.seen>=plan.dailyGoal){streak++;d2.setDate(d2.getDate()-1);}else break;}
+  var cats=CATS.filter(function(c){return c!=="Alle";});
+
+  return h("div",{style:{padding:"32px 20px 24px"}},
+    h("div",{style:{marginBottom:24}},
+      h("div",{style:{fontSize:28,fontWeight:300,fontFamily:"'DM Serif Display',serif",color:BLK,marginBottom:4}},greeting),
+      h("div",{style:{fontSize:15,color:GR}},"Bereit für deine nächste Lerneinheit?")
+    ),
+    h("div",{style:card({display:"flex",alignItems:"center",gap:20,marginBottom:20})},
+      h("div",{style:{position:"relative",flexShrink:0}},
+        h(Ring,{pct:pct,size:76,stroke:5}),
+        h("div",{style:{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}},
+          h("div",{style:{fontSize:20,fontWeight:600,color:done?GRN:BLK,lineHeight:1}},tod.seen),
+          h("div",{style:{fontSize:10,color:LT}},"/" + plan.dailyGoal)
+        )
+      ),
+      h("div",{style:{flex:1}},
+        h("div",{style:{fontSize:13,color:GR,marginBottom:2}},"Tagesziel"),
+        h("div",{style:{fontSize:15,fontWeight:500,color:BLK}},done?"Ziel erreicht! 🎉":"Noch "+(plan.dailyGoal-tod.seen)+" Wörter"),
+        streak>0?h("div",{style:{fontSize:12,color:GOLD,marginTop:4}},"🔥 "+streak+(streak===1?" Tag":" Tage")+" Serie"):null
+      )
+    ),
+    h("div",{style:{marginBottom:24}},
+      h("button",{onClick:function(){props.onGo("flash");},style:{width:"100%",padding:"15px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:16,fontWeight:600,cursor:"pointer",background:GOLD,color:"#fff",boxShadow:SGH}},"Weiterlernen")
+    ),
+    h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},
+      h("div",{style:label()},"THEMEN"),
+      h("span",{style:{fontSize:13,color:GOLD,cursor:"pointer"},onClick:function(){props.onGo("know");}},"Alle anzeigen")
+    ),
+    h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}},
+      cats.map(function(cat){
+        var tot=0,kk=0;
+        for(var i=0;i<VOCAB.length;i++){if(VOCAB[i].cat===cat){tot++;if(known.has(VOCAB[i].sk))kk++;}}
+        var p=tot?Math.round(kk/tot*100):0;
+        return h("div",{key:cat,onClick:function(){props.onGo("flash");},style:{background:WH,borderRadius:16,padding:"14px 16px",boxShadow:SSH,cursor:"pointer"}},
+          h("div",{style:{fontSize:13,fontWeight:500,color:BLK,marginBottom:4}},cat),
+          h("div",{style:{fontSize:11,color:LT,marginBottom:8}},kk+"/"+tot),
+          h("div",{style:{height:3,background:BR,borderRadius:2}},
+            h("div",{style:{height:"100%",width:p+"%",background:GOLD,borderRadius:2}})
+          )
+        );
+      })
+    )
+  );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// GRAPHIC SYSTEM
-// Determines graphic type from subject + lighting, then draws SVG elements.
-// All values derived from date seed → same day = same graphic.
-// ═══════════════════════════════════════════════════════════════════════════
+// ── FLASH SCREEN ──────────────────────────────────────────────────────────────
+function FlashScreen(){
+  var r1=useState("Alle"),cat=r1[0],setCat=r1[1];
+  var r2=useState("de2sk"),dir=r2[0],setDir=r2[1];
+  var r3=useState(false),flipped=r3[0],setFlipped=r3[1];
+  var r4=useState(0),fkey=r4[0],setFkey=r4[1];
+  var r5=useState(function(){var p=loadProgress();return new Set(p.known||[]);}),known=r5[0],setKnown=r5[1];
+  var r6=useState(function(){var p=loadProgress();return new Set(p.learning||[]);}),learning=r6[0],setLearning=r6[1];
+  var r7=useState(false),ankiMode=r7[0],setAnkiMode=r7[1];
+  var r8=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),shuffled=r8[0],setShuffled=r8[1];
+  var r9=useState(0),pos=r9[0],setPos=r9[1];
+  var r10=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),srQ=r10[0],setSrQ=r10[1];
+  var r11=useState(0),srPos=r11[0],setSrPos=r11[1];
+  var r12=useState(false),lit=r12[0],setLit=r12[1];
 
-function getGraphicType(subject, lightingPhrase) {
-  const s = subject.toLowerCase();
-  const l = lightingPhrase.toLowerCase();
-  // Lighting-first overrides
-  if (l.includes('nacht') || l.includes('dämmerung') || l.includes('neon') || l.includes('scheinwerfer')) return 'night';
-  if (l.includes('halbdunkel') || l.includes('schatten') || l.includes('regen')) return 'shadow';
-  if (l.includes('gegenlicht')) return 'silhouette';
-  // Subject-based
-  if (s.includes('spiegelung'))                                                     return 'mirror';
-  if (s.includes('schatten'))                                                        return 'shadow';
-  if (s.includes('linie') || s.includes('weg') || s.includes('grenze') || s.includes('rand')) return 'perspective';
-  if (s.includes('muster') || s.includes('struktur') || s.includes('textur'))       return 'grid';
-  if (s.includes('lichtquelle'))                                                     return 'light';
-  if (s.includes('silhouette'))                                                      return 'silhouette';
-  if (s.includes('fenster') || s.includes('tür') || s.includes('zwischenraum'))     return 'frame';
-  if (s.includes('bewegung') || s.includes('geste') || s.includes('begegnung'))     return 'scatter';
-  if (s.includes('stille') || s.includes('leere') || s.includes('warten'))          return 'minimal';
-  if (l.includes('morgen') || l.includes('abend') || l.includes('kerzen'))          return 'warm_lines';
-  if (l.includes('diffus') || l.includes('weich') || l.includes('bewölkt'))         return 'soft_grid';
-  return 'minimal';
-}
+  var poolIdx=[];
+  for(var i=0;i<shuffled.length;i++){var vi=shuffled[i];if(cat==="Alle"||VOCAB[vi].cat===cat)poolIdx.push(vi);}
+  var safePos=poolIdx.length?pos%poolIdx.length:0;
+  var safeAnki=srQ.length?srPos%srQ.length:0;
+  var card=ankiMode?VOCAB[srQ[safeAnki]]:VOCAB[poolIdx[safePos]];
+  if(!card)card=VOCAB[0];
+  var cur=ankiMode?safeAnki:safePos;
+  var tot=ankiMode?srQ.length:poolIdx.length;
+  var front=dir==="de2sk"?card.de:card.sk;
+  var back=dir==="de2sk"?card.sk:card.de;
+  var tips=getPronTips(card.sk);
+  var gPct=Math.round(known.size/VOCAB.length*100);
 
-// SVG namespace helper
-const SVG_NS = 'http://www.w3.org/2000/svg';
-function el(tag, attrs) {
-  const e = document.createElementNS(SVG_NS, tag);
-  Object.entries(attrs).forEach(([k,v]) => e.setAttribute(k, v));
-  return e;
-}
-
-// W=390 H=844 — matches viewBox
-const W = 390, H = 844;
-
-function buildGraphic(type, seed, inkColor) {
-  const frag = document.createDocumentFragment();
-  const R = saltedFloats(seed, 'gfx', 60); // 60 random values for graphic use
-  let ri = 0; // index into R
-  const r = () => R[ri++ % R.length];
-
-  const s = (opacity) => String(opacity);
-
-  switch (type) {
-
-    case 'shadow': {
-      // Dense horizontal bands fading upward, a single light-source dot + shadow rays
-      const lightX = 60 + r() * 270;
-      const lightY = 40 + r() * 120;
-      // Shadow rays
-      [0.06, 0.045, 0.03].forEach((op, i) => {
-        const angle = 0.3 + r() * 0.4;
-        const len = 600 + r() * 200;
-        const x2 = lightX + Math.cos(Math.PI * (0.8 + angle)) * len;
-        const y2 = lightY + Math.sin(Math.PI * (0.8 + angle)) * len;
-        frag.appendChild(el('line', { x1:lightX, y1:lightY, x2, y2, stroke:inkColor, 'stroke-width':'0.5', opacity:s(op) }));
-      });
-      // Horizontal lines — dense bottom, fading up
-      const bandOpacities = [0.07, 0.06, 0.055, 0.05, 0.04, 0.035, 0.028, 0.022, 0.016, 0.01];
-      bandOpacities.forEach((op, i) => {
-        const y = H - 20 - i * (55 + r() * 20);
-        if (y > 0) frag.appendChild(el('line', { x1:0, y1:y, x2:W, y2:y, stroke:inkColor, 'stroke-width':'0.4', opacity:s(op) }));
-      });
-      // Light dot
-      frag.appendChild(el('circle', { cx:lightX, cy:lightY, r:'1.8', fill:inkColor, opacity:'0.2' }));
-      frag.appendChild(el('circle', { cx:lightX, cy:lightY, r:'7',   fill:'none', stroke:inkColor, 'stroke-width':'0.4', opacity:'0.07' }));
-      frag.appendChild(el('circle', { cx:lightX, cy:lightY, r:'18',  fill:'none', stroke:inkColor, 'stroke-width':'0.3', opacity:'0.035' }));
-      break;
-    }
-
-    case 'mirror': {
-      // Horizontal mirror axis, vertical lines above+below, ripple horizontals below, sun+reflection
-      const axisY = 360 + r() * 120;
-      frag.appendChild(el('line', { x1:0, y1:axisY, x2:W, y2:axisY, stroke:inkColor, 'stroke-width':'0.6', opacity:'0.1' }));
-      const sunX = 80 + r() * 230;
-      const sunY = 50 + r() * 80;
-      // Vertical lines above — converge toward axis
-      for (let i = 0; i < 8; i++) {
-        const x = 40 + i * 44;
-        const topY = sunY + r() * (axisY - sunY - 40);
-        frag.appendChild(el('line', { x1:x, y1:axisY, x2:x + (r()-0.5)*16, y2:topY, stroke:inkColor, 'stroke-width':'0.4', opacity:'0.05' }));
-        // Mirror below
-        const botY = axisY + (axisY - topY) * 0.75;
-        frag.appendChild(el('line', { x1:x, y1:axisY, x2:x + (r()-0.5)*12, y2:Math.min(botY, H-20), stroke:inkColor, 'stroke-width':'0.3', opacity:'0.03' }));
-      }
-      // Ripple horizontals below axis
-      for (let i = 1; i <= 5; i++) {
-        const y = axisY + i * (38 + r()*12);
-        if (y < H - 20) frag.appendChild(el('line', { x1:30, y1:y, x2:W-30, y2:y, stroke:inkColor, 'stroke-width':'0.3', opacity:s(0.032 - i*0.005) }));
-      }
-      // Sun dot
-      frag.appendChild(el('circle', { cx:sunX, cy:sunY, r:'2',  fill:inkColor, opacity:'0.18' }));
-      frag.appendChild(el('circle', { cx:sunX, cy:sunY, r:'9',  fill:'none', stroke:inkColor, 'stroke-width':'0.4', opacity:'0.06' }));
-      frag.appendChild(el('circle', { cx:sunX, cy:sunY, r:'20', fill:'none', stroke:inkColor, 'stroke-width':'0.25', opacity:'0.03' }));
-      // Reflection dot
-      const refY = axisY + (axisY - sunY) * 0.8;
-      if (refY < H - 10) {
-        frag.appendChild(el('circle', { cx:sunX, cy:refY, r:'1.5', fill:inkColor, opacity:'0.07' }));
-        frag.appendChild(el('circle', { cx:sunX, cy:refY, r:'7',   fill:'none', stroke:inkColor, 'stroke-width':'0.3', opacity:'0.025' }));
-      }
-      break;
-    }
-
-    case 'perspective': {
-      // Two lines converging to a vanishing point, cross-lines getting denser
-      const vpX = W * (0.35 + r() * 0.3);
-      const vpY = H * (0.25 + r() * 0.2);
-      frag.appendChild(el('line', { x1:0,   y1:H, x2:vpX, y2:vpY, stroke:inkColor, 'stroke-width':'0.6', opacity:'0.1' }));
-      frag.appendChild(el('line', { x1:W,   y1:H, x2:vpX, y2:vpY, stroke:inkColor, 'stroke-width':'0.6', opacity:'0.1' }));
-      // Cross-lines
-      const steps = [0.95, 0.88, 0.80, 0.71, 0.62, 0.52, 0.42];
-      steps.forEach((t, i) => {
-        const y = vpY + t * (H - vpY);
-        const lx = vpX - t * vpX;
-        const rx = vpX + t * (W - vpX);
-        const op = 0.065 - i * 0.007;
-        frag.appendChild(el('line', { x1:lx, y1:y, x2:rx, y2:y, stroke:inkColor, 'stroke-width':'0.35', opacity:s(Math.max(op,0.01)) }));
-      });
-      // VP dot
-      frag.appendChild(el('circle', { cx:vpX, cy:vpY, r:'1.2', fill:inkColor, opacity:'0.22' }));
-      frag.appendChild(el('circle', { cx:vpX, cy:vpY, r:'5',   fill:'none', stroke:inkColor, 'stroke-width':'0.3', opacity:'0.08' }));
-      break;
-    }
-
-    case 'grid': {
-      // Dot grid fading toward center
-      const cols = [24,60,96,132,168,204,240,276,312,348];
-      const rows = [60,120,180,600,660,720,780,830];
-      cols.forEach(cx => rows.forEach(cy => {
-        const dx = (cx - W/2) / (W/2);
-        const dy = (cy - H/2) / (H/2);
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        const op = Math.max(0.01, 0.22 * dist - 0.02);
-        frag.appendChild(el('circle', { cx, cy, r:'0.9', fill:inkColor, opacity:s(op) }));
-      }));
-      // Frame lines
-      frag.appendChild(el('rect', { x:20, y:20, width:W-40, height:H-40, fill:'none', stroke:inkColor, 'stroke-width':'0.5', opacity:'0.06', rx:'2' }));
-      frag.appendChild(el('rect', { x:32, y:32, width:W-64, height:H-64, fill:'none', stroke:inkColor, 'stroke-width':'0.3', opacity:'0.03', rx:'1' }));
-      break;
-    }
-
-    case 'night': {
-      // Scattered small dots like stars/lights, denser at edges
-      for (let i = 0; i < 40; i++) {
-        const x = r() * W;
-        const y = r() * H;
-        const dx = (x - W/2) / (W/2);
-        const dy = (y - H/2) / (H/2);
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        const op = 0.05 + dist * 0.18;
-        const rad = 0.6 + r() * 0.8;
-        frag.appendChild(el('circle', { cx:x, cy:y, r:String(rad), fill:inkColor, opacity:s(Math.min(op, 0.25)) }));
-      }
-      // A single brighter point
-      const bx = 60 + r() * 270, by = 60 + r() * 200;
-      frag.appendChild(el('circle', { cx:bx, cy:by, r:'2',  fill:inkColor, opacity:'0.28' }));
-      frag.appendChild(el('circle', { cx:bx, cy:by, r:'8',  fill:'none', stroke:inkColor, 'stroke-width':'0.35', opacity:'0.08' }));
-      frag.appendChild(el('circle', { cx:bx, cy:by, r:'20', fill:'none', stroke:inkColor, 'stroke-width':'0.2', opacity:'0.04' }));
-      break;
-    }
-
-    case 'silhouette': {
-      // Strong vertical line off-center, thin horizontal, diagonal accent
-      const vx = 80 + r() * 230;
-      frag.appendChild(el('line', { x1:vx, y1:0,   x2:vx, y2:H,   stroke:inkColor, 'stroke-width':'0.7', opacity:'0.1' }));
-      frag.appendChild(el('line', { x1:vx, y1:0,   x2:vx+6, y2:H, stroke:inkColor, 'stroke-width':'0.3', opacity:'0.04' }));
-      const hy = 200 + r() * 400;
-      frag.appendChild(el('line', { x1:0,  y1:hy,  x2:W,   y2:hy, stroke:inkColor, 'stroke-width':'0.4', opacity:'0.06' }));
-      // Light source behind (gegenlicht)
-      const lx = 20 + r() * (W-40), ly = 20 + r() * 120;
-      frag.appendChild(el('circle', { cx:lx, cy:ly, r:'3',  fill:inkColor, opacity:'0.14' }));
-      frag.appendChild(el('circle', { cx:lx, cy:ly, r:'14', fill:'none', stroke:inkColor, 'stroke-width':'0.35', opacity:'0.05' }));
-      frag.appendChild(el('circle', { cx:lx, cy:ly, r:'30', fill:'none', stroke:inkColor, 'stroke-width':'0.2', opacity:'0.025' }));
-      frag.appendChild(el('circle', { cx:lx, cy:ly, r:'60', fill:'none', stroke:inkColor, 'stroke-width':'0.15', opacity:'0.015' }));
-      break;
-    }
-
-    case 'frame': {
-      // Nested rectangles, slightly offset — window/door frame feel
-      const pad = [20, 36, 52, 72];
-      const opacities = [0.07, 0.05, 0.035, 0.02];
-      pad.forEach((p, i) => {
-        const shift = (r() - 0.5) * 6;
-        frag.appendChild(el('rect', {
-          x: p + shift, y: p,
-          width: W - p*2 - Math.abs(shift),
-          height: H - p*2,
-          fill:'none', stroke:inkColor,
-          'stroke-width': String(0.5 - i*0.07),
-          opacity: s(opacities[i]),
-          rx:'1'
-        }));
-      });
-      // Single vertical center line
-      frag.appendChild(el('line', { x1:W/2, y1:0, x2:W/2, y2:H, stroke:inkColor, 'stroke-width':'0.3', opacity:'0.04' }));
-      break;
-    }
-
-    case 'scatter': {
-      // Random short lines — movement, gesture feel
-      for (let i = 0; i < 18; i++) {
-        const x = r() * W;
-        const y = r() * H;
-        const len = 12 + r() * 40;
-        const angle = r() * Math.PI * 2;
-        const x2 = x + Math.cos(angle) * len;
-        const y2 = y + Math.sin(angle) * len;
-        const op = 0.03 + r() * 0.06;
-        frag.appendChild(el('line', { x1:x, y1:y, x2, y2, stroke:inkColor, 'stroke-width':'0.4', opacity:s(op) }));
-      }
-      // A few dots
-      for (let i = 0; i < 6; i++) {
-        frag.appendChild(el('circle', { cx:r()*W, cy:r()*H, r:String(0.7 + r()*0.8), fill:inkColor, opacity:s(0.08 + r()*0.08) }));
-      }
-      break;
-    }
-
-    case 'light': {
-      // Radiating lines from a point, like a bare bulb
-      const lx = 80 + r() * 230, ly = 60 + r() * 160;
-      const rayCount = 12;
-      for (let i = 0; i < rayCount; i++) {
-        const angle = (i / rayCount) * Math.PI * 2;
-        const len = 120 + r() * 300;
-        frag.appendChild(el('line', {
-          x1:lx, y1:ly,
-          x2: lx + Math.cos(angle) * len,
-          y2: ly + Math.sin(angle) * len,
-          stroke:inkColor, 'stroke-width':'0.35', opacity:'0.04'
-        }));
-      }
-      frag.appendChild(el('circle', { cx:lx, cy:ly, r:'2',  fill:inkColor, opacity:'0.22' }));
-      frag.appendChild(el('circle', { cx:lx, cy:ly, r:'10', fill:'none', stroke:inkColor, 'stroke-width':'0.4', opacity:'0.07' }));
-      frag.appendChild(el('circle', { cx:lx, cy:ly, r:'24', fill:'none', stroke:inkColor, 'stroke-width':'0.25', opacity:'0.04' }));
-      frag.appendChild(el('circle', { cx:lx, cy:ly, r:'50', fill:'none', stroke:inkColor, 'stroke-width':'0.15', opacity:'0.02' }));
-      break;
-    }
-
-    case 'warm_lines': {
-      // Gentle diagonal lines — like warm light through blinds
-      const angle = 0.18 + r() * 0.12;
-      const gap = 48 + r() * 28;
-      for (let i = 0; i < 14; i++) {
-        const offset = i * gap - 200;
-        const op = 0.02 + (i % 3 === 0 ? 0.025 : 0);
-        frag.appendChild(el('line', {
-          x1: offset, y1: 0,
-          x2: offset + H * Math.tan(angle), y2: H,
-          stroke:inkColor, 'stroke-width':'0.5', opacity:s(op)
-        }));
-      }
-      // Small warm dot
-      const dx = 60 + r() * 270, dy = 60 + r() * 160;
-      frag.appendChild(el('circle', { cx:dx, cy:dy, r:'1.5', fill:inkColor, opacity:'0.16' }));
-      frag.appendChild(el('circle', { cx:dx, cy:dy, r:'7',   fill:'none', stroke:inkColor, 'stroke-width':'0.3', opacity:'0.05' }));
-      break;
-    }
-
-    case 'soft_grid': {
-      // Very faint regular grid — calm, diffuse feel
-      const gapX = 44, gapY = 44;
-      for (let x = gapX; x < W; x += gapX) {
-        frag.appendChild(el('line', { x1:x, y1:0, x2:x, y2:H, stroke:inkColor, 'stroke-width':'0.3', opacity:'0.03' }));
-      }
-      for (let y = gapY; y < H; y += gapY) {
-        frag.appendChild(el('line', { x1:0, y1:y, x2:W, y2:y, stroke:inkColor, 'stroke-width':'0.3', opacity:'0.025' }));
-      }
-      break;
-    }
-
-    case 'minimal':
-    default: {
-      // Almost nothing — just a single thin horizontal line and one dot
-      const y = H * (0.55 + r() * 0.2);
-      frag.appendChild(el('line', { x1:40, y1:y, x2:W-40, y2:y, stroke:inkColor, 'stroke-width':'0.4', opacity:'0.06' }));
-      const dx = 60 + r() * 270, dy = 60 + r() * 160;
-      frag.appendChild(el('circle', { cx:dx, cy:dy, r:'1.2', fill:inkColor, opacity:'0.12' }));
-      break;
+  function flip(){setFkey(function(k){return k+1;});setFlipped(function(f){return !f;});}
+  function switchCat(c){setCat(c);setPos(0);setFlipped(false);setFkey(function(k){return k+1;});setAnkiMode(false);setShuffled(shuffle(VOCAB.map(function(_,i){return i;})));}
+  function nextCard(mark){
+    var sk=card.sk,nk=new Set(setArr(known)),nl=new Set(setArr(learning));
+    if(mark==="known")nk.add(sk);else nl.add(sk);
+    setKnown(nk);setLearning(nl);saveProgress(nk,nl);recordActivity(mark==="known");
+    setFlipped(false);setFkey(function(k){return k+1;});
+    if(ankiMode){
+      var ci=srQ[safeAnki],iv=mark==="known"?Math.floor(Math.random()*11)+20:Math.floor(Math.random()*8)+3;
+      setSrQ(function(q){var nq=q.slice();nq.splice(srPos+iv,0,ci);return nq;});
+      setTimeout(function(){setSrPos(function(p){return p+1;});},120);
+    }else{
+      var pl=poolIdx.length;setTimeout(function(){setPos(function(p){return pl?(p+1)%pl:0;});},120);
     }
   }
-  return frag;
+  function tapSpeak(e){e.stopPropagation();speak(card.sk);setLit(true);setTimeout(function(){setLit(false);},600);}
+
+  return h("div",{style:{padding:"20px 20px 8px"}},
+    h("div",{style:{display:"flex",gap:6,marginBottom:12,alignItems:"center"}},
+      h("button",{onClick:function(){setDir("de2sk");setFlipped(false);setFkey(function(k){return k+1;});},style:pill(dir==="de2sk")},"🇩🇪 → 🇸🇰"),
+      h("button",{onClick:function(){setDir("sk2de");setFlipped(false);setFkey(function(k){return k+1;});},style:pill(dir==="sk2de")},"🇸🇰 → 🇩🇪"),
+      h("button",{onClick:function(){setSrQ(shuffle(VOCAB.map(function(_,i){return i;})));setSrPos(0);setAnkiMode(function(a){return !a;});setFlipped(false);setFkey(function(k){return k+1;});},
+        style:{marginLeft:"auto",padding:"7px 14px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:13,cursor:"pointer",background:ankiMode?GS:"transparent",color:ankiMode?GOLD:GR}},"🧠 Anki")
+    ),
+    h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:10,marginBottom:10}},
+      CATS.map(function(c){return h("button",{key:c,onClick:function(){switchCat(c);},style:pill(!ankiMode&&cat===c)},c);})
+    ),
+    h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:16}},
+      h("div",{style:{flex:1,height:3,background:BR,borderRadius:2}},
+        h("div",{style:{height:"100%",width:Math.round((cur+1)/Math.max(tot,1)*100)+"%",background:GOLD,borderRadius:2,transition:"width 0.4s"}})
+      ),
+      h("span",{style:{fontSize:12,color:LT,flexShrink:0}},(cur+1)+"/"+tot)
+    ),
+    h("div",{key:fkey,className:"fi",onClick:flip,style:{background:WH,borderRadius:28,boxShadow:SH,cursor:"pointer",padding:"32px 24px",textAlign:"center",position:"relative",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:240,marginBottom:16}},
+      h("div",{style:{position:"absolute",top:14,left:14}},
+        h("span",{style:{fontSize:11,fontWeight:500,color:LT,background:BR,padding:"3px 9px",borderRadius:999}},dir==="de2sk"?(flipped?"🇸🇰":"🇩🇪"):(flipped?"🇩🇪":"🇸🇰"))
+      ),
+      h("div",{style:{position:"absolute",top:12,right:12}},
+        h("button",{onClick:tapSpeak,style:{width:38,height:38,borderRadius:999,cursor:"pointer",flexShrink:0,border:"1.5px solid "+(lit?GOLD:BR),background:lit?GS:WH,display:"flex",alignItems:"center",justifyContent:"center"}},
+          IconSpeak(lit?GOLD:GR))
+      ),
+      h("div",{style:{fontSize:11,fontWeight:500,color:GOLD,background:GS,padding:"3px 10px",borderRadius:999,marginBottom:16}},card.cat),
+      h("div",{style:{fontSize:front.length>14?28:42,fontWeight:300,fontFamily:"'DM Serif Display',serif",color:flipped?GR:BLK,lineHeight:1.25,marginBottom:8}},flipped?back:front),
+      !flipped?h("div",{style:{fontSize:13,color:LT}},"Tippe zum Umdrehen"):null,
+      flipped?h("div",{style:{fontSize:14,color:GR,fontStyle:"italic",marginTop:4,maxWidth:260}},"("+card.ex+")"):null,
+      flipped&&tips.length?h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",justifyContent:"center",marginTop:8}},
+        tips.map(function(t){return h("span",{key:t,style:{fontSize:11,color:GOLD,background:GS,padding:"2px 8px",borderRadius:999}},t);})):null
+    ),
+    flipped
+      ?h("div",{style:{display:"flex",gap:10,marginBottom:12}},
+          h("button",{onClick:function(){nextCard("learning");},style:{flex:1,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"1.5px solid rgba(255,59,48,0.2)",background:"rgba(255,59,48,0.05)",color:RD,fontSize:15,fontWeight:500,cursor:"pointer"}},"✕ Schwer"),
+          h("button",{onClick:function(){nextCard("known");},style:{flex:2,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"none",background:GOLD,color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer",boxShadow:SGH}},"Einfach ✓")
+        )
+      :h("div",{style:{marginBottom:12}},
+          h("button",{onClick:flip,style:{width:"100%",padding:"15px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:16,fontWeight:600,cursor:"pointer",background:GOLD,color:"#fff",boxShadow:SGH}},"Lösung anzeigen")
+        ),
+    h("div",{style:{display:"flex",justifyContent:"center",gap:32,paddingBottom:4}},
+      h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:GRN}},known.size),h("div",{style:{fontSize:11,color:LT}},"Gelernt")),
+      h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:GOLD}},gPct+"%"),h("div",{style:{fontSize:11,color:LT}},"Gesamt")),
+      h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:RD}},learning.size),h("div",{style:{fontSize:11,color:LT}},"Üben"))
+    )
+  );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// GENERATE
-// ═══════════════════════════════════════════════════════════════════════════
+// ── QUIZ SCREEN ───────────────────────────────────────────────────────────────
+function QuizScreen(){
+  var r1=useState("Alle"),cat=r1[0],setCat=r1[1];
+  var r2=useState("de2sk"),dir=r2[0],setDir=r2[1];
+  var r3=useState(null),q=r3[0],setQ=r3[1];
+  var r4=useState(null),chosen=r4[0],setChosen=r4[1];
+  var r5=useState({r:0,w:0}),score=r5[0],setScore=r5[1];
+  var r6=useState(0),qkey=r6[0],setQkey=r6[1];
 
-function generateToday() {
-  const seed    = getViennaDateString();
-  const subject = saltedPick(subjects,     seed, 'subject');
-  const lighting= saltedPick(lightings,    seed, 'lighting');
-  const persp   = saltedPick(perspectives, seed, 'perspective');
-  const comp    = saltedPick(compositions, seed, 'composition');
-  const refl    = saltedPick(reflections,  seed, 'reflection');
-  const quote   = saltedPick(quotes,       seed, 'quote');
-  const tmpl    = saltedPick(templates,    seed, 'template');
-  const gtype   = getGraphicType(subject, lighting.phrase);
-  return { sentence: tmpl(subject, lighting.phrase, persp, comp), refl, quote, mood: lighting.mood, seed, gtype };
-}
-
-// ── Timer ─────────────────────────────────────────────────────────────────────
-function getSecondsUntilNext6() {
-  const now = new Date();
-  const s = now.toLocaleString('en-CA', {
-    timeZone:'Europe/Vienna', hour12:false,
-    year:'numeric', month:'2-digit', day:'2-digit',
-    hour:'2-digit', minute:'2-digit', second:'2-digit'
-  });
-  const [dp,tp] = s.split(', ');
-  const [year,month,day] = dp.split('-').map(Number);
-  const [hour,min,sec]   = tp.split(':').map(Number);
-  const dec = hour + min/60 + sec/3600;
-  let tY=year, tM=month, tD=day;
-  if (dec >= 6) {
-    const t = new Date(Date.UTC(year,month-1,day+1));
-    tY=t.getUTCFullYear(); tM=t.getUTCMonth()+1; tD=t.getUTCDate();
-  }
-  const sample  = new Date(Date.UTC(tY,tM-1,tD,5,0,0));
-  const sVienna = new Date(sample.toLocaleString('en-US',{timeZone:'Europe/Vienna'}));
-  const off     = -(sample-sVienna)/3_600_000;
-  const next6   = new Date(Date.UTC(tY,tM-1,tD,6-off,0,0));
-  return Math.max(0, Math.floor((next6-now)/1000));
-}
-
-function formatTimer(t) {
-  const h=Math.floor(t/3600), m=Math.floor((t%3600)/60), s=t%60;
-  return `${h}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
-}
-
-function formatDateLabel(seed) {
-  const [y,mo,d] = seed.split('-').map(Number);
-  const months=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
-  return `${d}. ${months[mo-1]} ${y}`;
-}
-
-// ── DOM ───────────────────────────────────────────────────────────────────────
-const $prompt    = document.getElementById('prompt');
-const $refl      = document.getElementById('reflection');
-const $qText     = document.getElementById('quote-text');
-const $qAuth     = document.getElementById('quote-author');
-const $timer     = document.getElementById('timer');
-const $dateLbl   = document.getElementById('date-label');
-const $wrap      = document.getElementById('prompt-wrap');
-const $bgLayer   = document.getElementById('bg-layer');
-
-function nl2br(str) { return str.split('\n').join('<br>'); }
-
-function applyMoodColors(mood) {
-  const bg  = moodBg[mood]  || moodBg.neutral;
-  const ink = moodInk[mood] || moodInk.neutral;
-  document.body.style.background = bg;
-  document.documentElement.style.background = bg;
-  // Update CSS variables for text color consistency
-  document.documentElement.style.setProperty('--ink',   ink);
-  document.documentElement.style.setProperty('--muted', ink.replace('1C','6B').replace('17','65').replace('28','28'));
-}
-
-function render(data) {
-  $prompt.innerHTML = nl2br(data.sentence);
-  $refl.innerHTML   = nl2br(data.refl);
-  $qText.innerHTML  = nl2br(data.quote.text);
-  $qAuth.textContent = data.quote.author;
-  $dateLbl.textContent = formatDateLabel(data.seed);
-  applyMoodColors(data.mood);
-
-  // Rebuild SVG graphic
-  const ink = moodInk[data.mood] || moodInk.neutral;
-  while ($bgLayer.firstChild) $bgLayer.removeChild($bgLayer.firstChild);
-  $bgLayer.appendChild(buildGraphic(data.gtype, data.seed, ink));
-}
-
-// ── Tick ──────────────────────────────────────────────────────────────────────
-let lastSeed = null;
-
-function tick() {
-  $timer.textContent = formatTimer(getSecondsUntilNext6());
-  const newSeed = getViennaDateString();
-  if (newSeed !== lastSeed) {
-    const data = generateToday();
-    if (lastSeed !== null) {
-      $wrap.classList.add('out');
-      setTimeout(() => { render(data); $wrap.classList.remove('out'); }, 550);
-    } else {
-      render(data);
+  function gen(){
+    var pool=cat==="Alle"?VOCAB:VOCAB.filter(function(v){return v.cat===cat;});
+    if(pool.length<4)return;
+    var c=pool[Math.floor(Math.random()*pool.length)];
+    var others=pool.filter(function(v){return v.sk!==c.sk;}).sort(function(){return Math.random()-0.5;}).slice(0,3);
+    var ws=[],opts;
+    if(dir==="de2sk"){
+      for(var i=0;i<others.length;i++)ws.push(others[i].sk);
+      opts=ws.concat([c.sk]).sort(function(){return Math.random()-0.5;});
+      setQ({question:c.de,answer:c.sk,options:opts,card:c});
+    }else{
+      for(var i=0;i<others.length;i++)ws.push(others[i].de);
+      opts=ws.concat([c.de]).sort(function(){return Math.random()-0.5;});
+      setQ({question:c.sk,answer:c.de,options:opts,card:c});
     }
-    lastSeed = newSeed;
+    setChosen(null);setQkey(function(k){return k+1;});
   }
+  useEffect(function(){gen();},[cat,dir]);
+
+  function pick(opt){
+    if(chosen!==null)return;
+    setChosen(opt);var ok=opt===q.answer;
+    if(ok)setScore(function(s){return{r:s.r+1,w:s.w};});
+    else setScore(function(s){return{r:s.r,w:s.w+1};});
+    recordActivity(ok);
+  }
+  var tot=score.r+score.w,pct=tot?Math.round(score.r/tot*100):0;
+
+  return h("div",{style:{padding:"20px 20px 24px"}},
+    h("div",{style:{display:"flex",gap:6,marginBottom:12}},
+      h("button",{onClick:function(){setDir("de2sk");setScore({r:0,w:0});},style:pill(dir==="de2sk")},"🇩🇪 → 🇸🇰"),
+      h("button",{onClick:function(){setDir("sk2de");setScore({r:0,w:0});},style:pill(dir==="sk2de")},"🇸🇰 → 🇩🇪")
+    ),
+    h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:16}},
+      CATS.map(function(c){return h("button",{key:c,onClick:function(){setCat(c);setScore({r:0,w:0});},style:pill(cat===c)},c);})
+    ),
+    h("div",{style:{display:"flex",gap:10,marginBottom:16}},
+      [{v:score.r,l:"Richtig",col:GRN},{v:pct+"%",l:"Quote",col:GOLD},{v:score.w,l:"Falsch",col:RD}].map(function(item){
+        return h("div",{key:item.l,style:{flex:1,background:WH,borderRadius:14,padding:"12px 8px",textAlign:"center",boxShadow:SSH}},
+          h("div",{style:{fontSize:20,fontWeight:600,color:item.col}},item.v),
+          h("div",{style:{fontSize:11,color:LT}},item.l));
+      })
+    ),
+    q?h("div",{key:qkey},
+      h("div",{style:card({textAlign:"center",padding:"28px 20px",marginBottom:16})},
+        h("div",{style:{fontSize:12,color:LT,marginBottom:12}},dir==="de2sk"?"Wie heißt auf Slowakisch…":"Was bedeutet auf Deutsch…"),
+        h("div",{style:{fontSize:36,fontWeight:300,fontFamily:"'DM Serif Display',serif",color:BLK,lineHeight:1.2,marginBottom:8}},q.question),
+        h("span",{style:{fontSize:11,color:GOLD,background:GS,padding:"3px 10px",borderRadius:999}},q.card.cat)
+      ),
+      h("div",{style:{display:"flex",flexDirection:"column",gap:10,marginBottom:12}},
+        q.options.map(function(opt){
+          var isC=opt===q.answer,isP=chosen===opt;
+          return h("button",{key:opt,onClick:function(){pick(opt);},style:{
+            padding:"16px 20px",borderRadius:14,fontFamily:"inherit",textAlign:"left",
+            background:chosen?(isC?"rgba(52,199,89,0.08)":isP?"rgba(255,59,48,0.07)":WH):WH,
+            border:"1.5px solid "+(chosen?(isC?GRN:isP?RD:BR):BR),
+            color:chosen?(isC?GRN:isP?RD:BLK):BLK,
+            fontSize:15,fontWeight:chosen&&isC?600:400,cursor:chosen?"default":"pointer",boxShadow:SSH}},
+            (chosen&&isC?"✓ ":(chosen&&isP?"✕ ":""))+opt);
+        }),
+        !chosen?h("button",{onClick:function(){pick("");},style:{fontSize:13,color:LT,background:"none",border:"none",cursor:"pointer",fontFamily:"inherit",textAlign:"center",padding:8}},"Ich weiß es nicht"):null
+      ),
+      chosen?h("div",null,
+        h("div",{style:{background:chosen===q.answer?"rgba(52,199,89,0.08)":"rgba(255,59,48,0.07)",border:"1px solid "+(chosen===q.answer?"rgba(52,199,89,0.25)":"rgba(255,59,48,0.2)"),borderRadius:14,padding:"14px 20px",textAlign:"center",marginBottom:12}},
+          h("div",{style:{fontSize:15,fontWeight:600,color:chosen===q.answer?GRN:RD}},chosen===q.answer?"Richtig! 🎉":"Leider falsch."),
+          h("div",{style:{fontSize:13,color:GR,marginTop:4}},q.card.de+" = "+q.card.sk)
+        ),
+        h("button",{onClick:gen,style:{width:"100%",padding:"15px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:16,fontWeight:600,cursor:"pointer",background:GOLD,color:"#fff",boxShadow:SGH}},"Weiter")
+      ):null
+    ):null
+  );
 }
 
-tick();
-setInterval(tick, 1000);
+// ── KNOWLEDGE SCREEN ──────────────────────────────────────────────────────────
+function KnowledgeScreen(){
+  var r1=useState("Grammatik"),sec=r1[0],setSec=r1[1];
+  var r2=useState(0),open=r2[0],setOpen=r2[1];
+  var r3=useState("Alle"),pf=r3[0],setPf=r3[1];
+  var r4=useState([{role:"assistant",content:"Ahoj! Ich bin dein KI-Tutor 🇸🇰 Womit kann ich helfen?"}]),msgs=r4[0],setMsgs=r4[1];
+  var r5=useState(""),inp=r5[0],setInp=r5[1];
+  var r6=useState(false),load=r6[0],setLoad=r6[1];
+  var chatRef=useRef(null);
+  var secs=["Grammatik","Phrasen","KI-Tutor"];
+  var pfCtx=["Alle"];
+  for(var i=0;i<PHRASES.length;i++){if(pfCtx.indexOf(PHRASES[i].context)===-1)pfCtx.push(PHRASES[i].context);}
+  var fp=pf==="Alle"?PHRASES:PHRASES.filter(function(p){return p.context===pf;});
+  useEffect(function(){if(chatRef.current)chatRef.current.scrollTop=chatRef.current.scrollHeight;},[msgs]);
+
+  function sendMsg(){
+    if(!inp.trim()||load)return;
+    var m={role:"user",content:inp},h2=msgs.concat([m]);
+    setMsgs(h2);setInp("");setLoad(true);
+    fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:700,
+        system:"Du bist ein freundlicher Slowakisch-Lehrer für Deutschsprachige. Antworte kurz auf Deutsch. Hebe slowakische Wörter mit **Fettschrift** hervor.",
+        messages:h2.map(function(x){return{role:x.role,content:x.content};})})
+    }).then(function(r){return r.json();}).then(function(d){
+      var txt=(d.content||[]).map(function(b){return b.text||"";}).join("")||"Fehler.";
+      setMsgs(function(hh){return hh.concat([{role:"assistant",content:txt}]);});setLoad(false);
+    }).catch(function(){setMsgs(function(hh){return hh.concat([{role:"assistant",content:"Verbindungsfehler."}]);});setLoad(false);});
+  }
+
+  function renderMsg(txt){
+    var parts=txt.split("**"),out=[];
+    for(var i=0;i<parts.length;i++){
+      if(i%2===1)out.push(h("strong",{key:i,style:{color:GOLD}},parts[i]));
+      else out.push(parts[i]);
+    }
+    return out;
+  }
+
+  return h("div",{style:{display:"flex",flexDirection:"column",height:"100%"}},
+    h("div",{style:{padding:"16px 20px 0",display:"flex",borderBottom:"1px solid "+BR}},
+      secs.map(function(s){return h("button",{key:s,onClick:function(){setSec(s);},style:{padding:"10px 16px",background:"none",fontFamily:"inherit",border:"none",borderBottom:"2px solid "+(sec===s?GOLD:"transparent"),color:sec===s?GOLD:GR,fontSize:14,fontWeight:sec===s?600:400,cursor:"pointer"}},s);})
+    ),
+    h("div",{style:{flex:1,overflowY:"auto",padding:"16px 20px 32px"}},
+      sec==="Grammatik"?h("div",null,
+        GRAMMAR.map(function(g,i){return h("div",{key:i,style:{background:WH,borderRadius:16,overflow:"hidden",boxShadow:SSH,marginBottom:10}},
+          h("div",{onClick:function(){setOpen(open===i?-1:i);},style:{padding:"16px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer"}},
+            h("div",null,h("div",{style:{fontSize:15,fontWeight:500,color:BLK}},g.title),h("div",{style:{fontSize:12,color:GR,marginTop:2}},g.description)),
+            IconDown(LT)
+          ),
+          open===i?h("div",{style:{padding:"0 20px 20px",borderTop:"1px solid "+BR}},
+            h("table",{style:{width:"100%",borderCollapse:"collapse",marginTop:12}},
+              h("tbody",null,g.table.map(function(row,j){return h("tr",{key:j,style:{borderBottom:"1px solid "+BR}},h("td",{style:{padding:"8px 0",fontSize:13,color:GR}},row[0]),h("td",{style:{padding:"8px 0",fontSize:16,fontWeight:500,color:BLK,textAlign:"right"}},row[1]));}))
+            ),
+            h("div",{style:{marginTop:12,padding:"10px 14px",background:GS,borderRadius:10,borderLeft:"3px solid "+GOLD}},h("div",{style:{fontSize:12,color:GOLD}},"💡 "+g.tip))
+          ):null
+        );})
+      ):null,
+      sec==="Phrasen"?h("div",null,
+        h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:10,marginBottom:10}},
+          pfCtx.map(function(c){return h("button",{key:c,onClick:function(){setPf(c);},style:pill(pf===c)},c);})
+        ),
+        fp.map(function(p,i){return h("div",{key:i,style:{background:WH,borderRadius:14,padding:"14px 16px",boxShadow:SSH,display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
+          h("div",null,h("div",{style:{fontSize:16,color:BLK}},p.sk),h("div",{style:{fontSize:13,color:GR,marginTop:2}},p.de)),
+          h("button",{onClick:function(){speak(p.sk);},style:{width:38,height:38,borderRadius:999,cursor:"pointer",border:"1.5px solid "+BR,background:WH,display:"flex",alignItems:"center",justifyContent:"center"}},IconSpeak(GR))
+        );})
+      ):null,
+      sec==="KI-Tutor"?h("div",{style:{display:"flex",flexDirection:"column",gap:12}},
+        h("div",{ref:chatRef,style:{display:"flex",flexDirection:"column",gap:10,maxHeight:360,overflowY:"auto"}},
+          msgs.map(function(m,i){return h("div",{key:i,style:{alignSelf:m.role==="user"?"flex-end":"flex-start",maxWidth:"80%",padding:"10px 14px",fontSize:14,lineHeight:1.5,borderRadius:m.role==="user"?"18px 18px 4px 18px":"18px 18px 18px 4px",background:m.role==="user"?GOLD:WH,color:m.role==="user"?"#fff":BLK,boxShadow:SSH}},renderMsg(m.content));}),
+          load?h("div",{style:{alignSelf:"flex-start",padding:"10px 14px",background:WH,borderRadius:"18px 18px 18px 4px",color:LT,fontSize:13}},"✍️ …"):null
+        ),
+        h("div",{style:{display:"flex",gap:8}},
+          h("input",{value:inp,onChange:function(e){setInp(e.target.value);},onKeyDown:function(e){if(e.key==="Enter")sendMsg();},placeholder:"Nachricht…",style:{flex:1,padding:"12px 16px",borderRadius:999,border:"1.5px solid "+BR,fontSize:14,outline:"none",fontFamily:"inherit",background:WH,color:BLK}}),
+          h("button",{onClick:sendMsg,disabled:load,style:{width:44,height:44,borderRadius:999,background:GOLD,border:"none",cursor:"pointer",color:"#fff",fontSize:20,flexShrink:0}},"›")
+        ),
+        h("div",{style:{display:"flex",gap:6,flexWrap:"wrap"}},
+          ["Wie sage ich 'Ich bin müde'?","Erkläre die Verneinung","Übe mit mir"].map(function(s){
+            return h("button",{key:s,onClick:function(){setInp(s);},style:{fontSize:12,color:GOLD,background:GS,border:"none",borderRadius:999,padding:"6px 12px",cursor:"pointer",fontFamily:"inherit"}},s);
+          })
+        )
+      ):null
+    )
+  );
+}
+
+// ── PROGRESS SCREEN ───────────────────────────────────────────────────────────
+function ProgressScreen(){
+  var stats=loadStats(),prog=loadProgress(),known=new Set(prog.known||[]);
+  var plan=loadPlan(),tod=stats[todayKey()]||{seen:0,correct:0};
+  var r1=useState(plan.dailyGoal),goal=r1[0],setGoal=r1[1];
+  var r2=useState(false),saved=r2[0],setSaved=r2[1];
+  var totalSeen=objSum(stats,"seen"),totalOk=objSum(stats,"correct");
+  var acc=totalSeen?Math.round(totalOk/totalSeen*100):0;
+  var kPct=Math.round(known.size/VOCAB.length*100);
+  var streak=0,d2=new Date();
+  while(true){var k=d2.toISOString().slice(0,10),ss=stats[k];if(ss&&ss.seen>=plan.dailyGoal){streak++;d2.setDate(d2.getDate()-1);}else break;}
+  var days=[];
+  for(var i=0;i<14;i++){var dd=new Date();dd.setDate(dd.getDate()-(13-i));var dk=dd.toISOString().slice(0,10);var lbl=i===13?"Heute":dd.toLocaleDateString("de",{weekday:"short"}).slice(0,2);days.push({key:dk,lbl:lbl,data:stats[dk]||{seen:0,correct:0}});}
+  var maxS=plan.dailyGoal;
+  for(var i=0;i<days.length;i++){if(days[i].data.seen>maxS)maxS=days[i].data.seen;}
+  var catS={};
+  for(var i=0;i<VOCAB.length;i++){var v=VOCAB[i];if(!catS[v.cat])catS[v.cat]={t:0,k:0};catS[v.cat].t++;if(known.has(v.sk))catS[v.cat].k++;}
+  function saveG(){savePlan(Object.assign({},plan,{dailyGoal:goal}));setSaved(true);setTimeout(function(){setSaved(false);},2000);}
+
+  var dots=[];
+  for(var ii=0;ii<30;ii++){
+    var dd2=new Date();dd2.setDate(dd2.getDate()-(29-ii));
+    var hk=dd2.toISOString().slice(0,10),hs=stats[hk];
+    var iv=hs?Math.min(1,hs.seen/plan.dailyGoal):0;
+    var bg=iv===0?BR:iv<0.5?GM:iv<1?GOLD:GRN;
+    dots.push(h("div",{key:hk,style:{width:24,height:24,borderRadius:6,background:bg,border:"2px solid "+(hk===todayKey()?GOLD:"transparent")}}));
+  }
+
+  return h("div",{style:{padding:"24px 20px 48px"}},
+    h("div",{style:{fontSize:26,fontWeight:300,fontFamily:"'DM Serif Display',serif",color:BLK,marginBottom:24}},"Fortschritt"),
+    h("div",{style:card({display:"flex",alignItems:"center",gap:20,marginBottom:16})},
+      h("div",{style:{position:"relative",flexShrink:0}},
+        h(Ring,{pct:kPct,size:88,stroke:7}),
+        h("div",{style:{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}},h("div",{style:{fontSize:20,fontWeight:600,color:BLK}},kPct+"%"))
+      ),
+      h("div",{style:{flex:1}},
+        h("div",{style:{fontSize:22,fontWeight:600,color:BLK}},known.size,h("span",{style:{fontSize:14,fontWeight:400,color:LT}}," / "+VOCAB.length)),
+        h("div",{style:{fontSize:13,color:GR,marginTop:2}},"Wörter gelernt"),
+        h("div",{style:{display:"flex",gap:20,marginTop:12}},
+          h("div",null,h("div",{style:{display:"flex",alignItems:"center",gap:4}},h("span",null,"🔥"),h("span",{style:{fontSize:18,fontWeight:600,color:BLK}},streak)),h("div",{style:{fontSize:11,color:LT}},"Serie")),
+          h("div",null,h("div",{style:{fontSize:18,fontWeight:600,color:BLK}},tod.seen),h("div",{style:{fontSize:11,color:LT}},"Heute")),
+          h("div",null,h("div",{style:{fontSize:18,fontWeight:600,color:GRN}},acc+"%"),h("div",{style:{fontSize:11,color:LT}},"Genauigkeit"))
+        )
+      )
+    ),
+    h("div",{style:card({marginBottom:16})},h("div",{style:label()},"LETZTE 30 TAGE"),h("div",{style:{display:"flex",flexWrap:"wrap",gap:5}},dots)),
+    h("div",{style:card({marginBottom:16})},
+      h("div",{style:label()},"LETZTE 14 TAGE"),
+      h("div",{style:{display:"flex",alignItems:"flex-end",gap:4,height:72}},
+        days.map(function(day){var ht=Math.round(day.data.seen/maxS*68);var gr=day.data.seen>=plan.dailyGoal,isT=day.key===todayKey();
+          return h("div",{key:day.key,style:{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3}},
+            h("div",{style:{width:"100%",display:"flex",flexDirection:"column",justifyContent:"flex-end",height:68}},h("div",{style:{width:"100%",height:Math.max(ht,2),background:gr?GRN:isT?GOLD:BR,borderRadius:"3px 3px 0 0"}})),
+            h("div",{style:{fontSize:9,color:isT?GOLD:LT,fontFamily:"monospace"}},day.lbl));
+        })
+      )
+    ),
+    h("div",{style:card({marginBottom:16})},
+      h("div",{style:label()},"NACH THEMA"),
+      Object.keys(catS).map(function(cat){var ct=catS[cat],p=Math.round(ct.k/ct.t*100);
+        return h("div",{key:cat,style:{marginBottom:14}},
+          h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:5}},h("span",{style:{fontSize:13,color:BLK}},cat),h("span",{style:{fontSize:12,color:LT}},ct.k+"/"+ct.t)),
+          h("div",{style:{height:4,background:BR,borderRadius:2}},h("div",{style:{height:"100%",width:p+"%",background:p===100?GRN:GOLD,borderRadius:2}})));
+      })
+    ),
+    h("div",{style:card(null)},
+      h("div",{style:label()},"TAGESZIEL"),
+      h("div",{style:{display:"flex",gap:8,marginBottom:16}},
+        [5,10,15,20,30].map(function(n){return h("button",{key:n,onClick:function(){setGoal(n);},style:{flex:1,padding:"10px 4px",borderRadius:12,fontFamily:"inherit",background:goal===n?GOLD:"transparent",border:"1.5px solid "+(goal===n?GOLD:BR),color:goal===n?"#fff":GR,fontSize:14,fontWeight:goal===n?600:400,cursor:"pointer"}},n);})
+      ),
+      h("button",{onClick:saveG,style:{width:"100%",padding:"15px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:16,fontWeight:600,cursor:"pointer",background:GOLD,color:"#fff",boxShadow:SGH}},saved?"✓ Gespeichert!":"Ziel speichern")
+    )
+  );
+}
+
+// ── TAB BAR ───────────────────────────────────────────────────────────────────
+function TabBar(props){
+  var tab=props.tab,setTab=props.setTab;
+  var tabs=[
+    {id:"learn",label:"Lernen",icon:IconLearn},
+    {id:"flash",label:"Flashcards",icon:IconFlash},
+    {id:"quiz",label:"Quiz",icon:IconQuiz},
+    {id:"know",label:"Wissen",icon:IconKnow},
+    {id:"prog",label:"Fortschritt",icon:IconProg},
+  ];
+  return h("div",{style:{display:"flex",background:WH,borderTop:"1px solid "+BR,paddingBottom:"env(safe-area-inset-bottom)",flexShrink:0}},
+    tabs.map(function(t){
+      var active=tab===t.id,col=active?GOLD:LT;
+      return h("button",{key:t.id,onClick:function(){setTab(t.id);},style:{flex:1,padding:"10px 0 12px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,fontFamily:"inherit"}},
+        t.icon(col),
+        h("span",{style:{fontSize:9,fontWeight:active?600:400,color:col}},t.label)
+      );
+    })
+  );
+}
+
+// ── APP ───────────────────────────────────────────────────────────────────────
+function App(){
+  var r1=useState("learn"),tab=r1[0],setTab=r1[1];
+  return h("div",{style:{display:"flex",flexDirection:"column",height:"100dvh",maxWidth:480,margin:"0 auto",background:BG,overflow:"hidden"}},
+    h("div",{style:{height:"env(safe-area-inset-top)",background:WH,flexShrink:0}}),
+    h("div",{style:{flex:1,overflowY:"auto"}},
+      tab==="learn"?h(LearnScreen,{onGo:setTab}):null,
+      tab==="flash"?h(FlashScreen,null):null,
+      tab==="quiz"?h(QuizScreen,null):null,
+      tab==="know"?h(KnowledgeScreen,null):null,
+      tab==="prog"?h(ProgressScreen,null):null
+    ),
+    h(TabBar,{tab:tab,setTab:setTab})
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(h(App,null));
 </script>
 </body>
 </html>
