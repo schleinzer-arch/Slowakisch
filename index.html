@@ -22,57 +22,57 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script>
-// No Babel needed - pure vanilla React.createElement
+var h=React.createElement,useState=React.useState,useEffect=React.useEffect,useRef=React.useRef;
 
-var h = React.createElement;
-var useState = React.useState;
-var useEffect = React.useEffect;
-var useRef = React.useRef;
-
-// ── COLORS ────────────────────────────────────────────────────────────────────
-var GOLD="#D4A937",GS="#D4A93715",GM="#D4A93745",BLK="#111",GR="#6B6B6B",LT="#AAAAAA";
+// COLORS
+var GOLD="#D4A937",GS="#D4A93715",GM="#D4A93745",BLK="#111111",GR="#6B6B6B",LT="#AAAAAA";
 var BG="#F7F5F0",WH="#FFFFFF",BR="#EBEBEB",GRN="#34C759",RD="#FF3B30";
 var SH="0 2px 16px rgba(0,0,0,0.06)",SSH="0 1px 4px rgba(0,0,0,0.04)",SGH="0 2px 10px rgba(212,169,55,0.28)";
 
-// ── STORAGE ───────────────────────────────────────────────────────────────────
+// STORAGE
 function lsGet(k,fb){try{var v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 function loadProgress(){return lsGet("sk_prog",{});}
-function saveProgress(kn,le){
+function saveProgress(kn,le,counts){
   var ka=[],la=[];
-  kn.forEach(function(v){ka.push(v);}); le.forEach(function(v){la.push(v);});
-  lsSet("sk_prog",{known:ka,learning:la});
+  kn.forEach(function(v){ka.push(v);});
+  le.forEach(function(v){la.push(v);});
+  lsSet("sk_prog",{known:ka,learning:la,counts:counts||{}});
 }
 function loadStats(){return lsGet("sk_stats",{});}
 function saveStats(s){lsSet("sk_stats",s);}
 function loadPlan(){return lsGet("sk_plan",{dailyGoal:10});}
 function savePlan(p){lsSet("sk_plan",p);}
 function todayKey(){return new Date().toISOString().slice(0,10);}
-function recordActivity(ok){
+function recordActivity(sk,correct){
   var s=loadStats(),k=todayKey();
-  if(!s[k])s[k]={seen:0,correct:0};
-  s[k].seen++;if(ok)s[k].correct++;
+  if(!s[k])s[k]={seen:0,correct:0,words:[]};
+  s[k].seen++;
+  if(correct)s[k].correct++;
+  if(s[k].words.indexOf(sk)===-1)s[k].words.push(sk);
   var keys=Object.keys(s).sort();
   if(keys.length>30)keys.slice(0,keys.length-30).forEach(function(k2){delete s[k2];});
   saveStats(s);
 }
-function shuffle(arr){
-  var a=arr.slice(),i=a.length,j,t;
-  while(i--){j=Math.floor(Math.random()*(i+1));t=a[i];a[i]=a[j];a[j]=t;}
-  return a;
+function getTodayWords(){
+  var s=loadStats(),k=todayKey();
+  return s[k]?s[k].words||[]:[]; 
 }
-function setArr(s){var a=[];s.forEach(function(v){a.push(v);});return a;}
 function objSum(o,key){var t=0;Object.keys(o).forEach(function(k){t+=o[k][key]||0;});return t;}
+function shuffle(arr){var a=arr.slice(),i=a.length,j,t;while(i--){j=Math.floor(Math.random()*(i+1));t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function setArr(s){var a=[];s.forEach(function(v){a.push(v);});return a;}
 
-// ── PRONUNCIATION ─────────────────────────────────────────────────────────────
-var PRONUNC={"š":"sch","č":"tsch","ž":"zh","ď":"dj","ť":"tj","ň":"nj","ľ":"lj","á":"aa","é":"ee","í":"ii","ú":"uu","ý":"ii","ô":"uo"};
+// PRONUNCIATION
+var PRONUNC={"s\u030c":"sch","c\u030c":"tsch","z\u030c":"zh","d\u030c":"dj","t\u030c":"tj","n\u030c":"nj","l\u0301":"lj","a\u0301":"aa","e\u0301":"ee","i\u0301":"ii","u\u0301":"uu","y\u0301":"ii","o\u0302":"uo"};
 function getPronTips(word){
   var tips=[],low=word.toLowerCase();
-  Object.keys(PRONUNC).forEach(function(ch){if(low.indexOf(ch)!==-1)tips.push(ch+"="+PRONUNC[ch]);});
+  var checks=["\u0161","\u010d","\u017e","\u010f","\u0165","\u0148","\u013e","\u00e1","\u00e9","\u00ed","\u00fa","\u00fd","\u00f4"];
+  var labels=["sch","tsch","zh","dj","tj","nj","lj","aa","ee","ii","uu","ii","uo"];
+  for(var i=0;i<checks.length;i++){if(low.indexOf(checks[i])!==-1)tips.push(checks[i]+"="+labels[i]);}
   return tips.slice(0,2);
 }
 
-// ── DATA ──────────────────────────────────────────────────────────────────────
+// DATA
 const VOCAB = [
   // ── Begrüßung & Höflichkeit (40) ──
   { sk: "Ahoj", de: "Hallo", cat: "Grundlagen", ex: "Ahoj, ako sa máš?" },
@@ -433,16 +433,95 @@ const PHRASES = [
   { sk: "Je tu voľné miesto?", de: "Ist hier noch frei?", context: "Restaurant" },
 ];
 const GRAMMAR = [
-  { title: "Persönliche Fürwörter", description: "Die Grundpronomen im Slowakischen", table: [["Ich", "ja"], ["Du", "ty"], ["Er/Sie/Es", "on/ona/ono"], ["Wir", "my"], ["Ihr", "vy"], ["Sie (formal)", "Vy"], ["Sie", "oni/ony"]], tip: "Das formelle 'Vy' wird großgeschrieben, ähnlich wie das deutsche 'Sie'." },
-  { title: "Verb 'byť' (sein)", description: "Das wichtigste Verb — sein", table: [["Ich bin", "ja som"], ["Du bist", "ty si"], ["Er/Sie ist", "on/ona je"], ["Wir sind", "my sme"], ["Ihr seid", "vy ste"], ["Sie sind", "oni sú"]], tip: "Merke: 'som' klingt ähnlich wie 'some' — ich BIN etwas." },
-  { title: "Verb 'mať' (haben)", description: "Ich habe — auf Slowakisch", table: [["Ich habe", "ja mám"], ["Du hast", "ty máš"], ["Er/Sie hat", "on/ona má"], ["Wir haben", "my máme"], ["Ihr habt", "vy máte"], ["Sie haben", "oni majú"]], tip: "Gut merken: 'mám' = ich habe. Sehr häufig im Alltag!" },
-  { title: "Verb 'ísť' (gehen)", description: "Ich gehe — Bewegungsverb", table: [["Ich gehe", "ja idem"], ["Du gehst", "ty ideš"], ["Er/Sie geht", "on/ona ide"], ["Wir gehen", "my ideme"], ["Ihr geht", "vy idete"], ["Sie gehen", "oni idú"]], tip: "'Idem domov' = Ich gehe nach Hause. Sehr alltäglich!" },
-  { title: "Zahlen 1–20", description: "Slowakische Zahlen", table: [["1", "jeden"], ["2", "dva"], ["3", "tri"], ["4", "štyri"], ["5", "päť"], ["6", "šesť"], ["7", "sedem"], ["8", "osem"], ["9", "deväť"], ["10", "desať"], ["11", "jedenásť"], ["15", "pätnásť"], ["20", "dvadsať"]], tip: "Ab 11 endet die Zahl auf '-násť' (entspricht dem deutschen '-zehn')." },
-  { title: "Verneinung", description: "Wie man Nein sagt", table: [["Ja habe", "Mám"], ["Ich habe nicht", "Nemám"], ["Ich gehe", "Idem"], ["Ich gehe nicht", "Nejdem"], ["Ich bin", "Som"], ["Ich bin nicht", "Nie som"]], tip: "Die Verneinung bildet man mit 'ne-' vor dem Verb. Einfach!" },
+  {
+    title: "Persönliche Fürwörter",
+    description: "ich, du, er, sie...",
+    table: [["Ich","ja"],["Du","ty"],["Er","on"],["Sie (f)","ona"],["Es","ono"],["Wir","my"],["Ihr","vy"],["Sie (formal)","Vy"],["Sie (pl)","oni/ony"]],
+    tip: "Das formelle Vy wird großgeschrieben — wie das deutsche Sie."
+  },
+  {
+    title: "Verb byť — sein",
+    description: "Ich bin, du bist...",
+    table: [["Ich bin","ja som"],["Du bist","ty si"],["Er/Sie ist","on/ona je"],["Wir sind","my sme"],["Ihr seid","vy ste"],["Sie sind","oni sú"]],
+    tip: "som klingt wie englisch some — ich BIN etwas."
+  },
+  {
+    title: "Verb mať — haben",
+    description: "Ich habe, du hast...",
+    table: [["Ich habe","ja mám"],["Du hast","ty máš"],["Er/Sie hat","on/ona má"],["Wir haben","my máme"],["Ihr habt","vy máte"],["Sie haben","oni majú"]],
+    tip: "mám = ich habe. Sehr häufig im Alltag!"
+  },
+  {
+    title: "Verb ísť — gehen",
+    description: "Ich gehe, du gehst...",
+    table: [["Ich gehe","ja idem"],["Du gehst","ty ideš"],["Er/Sie geht","on/ona ide"],["Wir gehen","my ideme"],["Ihr geht","vy idete"],["Sie gehen","oni idú"]],
+    tip: "Idem domov = Ich gehe nach Hause."
+  },
+  {
+    title: "Verb hovoriť — sprechen",
+    description: "Ich spreche, du sprichst...",
+    table: [["Ich spreche","ja hovorím"],["Du sprichst","ty hovoríš"],["Er/Sie spricht","on/ona hovorí"],["Wir sprechen","my hovoríme"],["Ihr sprecht","vy hovoríte"],["Sie sprechen","oni hovoria"]],
+    tip: "Hovoríte po slovensky? = Sprechen Sie Slowakisch?"
+  },
+  {
+    title: "Verb jesť — essen",
+    description: "Ich esse, du isst...",
+    table: [["Ich esse","ja jem"],["Du isst","ty ješ"],["Er/Sie isst","on/ona je"],["Wir essen","my jeme"],["Ihr esst","vy jete"],["Sie essen","oni jedia"]],
+    tip: "Achtung: je bedeutet sowohl er isst als auch er ist!"
+  },
+  {
+    title: "Verneinung",
+    description: "Wie man Nein sagt",
+    table: [["Ich habe","Mám"],["Ich habe nicht","Nemám"],["Ich gehe","Idem"],["Ich gehe nicht","Nejdem"],["Ich bin","Som"],["Ich bin nicht","Nie som"],["Ich spreche","Hovorím"],["Ich spreche nicht","Nehovorím"]],
+    tip: "Verneinung = ne- vor das Verb setzen. Einfach!"
+  },
+  {
+    title: "Fragewörter",
+    description: "Wo? Wann? Wer? Wie?",
+    table: [["Wer?","Kto?"],["Was?","Čo?"],["Wo?","Kde?"],["Wohin?","Kam?"],["Wann?","Kedy?"],["Wie?","Ako?"],["Wie viel?","Koľko?"],["Warum?","Prečo?"],["Welche/r/s?","Ktorý/á/é?"]],
+    tip: "Kde = Wo (Ort), Kam = Wohin (Richtung). Wichtiger Unterschied!"
+  },
+  {
+    title: "Possessivpronomen",
+    description: "mein, dein, sein...",
+    table: [["mein (m)","môj"],["mein (f)","moja"],["mein (n)","moje"],["dein (m)","tvoj"],["dein (f)","tvoja"],["sein/ihr (m)","jeho/jej"],["unser","náš/naša"],["euer","váš/vaša"]],
+    tip: "Das Possessivpronomen richtet sich nach dem Geschlecht des Substantivs."
+  },
+  {
+    title: "Adjektive — Grundformen",
+    description: "groß, klein, gut, schlecht...",
+    table: [["groß","veľký/á/é"],["klein","malý/á/é"],["gut","dobrý/á/é"],["schlecht","zlý/á/é"],["schön","pekný/á/é"],["neu","nový/á/é"],["alt","starý/á/é"],["schnell","rýchly/á/é"],["langsam","pomalý/á/é"],["teuer","drahý/á/é"]],
+    tip: "Adjektive ändern ihre Endung je nach Geschlecht: -ý (m), -á (f), -é (n)."
+  },
+  {
+    title: "Plural — Mehrzahl",
+    description: "Wie man Mehrzahl bildet",
+    table: [["Haus — Häuser","dom — domy"],["Auto — Autos","auto — autá"],["Mann — Männer","muž — muži"],["Frau — Frauen","žena — ženy"],["Kind — Kinder","dieťa — deti"],["Tag — Tage","deň — dni"],["Stadt — Städte","mesto — mestá"]],
+    tip: "Die häufigste Pluralendung ist -y oder -i. Es gibt aber viele Ausnahmen!"
+  },
+  {
+    title: "Uhrzeiten",
+    description: "Wie spät ist es?",
+    table: [["Wie spät ist es?","Koľko je hodín?"],["Es ist 1 Uhr","Je jedna hodina"],["Es ist 2 Uhr","Sú dve hodiny"],["Es ist 5 Uhr","Je päť hodín"],["Um 8 Uhr","O ôsmej"],["halb 3","pol tretej"],["Viertel nach 4","štvrt na päť"],["Mittag","poludnie"],["Mitternacht","polnoc"]],
+    tip: "pol tretej = halb drei (wörtlich: Hälfte des dritten). Etwas gewöhnungsbedürftig!"
+  },
+  {
+    title: "Kasus — Einführung",
+    description: "Nominativ & Akkusativ",
+    table: [["Wer/Was? (Nom.)","Nominatív"],["der Mann","muž"],["Wen/Was? (Akk.)","Akuzatív"],["den Mann (sehen)","muža (vidieť)"],["die Frau (Nom.)","žena"],["die Frau (Akk.)","ženu (vidieť)"],["das Kind (Nom.)","dieťa"],["das Kind (Akk.)","dieťa (vidieť)"]],
+    tip: "Im Slowakischen gibt es 6 Fälle. Nominativ und Akkusativ sind der Einstieg."
+  },
+  {
+    title: "Zahlen 1–20",
+    description: "Slowakische Zahlen",
+    table: [["1","jeden"],["2","dva"],["3","tri"],["4","štyri"],["5","päť"],["6","šesť"],["7","sedem"],["8","osem"],["9","deväť"],["10","desať"],["11","jedenásť"],["15","pätnásť"],["20","dvadsať"]],
+    tip: "Ab 11 endet die Zahl auf -násť (entspricht dem deutschen -zehn)."
+  }
 ];
+
 var CATS=["Alle","Grundlagen","Zahlen & Zeit","Essen & Reisen","Alltag & Einkaufen","Gesundheit & Notfall"];
 
-// ── AUDIO ─────────────────────────────────────────────────────────────────────
+// AUDIO
 function speak(text){
   if(!window.speechSynthesis)return;
   window.speechSynthesis.cancel();
@@ -453,22 +532,23 @@ function speak(text){
   window.speechSynthesis.speak(u);
 }
 
-// ── STYLE HELPERS ─────────────────────────────────────────────────────────────
-function s(){var o={};for(var i=0;i<arguments.length;i++){var a=arguments[i];if(a)Object.keys(a).forEach(function(k){o[k]=a[k];});}return o;}
-function card(extra){return s({background:WH,borderRadius:20,boxShadow:SH,padding:20},extra);}
-function pill(active){return s({padding:"7px 15px",borderRadius:999,border:"none",fontFamily:"inherit",whiteSpace:"nowrap",cursor:"pointer",fontSize:13,fontWeight:active?600:400,background:active?GOLD:"transparent",color:active?"#fff":GR});}
-function label(){return{fontSize:11,fontWeight:600,letterSpacing:0.8,color:LT,textTransform:"uppercase",marginBottom:8};}
+// STYLE
+function cs(){var o={};for(var i=0;i<arguments.length;i++){var a=arguments[i];if(a)Object.keys(a).forEach(function(k){o[k]=a[k];});}return o;}
+function cardSt(ex){return cs({background:WH,borderRadius:20,boxShadow:SH,padding:20},ex||{});}
+function pillSt(active){return{padding:"7px 15px",borderRadius:999,border:"none",fontFamily:"inherit",whiteSpace:"nowrap",cursor:"pointer",fontSize:13,fontWeight:active?600:400,background:active?GOLD:"transparent",color:active?"#fff":GR};}
+function lblSt(){return{fontSize:11,fontWeight:600,letterSpacing:0.8,color:LT,textTransform:"uppercase",marginBottom:8};}
+function btnPrimSt(){return{width:"100%",padding:"15px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:16,fontWeight:600,cursor:"pointer",background:GOLD,color:"#fff",boxShadow:SGH};}
 
-// ── SVG ICONS ─────────────────────────────────────────────────────────────────
-function IconLearn(col){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:1.8,strokeLinecap:"round"},h("path",{d:"M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"}),h("path",{d:"M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"}));}
-function IconFlash(col){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:1.8,strokeLinecap:"round"},h("rect",{x:2,y:3,width:20,height:14,rx:2}),h("path",{d:"M8 21h8M12 17v4"}));}
-function IconQuiz(col){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:1.8,strokeLinecap:"round"},h("circle",{cx:12,cy:12,r:10}),h("path",{d:"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"}),h("line",{x1:12,y1:17,x2:12.01,y2:17,strokeWidth:3}));}
-function IconKnow(col){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:1.8,strokeLinecap:"round"},h("path",{d:"M12 2L2 7l10 5 10-5-10-5z"}),h("path",{d:"M2 17l10 5 10-5"}),h("path",{d:"M2 12l10 5 10-5"}));}
-function IconProg(col){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:1.8,strokeLinecap:"round"},h("line",{x1:18,y1:20,x2:18,y2:10}),h("line",{x1:12,y1:20,x2:12,y2:4}),h("line",{x1:6,y1:20,x2:6,y2:14}));}
-function IconSpeak(col){return h("svg",{width:15,height:15,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:2,strokeLinecap:"round"},h("polygon",{points:"11 5 6 9 2 9 2 15 6 15 11 19 11 5"}),h("path",{d:"M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"}));}
-function IconDown(col){return h("svg",{width:15,height:15,viewBox:"0 0 24 24",fill:"none",stroke:col,strokeWidth:2,strokeLinecap:"round"},h("path",{d:"M6 9l6 6 6-6"}));}
+// ICONS
+function IcoLearn(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("path",{d:"M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"}),h("path",{d:"M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"}));}
+function IcoFlash(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("rect",{x:2,y:3,width:20,height:14,rx:2}),h("path",{d:"M8 21h8M12 17v4"}));}
+function IcoQuiz(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("circle",{cx:12,cy:12,r:10}),h("path",{d:"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"}),h("line",{x1:12,y1:17,x2:12.01,y2:17,strokeWidth:3}));}
+function IcoKnow(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("path",{d:"M12 2L2 7l10 5 10-5-10-5z"}),h("path",{d:"M2 17l10 5 10-5"}),h("path",{d:"M2 12l10 5 10-5"}));}
+function IcoProg(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("line",{x1:18,y1:20,x2:18,y2:10}),h("line",{x1:12,y1:20,x2:12,y2:4}),h("line",{x1:6,y1:20,x2:6,y2:14}));}
+function IcoSpeak(c){return h("svg",{width:15,height:15,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:2,strokeLinecap:"round"},h("polygon",{points:"11 5 6 9 2 9 2 15 6 15 11 19 11 5"}),h("path",{d:"M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"}));}
+function IcoDn(c){return h("svg",{width:15,height:15,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:2,strokeLinecap:"round"},h("path",{d:"M6 9l6 6 6-6"}));}
 
-// ── RING ──────────────────────────────────────────────────────────────────────
+// RING
 function Ring(props){
   var size=props.size||72,stroke=props.stroke||5,color=props.color||GOLD;
   var pct=Math.min(props.pct||0,100),r=(size-stroke)/2,circ=2*Math.PI*r;
@@ -479,7 +559,7 @@ function Ring(props){
       style:{transition:"stroke-dashoffset 0.6s"}}));
 }
 
-// ── LEARN SCREEN ──────────────────────────────────────────────────────────────
+// LEARN SCREEN
 function LearnScreen(props){
   var prog=loadProgress(),known=new Set(prog.known||[]);
   var plan=loadPlan(),stats=loadStats();
@@ -487,35 +567,33 @@ function LearnScreen(props){
   var pct=Math.min(100,Math.round(tod.seen/plan.dailyGoal*100));
   var done=tod.seen>=plan.dailyGoal;
   var hour=new Date().getHours();
-  var greeting=hour<12?"Dobré ráno 👋":hour<18?"Dobrý deň 👋":"Dobrý večer 👋";
+  var greeting=hour<12?"Dobré ráno":"Dobrý deň";
+  if(hour>=18)greeting="Dobrý večer";
   var streak=0,d2=new Date();
   while(true){var k=d2.toISOString().slice(0,10),ss=stats[k];if(ss&&ss.seen>=plan.dailyGoal){streak++;d2.setDate(d2.getDate()-1);}else break;}
   var cats=CATS.filter(function(c){return c!=="Alle";});
-
   return h("div",{style:{padding:"32px 20px 24px"}},
     h("div",{style:{marginBottom:24}},
-      h("div",{style:{fontSize:28,fontWeight:300,fontFamily:"'DM Serif Display',serif",color:BLK,marginBottom:4}},greeting),
+      h("div",{style:{fontSize:28,fontWeight:300,fontFamily:"'DM Serif Display',serif",color:BLK,marginBottom:4}},greeting+" \uD83D\uDC4B"),
       h("div",{style:{fontSize:15,color:GR}},"Bereit für deine nächste Lerneinheit?")
     ),
-    h("div",{style:card({display:"flex",alignItems:"center",gap:20,marginBottom:20})},
+    h("div",{style:cardSt({display:"flex",alignItems:"center",gap:20,marginBottom:20})},
       h("div",{style:{position:"relative",flexShrink:0}},
         h(Ring,{pct:pct,size:76,stroke:5}),
         h("div",{style:{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}},
           h("div",{style:{fontSize:20,fontWeight:600,color:done?GRN:BLK,lineHeight:1}},tod.seen),
-          h("div",{style:{fontSize:10,color:LT}},"/" + plan.dailyGoal)
+          h("div",{style:{fontSize:10,color:LT}},"/"+plan.dailyGoal)
         )
       ),
       h("div",{style:{flex:1}},
         h("div",{style:{fontSize:13,color:GR,marginBottom:2}},"Tagesziel"),
-        h("div",{style:{fontSize:15,fontWeight:500,color:BLK}},done?"Ziel erreicht! 🎉":"Noch "+(plan.dailyGoal-tod.seen)+" Wörter"),
-        streak>0?h("div",{style:{fontSize:12,color:GOLD,marginTop:4}},"🔥 "+streak+(streak===1?" Tag":" Tage")+" Serie"):null
+        h("div",{style:{fontSize:15,fontWeight:500,color:BLK}},done?"Ziel erreicht!":"Noch "+(plan.dailyGoal-tod.seen)+" Wörter"),
+        streak>0?h("div",{style:{fontSize:12,color:GOLD,marginTop:4}},"\uD83D\uDD25 "+streak+(streak===1?" Tag":" Tage")+" Serie"):null
       )
     ),
-    h("div",{style:{marginBottom:24}},
-      h("button",{onClick:function(){props.onGo("flash");},style:{width:"100%",padding:"15px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:16,fontWeight:600,cursor:"pointer",background:GOLD,color:"#fff",boxShadow:SGH}},"Weiterlernen")
-    ),
+    h("div",{style:{marginBottom:24}},h("button",{onClick:function(){props.onGo("flash");},style:btnPrimSt()},"Weiterlernen")),
     h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},
-      h("div",{style:label()},"THEMEN"),
+      h("div",{style:lblSt()},"THEMEN"),
       h("span",{style:{fontSize:13,color:GOLD,cursor:"pointer"},onClick:function(){props.onGo("know");}},"Alle anzeigen")
     ),
     h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}},
@@ -526,29 +604,29 @@ function LearnScreen(props){
         return h("div",{key:cat,onClick:function(){props.onGo("flash");},style:{background:WH,borderRadius:16,padding:"14px 16px",boxShadow:SSH,cursor:"pointer"}},
           h("div",{style:{fontSize:13,fontWeight:500,color:BLK,marginBottom:4}},cat),
           h("div",{style:{fontSize:11,color:LT,marginBottom:8}},kk+"/"+tot),
-          h("div",{style:{height:3,background:BR,borderRadius:2}},
-            h("div",{style:{height:"100%",width:p+"%",background:GOLD,borderRadius:2}})
-          )
+          h("div",{style:{height:3,background:BR,borderRadius:2}},h("div",{style:{height:"100%",width:p+"%",background:GOLD,borderRadius:2}}))
         );
       })
     )
   );
 }
 
-// ── FLASH SCREEN ──────────────────────────────────────────────────────────────
+// FLASH SCREEN — 3x correct = learned
 function FlashScreen(){
   var r1=useState("Alle"),cat=r1[0],setCat=r1[1];
   var r2=useState("de2sk"),dir=r2[0],setDir=r2[1];
   var r3=useState(false),flipped=r3[0],setFlipped=r3[1];
   var r4=useState(0),fkey=r4[0],setFkey=r4[1];
-  var r5=useState(function(){var p=loadProgress();return new Set(p.known||[]);}),known=r5[0],setKnown=r5[1];
-  var r6=useState(function(){var p=loadProgress();return new Set(p.learning||[]);}),learning=r6[0],setLearning=r6[1];
-  var r7=useState(false),ankiMode=r7[0],setAnkiMode=r7[1];
-  var r8=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),shuffled=r8[0],setShuffled=r8[1];
-  var r9=useState(0),pos=r9[0],setPos=r9[1];
-  var r10=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),srQ=r10[0],setSrQ=r10[1];
-  var r11=useState(0),srPos=r11[0],setSrPos=r11[1];
-  var r12=useState(false),lit=r12[0],setLit=r12[1];
+  var prog=loadProgress();
+  var r5=useState(function(){return new Set(prog.known||[]);}),known=r5[0],setKnown=r5[1];
+  var r6=useState(function(){return new Set(prog.learning||[]);}),learning=r6[0],setLearning=r6[1];
+  var r7=useState(function(){return prog.counts||{};}),counts=r7[0],setCounts=r7[1];
+  var r8=useState(false),ankiMode=r8[0],setAnkiMode=r8[1];
+  var r9=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),shuffled=r9[0],setShuffled=r9[1];
+  var r10=useState(0),pos=r10[0],setPos=r10[1];
+  var r11=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),srQ=r11[0],setSrQ=r11[1];
+  var r12=useState(0),srPos=r12[0],setSrPos=r12[1];
+  var r13=useState(false),lit=r13[0],setLit=r13[1];
 
   var poolIdx=[];
   for(var i=0;i<shuffled.length;i++){var vi=shuffled[i];if(cat==="Alle"||VOCAB[vi].cat===cat)poolIdx.push(vi);}
@@ -562,33 +640,56 @@ function FlashScreen(){
   var back=dir==="de2sk"?card.sk:card.de;
   var tips=getPronTips(card.sk);
   var gPct=Math.round(known.size/VOCAB.length*100);
+  var cardCount=counts[card.sk]||0;
 
   function flip(){setFkey(function(k){return k+1;});setFlipped(function(f){return !f;});}
   function switchCat(c){setCat(c);setPos(0);setFlipped(false);setFkey(function(k){return k+1;});setAnkiMode(false);setShuffled(shuffle(VOCAB.map(function(_,i){return i;})));}
+
   function nextCard(mark){
-    var sk=card.sk,nk=new Set(setArr(known)),nl=new Set(setArr(learning));
-    if(mark==="known")nk.add(sk);else nl.add(sk);
-    setKnown(nk);setLearning(nl);saveProgress(nk,nl);recordActivity(mark==="known");
+    var sk=card.sk;
+    var nk=new Set(setArr(known)),nl=new Set(setArr(learning)),nc=cs({},counts);
+    if(mark==="known"){
+      nc[sk]=(nc[sk]||0)+1;
+      if(nc[sk]>=3){nk.add(sk);nl.delete(sk);}
+      else{nl.add(sk);}
+    } else {
+      nc[sk]=0;nl.add(sk);nk.delete(sk);
+    }
+    setKnown(nk);setLearning(nl);setCounts(nc);
+    saveProgress(nk,nl,nc);
+    recordActivity(sk,mark==="known");
     setFlipped(false);setFkey(function(k){return k+1;});
     if(ankiMode){
       var ci=srQ[safeAnki],iv=mark==="known"?Math.floor(Math.random()*11)+20:Math.floor(Math.random()*8)+3;
       setSrQ(function(q){var nq=q.slice();nq.splice(srPos+iv,0,ci);return nq;});
       setTimeout(function(){setSrPos(function(p){return p+1;});},120);
-    }else{
-      var pl=poolIdx.length;setTimeout(function(){setPos(function(p){return pl?(p+1)%pl:0;});},120);
+    } else {
+      var pl=poolIdx.length;
+      setTimeout(function(){setPos(function(p){return pl?(p+1)%pl:0;});},120);
     }
   }
+
   function tapSpeak(e){e.stopPropagation();speak(card.sk);setLit(true);setTimeout(function(){setLit(false);},600);}
+
+  // Progress dots for 3x learning
+  function ProgressDots(){
+    var dots=[];
+    for(var i=0;i<3;i++){
+      dots.push(h("div",{key:i,style:{width:6,height:6,borderRadius:999,background:i<cardCount?GOLD:BR,transition:"background 0.2s"}}));
+    }
+    return h("div",{style:{display:"flex",gap:4,justifyContent:"center",marginTop:8}},dots);
+  }
 
   return h("div",{style:{padding:"20px 20px 8px"}},
     h("div",{style:{display:"flex",gap:6,marginBottom:12,alignItems:"center"}},
-      h("button",{onClick:function(){setDir("de2sk");setFlipped(false);setFkey(function(k){return k+1;});},style:pill(dir==="de2sk")},"🇩🇪 → 🇸🇰"),
-      h("button",{onClick:function(){setDir("sk2de");setFlipped(false);setFkey(function(k){return k+1;});},style:pill(dir==="sk2de")},"🇸🇰 → 🇩🇪"),
+      h("button",{onClick:function(){setDir("de2sk");setFlipped(false);setFkey(function(k){return k+1;});},style:pillSt(dir==="de2sk")},"\uD83C\uDDE9\uD83C\uDDEA \u2192 \uD83C\uDDF8\uD83C\uDDF0"),
+      h("button",{onClick:function(){setDir("sk2de");setFlipped(false);setFkey(function(k){return k+1;});},style:pillSt(dir==="sk2de")},"\uD83C\uDDF8\uD83C\uDDF0 \u2192 \uD83C\uDDE9\uD83C\uDDEA"),
       h("button",{onClick:function(){setSrQ(shuffle(VOCAB.map(function(_,i){return i;})));setSrPos(0);setAnkiMode(function(a){return !a;});setFlipped(false);setFkey(function(k){return k+1;});},
-        style:{marginLeft:"auto",padding:"7px 14px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:13,cursor:"pointer",background:ankiMode?GS:"transparent",color:ankiMode?GOLD:GR}},"🧠 Anki")
+        style:{marginLeft:"auto",padding:"7px 14px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:13,cursor:"pointer",background:ankiMode?GS:"transparent",color:ankiMode?GOLD:GR}},
+        "\uD83E\uDDE0 Anki")
     ),
     h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:10,marginBottom:10}},
-      CATS.map(function(c){return h("button",{key:c,onClick:function(){switchCat(c);},style:pill(!ankiMode&&cat===c)},c);})
+      CATS.map(function(c){return h("button",{key:c,onClick:function(){switchCat(c);},style:pillSt(!ankiMode&&cat===c)},c);})
     ),
     h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:16}},
       h("div",{style:{flex:1,height:3,background:BR,borderRadius:2}},
@@ -598,27 +699,25 @@ function FlashScreen(){
     ),
     h("div",{key:fkey,className:"fi",onClick:flip,style:{background:WH,borderRadius:28,boxShadow:SH,cursor:"pointer",padding:"32px 24px",textAlign:"center",position:"relative",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:240,marginBottom:16}},
       h("div",{style:{position:"absolute",top:14,left:14}},
-        h("span",{style:{fontSize:11,fontWeight:500,color:LT,background:BR,padding:"3px 9px",borderRadius:999}},dir==="de2sk"?(flipped?"🇸🇰":"🇩🇪"):(flipped?"🇩🇪":"🇸🇰"))
+        h("span",{style:{fontSize:11,fontWeight:500,color:LT,background:BR,padding:"3px 9px",borderRadius:999}},
+          dir==="de2sk"?(flipped?"\uD83C\uDDF8\uD83C\uDDF0":"\uD83C\uDDE9\uD83C\uDDEA"):(flipped?"\uD83C\uDDE9\uD83C\uDDEA":"\uD83C\uDDF8\uD83C\uDDF0"))
       ),
       h("div",{style:{position:"absolute",top:12,right:12}},
-        h("button",{onClick:tapSpeak,style:{width:38,height:38,borderRadius:999,cursor:"pointer",flexShrink:0,border:"1.5px solid "+(lit?GOLD:BR),background:lit?GS:WH,display:"flex",alignItems:"center",justifyContent:"center"}},
-          IconSpeak(lit?GOLD:GR))
+        h("button",{onClick:tapSpeak,style:{width:38,height:38,borderRadius:999,cursor:"pointer",border:"1.5px solid "+(lit?GOLD:BR),background:lit?GS:WH,display:"flex",alignItems:"center",justifyContent:"center"}},IcoSpeak(lit?GOLD:GR))
       ),
       h("div",{style:{fontSize:11,fontWeight:500,color:GOLD,background:GS,padding:"3px 10px",borderRadius:999,marginBottom:16}},card.cat),
       h("div",{style:{fontSize:front.length>14?28:42,fontWeight:300,fontFamily:"'DM Serif Display',serif",color:flipped?GR:BLK,lineHeight:1.25,marginBottom:8}},flipped?back:front),
       !flipped?h("div",{style:{fontSize:13,color:LT}},"Tippe zum Umdrehen"):null,
-      flipped?h("div",{style:{fontSize:14,color:GR,fontStyle:"italic",marginTop:4,maxWidth:260}},"("+card.ex+")"):null,
-      flipped&&tips.length?h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",justifyContent:"center",marginTop:8}},
-        tips.map(function(t){return h("span",{key:t,style:{fontSize:11,color:GOLD,background:GS,padding:"2px 8px",borderRadius:999}},t);})):null
+      flipped?h("div",{style:{fontSize:14,color:GR,fontStyle:"italic",marginTop:4,maxWidth:260}},card.ex):null,
+      flipped&&tips.length?h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",justifyContent:"center",marginTop:8}},tips.map(function(t){return h("span",{key:t,style:{fontSize:11,color:GOLD,background:GS,padding:"2px 8px",borderRadius:999}},t);})):null,
+      h(ProgressDots,null)
     ),
     flipped
       ?h("div",{style:{display:"flex",gap:10,marginBottom:12}},
-          h("button",{onClick:function(){nextCard("learning");},style:{flex:1,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"1.5px solid rgba(255,59,48,0.2)",background:"rgba(255,59,48,0.05)",color:RD,fontSize:15,fontWeight:500,cursor:"pointer"}},"✕ Schwer"),
-          h("button",{onClick:function(){nextCard("known");},style:{flex:2,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"none",background:GOLD,color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer",boxShadow:SGH}},"Einfach ✓")
+          h("button",{onClick:function(){nextCard("learning");},style:{flex:1,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"1.5px solid rgba(255,59,48,0.2)",background:"rgba(255,59,48,0.05)",color:RD,fontSize:15,fontWeight:500,cursor:"pointer"}},"\u2715 Schwer"),
+          h("button",{onClick:function(){nextCard("known");},style:{flex:2,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"none",background:GOLD,color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer",boxShadow:SGH}},"Einfach \u2713")
         )
-      :h("div",{style:{marginBottom:12}},
-          h("button",{onClick:flip,style:{width:"100%",padding:"15px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:16,fontWeight:600,cursor:"pointer",background:GOLD,color:"#fff",boxShadow:SGH}},"Lösung anzeigen")
-        ),
+      :h("div",{style:{marginBottom:12}},h("button",{onClick:flip,style:btnPrimSt()},"Lösung anzeigen")),
     h("div",{style:{display:"flex",justifyContent:"center",gap:32,paddingBottom:4}},
       h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:GRN}},known.size),h("div",{style:{fontSize:11,color:LT}},"Gelernt")),
       h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:GOLD}},gPct+"%"),h("div",{style:{fontSize:11,color:LT}},"Gesamt")),
@@ -627,50 +726,79 @@ function FlashScreen(){
   );
 }
 
-// ── QUIZ SCREEN ───────────────────────────────────────────────────────────────
+// QUIZ SCREEN — 3 modes + today mode
 function QuizScreen(){
-  var r1=useState("Alle"),cat=r1[0],setCat=r1[1];
-  var r2=useState("de2sk"),dir=r2[0],setDir=r2[1];
+  var r1=useState("sk2de"),mode=r1[0],setMode=r1[1];
+  // modes: sk2de, de2sk, mixed, today
+  var r2=useState("Alle"),cat=r2[0],setCat=r2[1];
   var r3=useState(null),q=r3[0],setQ=r3[1];
   var r4=useState(null),chosen=r4[0],setChosen=r4[1];
   var r5=useState({r:0,w:0}),score=r5[0],setScore=r5[1];
   var r6=useState(0),qkey=r6[0],setQkey=r6[1];
+  var r7=useState(false),noWords=r7[0],setNoWords=r7[1];
+
+  function getPool(){
+    if(mode==="today"){
+      var todayWords=getTodayWords();
+      if(!todayWords.length){setNoWords(true);return [];}
+      setNoWords(false);
+      return VOCAB.filter(function(v){return todayWords.indexOf(v.sk)!==-1;});
+    }
+    setNoWords(false);
+    return cat==="Alle"?VOCAB:VOCAB.filter(function(v){return v.cat===cat;});
+  }
 
   function gen(){
-    var pool=cat==="Alle"?VOCAB:VOCAB.filter(function(v){return v.cat===cat;});
-    if(pool.length<4)return;
+    var pool=getPool();
+    if(pool.length<2){setQ(null);return;}
     var c=pool[Math.floor(Math.random()*pool.length)];
-    var others=pool.filter(function(v){return v.sk!==c.sk;}).sort(function(){return Math.random()-0.5;}).slice(0,3);
+    // determine direction
+    var useDir;
+    if(mode==="mixed")useDir=Math.random()<0.5?"de2sk":"sk2de";
+    else if(mode==="today")useDir=Math.random()<0.5?"de2sk":"sk2de";
+    else useDir=mode;
+    // build wrong answers from full VOCAB for variety
+    var fullPool=VOCAB.filter(function(v){return v.sk!==c.sk;});
+    var others=fullPool.sort(function(){return Math.random()-0.5;}).slice(0,3);
     var ws=[],opts;
-    if(dir==="de2sk"){
+    if(useDir==="de2sk"){
       for(var i=0;i<others.length;i++)ws.push(others[i].sk);
       opts=ws.concat([c.sk]).sort(function(){return Math.random()-0.5;});
-      setQ({question:c.de,answer:c.sk,options:opts,card:c});
-    }else{
+      setQ({question:c.de,answer:c.sk,options:opts,card:c,dir:useDir});
+    } else {
       for(var i=0;i<others.length;i++)ws.push(others[i].de);
       opts=ws.concat([c.de]).sort(function(){return Math.random()-0.5;});
-      setQ({question:c.sk,answer:c.de,options:opts,card:c});
+      setQ({question:c.sk,answer:c.de,options:opts,card:c,dir:useDir});
     }
     setChosen(null);setQkey(function(k){return k+1;});
   }
-  useEffect(function(){gen();},[cat,dir]);
+
+  useEffect(function(){gen();},[mode,cat]);
 
   function pick(opt){
     if(chosen!==null)return;
     setChosen(opt);var ok=opt===q.answer;
     if(ok)setScore(function(s){return{r:s.r+1,w:s.w};});
     else setScore(function(s){return{r:s.r,w:s.w+1};});
-    recordActivity(ok);
+    recordActivity(q.card.sk,ok);
   }
+
   var tot=score.r+score.w,pct=tot?Math.round(score.r/tot*100):0;
+  var modes=[
+    {id:"de2sk",label:"\uD83C\uDDE9\uD83C\uDDEA \u2192 \uD83C\uDDF8\uD83C\uDDF0"},
+    {id:"sk2de",label:"\uD83C\uDDF8\uD83C\uDDF0 \u2192 \uD83C\uDDE9\uD83C\uDDEA"},
+    {id:"mixed",label:"\uD83D\uDD04 Gemischt"},
+    {id:"today",label:"\uD83D\uDCC5 Heute"},
+  ];
 
   return h("div",{style:{padding:"20px 20px 24px"}},
-    h("div",{style:{display:"flex",gap:6,marginBottom:12}},
-      h("button",{onClick:function(){setDir("de2sk");setScore({r:0,w:0});},style:pill(dir==="de2sk")},"🇩🇪 → 🇸🇰"),
-      h("button",{onClick:function(){setDir("sk2de");setScore({r:0,w:0});},style:pill(dir==="sk2de")},"🇸🇰 → 🇩🇪")
+    h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:12}},
+      modes.map(function(m){return h("button",{key:m.id,onClick:function(){setMode(m.id);setScore({r:0,w:0});},style:pillSt(mode===m.id)},m.label);})
     ),
-    h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:16}},
-      CATS.map(function(c){return h("button",{key:c,onClick:function(){setCat(c);setScore({r:0,w:0});},style:pill(cat===c)},c);})
+    mode!=="today"?h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:16}},
+      CATS.map(function(c){return h("button",{key:c,onClick:function(){setCat(c);setScore({r:0,w:0});},style:pillSt(cat===c)},c);})
+    ):h("div",{style:{marginBottom:16}},
+      h("div",{style:{background:GS,borderRadius:12,padding:"10px 16px",fontSize:13,color:GOLD}},"\uD83D\uDCC5 Nur Wörter die du heute in den Flashcards gesehen hast")
     ),
     h("div",{style:{display:"flex",gap:10,marginBottom:16}},
       [{v:score.r,l:"Richtig",col:GRN},{v:pct+"%",l:"Quote",col:GOLD},{v:score.w,l:"Falsch",col:RD}].map(function(item){
@@ -679,9 +807,14 @@ function QuizScreen(){
           h("div",{style:{fontSize:11,color:LT}},item.l));
       })
     ),
-    q?h("div",{key:qkey},
-      h("div",{style:card({textAlign:"center",padding:"28px 20px",marginBottom:16})},
-        h("div",{style:{fontSize:12,color:LT,marginBottom:12}},dir==="de2sk"?"Wie heißt auf Slowakisch…":"Was bedeutet auf Deutsch…"),
+    noWords?h("div",{style:cardSt({textAlign:"center",padding:"40px 20px"})},
+      h("div",{style:{fontSize:32,marginBottom:12}},"\uD83D\uDCC5"),
+      h("div",{style:{fontSize:16,fontWeight:500,color:BLK,marginBottom:8}},"Noch keine Wörter heute"),
+      h("div",{style:{fontSize:14,color:GR}},"Lerne zuerst ein paar Vokabeln in den Flashcards!")
+    ):null,
+    q&&!noWords?h("div",{key:qkey},
+      h("div",{style:cardSt({textAlign:"center",padding:"28px 20px",marginBottom:16})},
+        h("div",{style:{fontSize:12,color:LT,marginBottom:12}},q.dir==="de2sk"?"Wie heißt auf Slowakisch...":"Was bedeutet auf Deutsch..."),
         h("div",{style:{fontSize:36,fontWeight:300,fontFamily:"'DM Serif Display',serif",color:BLK,lineHeight:1.2,marginBottom:8}},q.question),
         h("span",{style:{fontSize:11,color:GOLD,background:GS,padding:"3px 10px",borderRadius:999}},q.card.cat)
       ),
@@ -694,107 +827,82 @@ function QuizScreen(){
             border:"1.5px solid "+(chosen?(isC?GRN:isP?RD:BR):BR),
             color:chosen?(isC?GRN:isP?RD:BLK):BLK,
             fontSize:15,fontWeight:chosen&&isC?600:400,cursor:chosen?"default":"pointer",boxShadow:SSH}},
-            (chosen&&isC?"✓ ":(chosen&&isP?"✕ ":""))+opt);
+            (chosen&&isC?"\u2713 ":(chosen&&isP?"\u2715 ":""))+opt);
         }),
-        !chosen?h("button",{onClick:function(){pick("");},style:{fontSize:13,color:LT,background:"none",border:"none",cursor:"pointer",fontFamily:"inherit",textAlign:"center",padding:8}},"Ich weiß es nicht"):null
+        !chosen?h("button",{onClick:function(){pick("");},style:{fontSize:13,color:LT,background:"none",border:"none",cursor:"pointer",fontFamily:"inherit",textAlign:"center",padding:8}},"Ich wei\u00DF es nicht"):null
       ),
       chosen?h("div",null,
         h("div",{style:{background:chosen===q.answer?"rgba(52,199,89,0.08)":"rgba(255,59,48,0.07)",border:"1px solid "+(chosen===q.answer?"rgba(52,199,89,0.25)":"rgba(255,59,48,0.2)"),borderRadius:14,padding:"14px 20px",textAlign:"center",marginBottom:12}},
-          h("div",{style:{fontSize:15,fontWeight:600,color:chosen===q.answer?GRN:RD}},chosen===q.answer?"Richtig! 🎉":"Leider falsch."),
+          h("div",{style:{fontSize:15,fontWeight:600,color:chosen===q.answer?GRN:RD}},chosen===q.answer?"Richtig! \uD83C\uDF89":"Leider falsch."),
           h("div",{style:{fontSize:13,color:GR,marginTop:4}},q.card.de+" = "+q.card.sk)
         ),
-        h("button",{onClick:gen,style:{width:"100%",padding:"15px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:16,fontWeight:600,cursor:"pointer",background:GOLD,color:"#fff",boxShadow:SGH}},"Weiter")
+        h("button",{onClick:gen,style:btnPrimSt()},"Weiter")
       ):null
     ):null
   );
 }
 
-// ── KNOWLEDGE SCREEN ──────────────────────────────────────────────────────────
+// KNOWLEDGE SCREEN — Grammar + Phrases, no KI-Tutor
 function KnowledgeScreen(){
   var r1=useState("Grammatik"),sec=r1[0],setSec=r1[1];
-  var r2=useState(0),open=r2[0],setOpen=r2[1];
+  var r2=useState(-1),open=r2[0],setOpen=r2[1];
   var r3=useState("Alle"),pf=r3[0],setPf=r3[1];
-  var r4=useState([{role:"assistant",content:"Ahoj! Ich bin dein KI-Tutor 🇸🇰 Womit kann ich helfen?"}]),msgs=r4[0],setMsgs=r4[1];
-  var r5=useState(""),inp=r5[0],setInp=r5[1];
-  var r6=useState(false),load=r6[0],setLoad=r6[1];
-  var chatRef=useRef(null);
-  var secs=["Grammatik","Phrasen","KI-Tutor"];
+  var secs=["Grammatik","Phrasen"];
   var pfCtx=["Alle"];
   for(var i=0;i<PHRASES.length;i++){if(pfCtx.indexOf(PHRASES[i].context)===-1)pfCtx.push(PHRASES[i].context);}
   var fp=pf==="Alle"?PHRASES:PHRASES.filter(function(p){return p.context===pf;});
-  useEffect(function(){if(chatRef.current)chatRef.current.scrollTop=chatRef.current.scrollHeight;},[msgs]);
-
-  function sendMsg(){
-    if(!inp.trim()||load)return;
-    var m={role:"user",content:inp},h2=msgs.concat([m]);
-    setMsgs(h2);setInp("");setLoad(true);
-    fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:700,
-        system:"Du bist ein freundlicher Slowakisch-Lehrer für Deutschsprachige. Antworte kurz auf Deutsch. Hebe slowakische Wörter mit **Fettschrift** hervor.",
-        messages:h2.map(function(x){return{role:x.role,content:x.content};})})
-    }).then(function(r){return r.json();}).then(function(d){
-      var txt=(d.content||[]).map(function(b){return b.text||"";}).join("")||"Fehler.";
-      setMsgs(function(hh){return hh.concat([{role:"assistant",content:txt}]);});setLoad(false);
-    }).catch(function(){setMsgs(function(hh){return hh.concat([{role:"assistant",content:"Verbindungsfehler."}]);});setLoad(false);});
-  }
-
-  function renderMsg(txt){
-    var parts=txt.split("**"),out=[];
-    for(var i=0;i<parts.length;i++){
-      if(i%2===1)out.push(h("strong",{key:i,style:{color:GOLD}},parts[i]));
-      else out.push(parts[i]);
-    }
-    return out;
-  }
 
   return h("div",{style:{display:"flex",flexDirection:"column",height:"100%"}},
     h("div",{style:{padding:"16px 20px 0",display:"flex",borderBottom:"1px solid "+BR}},
-      secs.map(function(s){return h("button",{key:s,onClick:function(){setSec(s);},style:{padding:"10px 16px",background:"none",fontFamily:"inherit",border:"none",borderBottom:"2px solid "+(sec===s?GOLD:"transparent"),color:sec===s?GOLD:GR,fontSize:14,fontWeight:sec===s?600:400,cursor:"pointer"}},s);})
+      secs.map(function(s){return h("button",{key:s,onClick:function(){setSec(s);},style:{padding:"10px 20px",background:"none",fontFamily:"inherit",border:"none",borderBottom:"2px solid "+(sec===s?GOLD:"transparent"),color:sec===s?GOLD:GR,fontSize:14,fontWeight:sec===s?600:400,cursor:"pointer"}},s);})
     ),
-    h("div",{style:{flex:1,overflowY:"auto",padding:"16px 20px 32px"}},
+    h("div",{style:{flex:1,overflowY:"auto",padding:"16px 20px 40px"}},
       sec==="Grammatik"?h("div",null,
-        GRAMMAR.map(function(g,i){return h("div",{key:i,style:{background:WH,borderRadius:16,overflow:"hidden",boxShadow:SSH,marginBottom:10}},
-          h("div",{onClick:function(){setOpen(open===i?-1:i);},style:{padding:"16px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer"}},
-            h("div",null,h("div",{style:{fontSize:15,fontWeight:500,color:BLK}},g.title),h("div",{style:{fontSize:12,color:GR,marginTop:2}},g.description)),
-            IconDown(LT)
-          ),
-          open===i?h("div",{style:{padding:"0 20px 20px",borderTop:"1px solid "+BR}},
-            h("table",{style:{width:"100%",borderCollapse:"collapse",marginTop:12}},
-              h("tbody",null,g.table.map(function(row,j){return h("tr",{key:j,style:{borderBottom:"1px solid "+BR}},h("td",{style:{padding:"8px 0",fontSize:13,color:GR}},row[0]),h("td",{style:{padding:"8px 0",fontSize:16,fontWeight:500,color:BLK,textAlign:"right"}},row[1]));}))
+        h("div",{style:{fontSize:13,color:GR,marginBottom:16}},GRAMMAR.length+" Kapitel"),
+        GRAMMAR.map(function(g,i){
+          return h("div",{key:i,style:{background:WH,borderRadius:16,overflow:"hidden",boxShadow:SSH,marginBottom:10}},
+            h("div",{onClick:function(){setOpen(open===i?-1:i);},style:{padding:"16px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer"}},
+              h("div",null,
+                h("div",{style:{fontSize:15,fontWeight:500,color:BLK}},g.title),
+                h("div",{style:{fontSize:12,color:GR,marginTop:2}},g.description)
+              ),
+              h("div",{style:{transform:open===i?"rotate(180deg)":"none",transition:"0.2s"}},IcoDn(LT))
             ),
-            h("div",{style:{marginTop:12,padding:"10px 14px",background:GS,borderRadius:10,borderLeft:"3px solid "+GOLD}},h("div",{style:{fontSize:12,color:GOLD}},"💡 "+g.tip))
-          ):null
-        );})
+            open===i?h("div",{style:{padding:"0 20px 20px",borderTop:"1px solid "+BR}},
+              h("table",{style:{width:"100%",borderCollapse:"collapse",marginTop:12}},
+                h("tbody",null,g.table.map(function(row,j){
+                  return h("tr",{key:j,style:{borderBottom:"1px solid "+BR}},
+                    h("td",{style:{padding:"8px 0",fontSize:13,color:GR}},row[0]),
+                    h("td",{style:{padding:"8px 0",fontSize:16,fontWeight:500,color:BLK,textAlign:"right"}},row[1])
+                  );
+                }))
+              ),
+              h("div",{style:{marginTop:12,padding:"10px 14px",background:GS,borderRadius:10,borderLeft:"3px solid "+GOLD}},
+                h("div",{style:{fontSize:12,color:GOLD}},"\uD83D\uDCA1 "+g.tip)
+              )
+            ):null
+          );
+        })
       ):null,
       sec==="Phrasen"?h("div",null,
         h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:10,marginBottom:10}},
-          pfCtx.map(function(c){return h("button",{key:c,onClick:function(){setPf(c);},style:pill(pf===c)},c);})
+          pfCtx.map(function(c){return h("button",{key:c,onClick:function(){setPf(c);},style:pillSt(pf===c)},c);})
         ),
-        fp.map(function(p,i){return h("div",{key:i,style:{background:WH,borderRadius:14,padding:"14px 16px",boxShadow:SSH,display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
-          h("div",null,h("div",{style:{fontSize:16,color:BLK}},p.sk),h("div",{style:{fontSize:13,color:GR,marginTop:2}},p.de)),
-          h("button",{onClick:function(){speak(p.sk);},style:{width:38,height:38,borderRadius:999,cursor:"pointer",border:"1.5px solid "+BR,background:WH,display:"flex",alignItems:"center",justifyContent:"center"}},IconSpeak(GR))
-        );})
-      ):null,
-      sec==="KI-Tutor"?h("div",{style:{display:"flex",flexDirection:"column",gap:12}},
-        h("div",{ref:chatRef,style:{display:"flex",flexDirection:"column",gap:10,maxHeight:360,overflowY:"auto"}},
-          msgs.map(function(m,i){return h("div",{key:i,style:{alignSelf:m.role==="user"?"flex-end":"flex-start",maxWidth:"80%",padding:"10px 14px",fontSize:14,lineHeight:1.5,borderRadius:m.role==="user"?"18px 18px 4px 18px":"18px 18px 18px 4px",background:m.role==="user"?GOLD:WH,color:m.role==="user"?"#fff":BLK,boxShadow:SSH}},renderMsg(m.content));}),
-          load?h("div",{style:{alignSelf:"flex-start",padding:"10px 14px",background:WH,borderRadius:"18px 18px 18px 4px",color:LT,fontSize:13}},"✍️ …"):null
-        ),
-        h("div",{style:{display:"flex",gap:8}},
-          h("input",{value:inp,onChange:function(e){setInp(e.target.value);},onKeyDown:function(e){if(e.key==="Enter")sendMsg();},placeholder:"Nachricht…",style:{flex:1,padding:"12px 16px",borderRadius:999,border:"1.5px solid "+BR,fontSize:14,outline:"none",fontFamily:"inherit",background:WH,color:BLK}}),
-          h("button",{onClick:sendMsg,disabled:load,style:{width:44,height:44,borderRadius:999,background:GOLD,border:"none",cursor:"pointer",color:"#fff",fontSize:20,flexShrink:0}},"›")
-        ),
-        h("div",{style:{display:"flex",gap:6,flexWrap:"wrap"}},
-          ["Wie sage ich 'Ich bin müde'?","Erkläre die Verneinung","Übe mit mir"].map(function(s){
-            return h("button",{key:s,onClick:function(){setInp(s);},style:{fontSize:12,color:GOLD,background:GS,border:"none",borderRadius:999,padding:"6px 12px",cursor:"pointer",fontFamily:"inherit"}},s);
-          })
-        )
+        fp.map(function(p,i){
+          return h("div",{key:i,style:{background:WH,borderRadius:14,padding:"14px 16px",boxShadow:SSH,display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
+            h("div",null,
+              h("div",{style:{fontSize:16,color:BLK}},p.sk),
+              h("div",{style:{fontSize:13,color:GR,marginTop:2}},p.de)
+            ),
+            h("button",{onClick:function(){speak(p.sk);},style:{width:38,height:38,borderRadius:999,cursor:"pointer",border:"1.5px solid "+BR,background:WH,display:"flex",alignItems:"center",justifyContent:"center"}},IcoSpeak(GR))
+          );
+        })
       ):null
     )
   );
 }
 
-// ── PROGRESS SCREEN ───────────────────────────────────────────────────────────
+// PROGRESS SCREEN
 function ProgressScreen(){
   var stats=loadStats(),prog=loadProgress(),known=new Set(prog.known||[]);
   var plan=loadPlan(),tod=stats[todayKey()]||{seen:0,correct:0};
@@ -812,7 +920,6 @@ function ProgressScreen(){
   var catS={};
   for(var i=0;i<VOCAB.length;i++){var v=VOCAB[i];if(!catS[v.cat])catS[v.cat]={t:0,k:0};catS[v.cat].t++;if(known.has(v.sk))catS[v.cat].k++;}
   function saveG(){savePlan(Object.assign({},plan,{dailyGoal:goal}));setSaved(true);setTimeout(function(){setSaved(false);},2000);}
-
   var dots=[];
   for(var ii=0;ii<30;ii++){
     var dd2=new Date();dd2.setDate(dd2.getDate()-(29-ii));
@@ -821,62 +928,67 @@ function ProgressScreen(){
     var bg=iv===0?BR:iv<0.5?GM:iv<1?GOLD:GRN;
     dots.push(h("div",{key:hk,style:{width:24,height:24,borderRadius:6,background:bg,border:"2px solid "+(hk===todayKey()?GOLD:"transparent")}}));
   }
-
   return h("div",{style:{padding:"24px 20px 48px"}},
     h("div",{style:{fontSize:26,fontWeight:300,fontFamily:"'DM Serif Display',serif",color:BLK,marginBottom:24}},"Fortschritt"),
-    h("div",{style:card({display:"flex",alignItems:"center",gap:20,marginBottom:16})},
+    h("div",{style:cardSt({display:"flex",alignItems:"center",gap:20,marginBottom:16})},
       h("div",{style:{position:"relative",flexShrink:0}},
         h(Ring,{pct:kPct,size:88,stroke:7}),
-        h("div",{style:{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}},h("div",{style:{fontSize:20,fontWeight:600,color:BLK}},kPct+"%"))
+        h("div",{style:{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}},
+          h("div",{style:{fontSize:20,fontWeight:600,color:BLK}},kPct+"%"))
       ),
       h("div",{style:{flex:1}},
         h("div",{style:{fontSize:22,fontWeight:600,color:BLK}},known.size,h("span",{style:{fontSize:14,fontWeight:400,color:LT}}," / "+VOCAB.length)),
         h("div",{style:{fontSize:13,color:GR,marginTop:2}},"Wörter gelernt"),
         h("div",{style:{display:"flex",gap:20,marginTop:12}},
-          h("div",null,h("div",{style:{display:"flex",alignItems:"center",gap:4}},h("span",null,"🔥"),h("span",{style:{fontSize:18,fontWeight:600,color:BLK}},streak)),h("div",{style:{fontSize:11,color:LT}},"Serie")),
+          h("div",null,h("div",{style:{display:"flex",alignItems:"center",gap:4}},h("span",null,"\uD83D\uDD25"),h("span",{style:{fontSize:18,fontWeight:600,color:BLK}},streak)),h("div",{style:{fontSize:11,color:LT}},"Serie")),
           h("div",null,h("div",{style:{fontSize:18,fontWeight:600,color:BLK}},tod.seen),h("div",{style:{fontSize:11,color:LT}},"Heute")),
           h("div",null,h("div",{style:{fontSize:18,fontWeight:600,color:GRN}},acc+"%"),h("div",{style:{fontSize:11,color:LT}},"Genauigkeit"))
         )
       )
     ),
-    h("div",{style:card({marginBottom:16})},h("div",{style:label()},"LETZTE 30 TAGE"),h("div",{style:{display:"flex",flexWrap:"wrap",gap:5}},dots)),
-    h("div",{style:card({marginBottom:16})},
-      h("div",{style:label()},"LETZTE 14 TAGE"),
+    h("div",{style:cardSt({marginBottom:16})},h("div",{style:lblSt()},"LETZTE 30 TAGE"),h("div",{style:{display:"flex",flexWrap:"wrap",gap:5}},dots)),
+    h("div",{style:cardSt({marginBottom:16})},
+      h("div",{style:lblSt()},"LETZTE 14 TAGE"),
       h("div",{style:{display:"flex",alignItems:"flex-end",gap:4,height:72}},
-        days.map(function(day){var ht=Math.round(day.data.seen/maxS*68);var gr=day.data.seen>=plan.dailyGoal,isT=day.key===todayKey();
+        days.map(function(day){
+          var ht=Math.round(day.data.seen/maxS*68),gr=day.data.seen>=plan.dailyGoal,isT=day.key===todayKey();
           return h("div",{key:day.key,style:{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3}},
-            h("div",{style:{width:"100%",display:"flex",flexDirection:"column",justifyContent:"flex-end",height:68}},h("div",{style:{width:"100%",height:Math.max(ht,2),background:gr?GRN:isT?GOLD:BR,borderRadius:"3px 3px 0 0"}})),
+            h("div",{style:{width:"100%",display:"flex",flexDirection:"column",justifyContent:"flex-end",height:68}},
+              h("div",{style:{width:"100%",height:Math.max(ht,2),background:gr?GRN:isT?GOLD:BR,borderRadius:"3px 3px 0 0"}})),
             h("div",{style:{fontSize:9,color:isT?GOLD:LT,fontFamily:"monospace"}},day.lbl));
         })
       )
     ),
-    h("div",{style:card({marginBottom:16})},
-      h("div",{style:label()},"NACH THEMA"),
-      Object.keys(catS).map(function(cat){var ct=catS[cat],p=Math.round(ct.k/ct.t*100);
+    h("div",{style:cardSt({marginBottom:16})},
+      h("div",{style:lblSt()},"NACH THEMA"),
+      Object.keys(catS).map(function(cat){
+        var ct=catS[cat],p=Math.round(ct.k/ct.t*100);
         return h("div",{key:cat,style:{marginBottom:14}},
-          h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:5}},h("span",{style:{fontSize:13,color:BLK}},cat),h("span",{style:{fontSize:12,color:LT}},ct.k+"/"+ct.t)),
-          h("div",{style:{height:4,background:BR,borderRadius:2}},h("div",{style:{height:"100%",width:p+"%",background:p===100?GRN:GOLD,borderRadius:2}})));
+          h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:5}},
+            h("span",{style:{fontSize:13,color:BLK}},cat),h("span",{style:{fontSize:12,color:LT}},ct.k+"/"+ct.t)),
+          h("div",{style:{height:4,background:BR,borderRadius:2}},
+            h("div",{style:{height:"100%",width:p+"%",background:p===100?GRN:GOLD,borderRadius:2}})));
       })
     ),
-    h("div",{style:card(null)},
-      h("div",{style:label()},"TAGESZIEL"),
+    h("div",{style:cardSt(null)},
+      h("div",{style:lblSt()},"TAGESZIEL"),
       h("div",{style:{display:"flex",gap:8,marginBottom:16}},
         [5,10,15,20,30].map(function(n){return h("button",{key:n,onClick:function(){setGoal(n);},style:{flex:1,padding:"10px 4px",borderRadius:12,fontFamily:"inherit",background:goal===n?GOLD:"transparent",border:"1.5px solid "+(goal===n?GOLD:BR),color:goal===n?"#fff":GR,fontSize:14,fontWeight:goal===n?600:400,cursor:"pointer"}},n);})
       ),
-      h("button",{onClick:saveG,style:{width:"100%",padding:"15px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:16,fontWeight:600,cursor:"pointer",background:GOLD,color:"#fff",boxShadow:SGH}},saved?"✓ Gespeichert!":"Ziel speichern")
+      h("button",{onClick:saveG,style:btnPrimSt()},saved?"\u2713 Gespeichert!":"Ziel speichern")
     )
   );
 }
 
-// ── TAB BAR ───────────────────────────────────────────────────────────────────
+// TAB BAR
 function TabBar(props){
   var tab=props.tab,setTab=props.setTab;
   var tabs=[
-    {id:"learn",label:"Lernen",icon:IconLearn},
-    {id:"flash",label:"Flashcards",icon:IconFlash},
-    {id:"quiz",label:"Quiz",icon:IconQuiz},
-    {id:"know",label:"Wissen",icon:IconKnow},
-    {id:"prog",label:"Fortschritt",icon:IconProg},
+    {id:"learn",label:"Lernen",icon:IcoLearn},
+    {id:"flash",label:"Flashcards",icon:IcoFlash},
+    {id:"quiz",label:"Quiz",icon:IcoQuiz},
+    {id:"know",label:"Wissen",icon:IcoKnow},
+    {id:"prog",label:"Fortschritt",icon:IcoProg},
   ];
   return h("div",{style:{display:"flex",background:WH,borderTop:"1px solid "+BR,paddingBottom:"env(safe-area-inset-bottom)",flexShrink:0}},
     tabs.map(function(t){
@@ -889,7 +1001,7 @@ function TabBar(props){
   );
 }
 
-// ── APP ───────────────────────────────────────────────────────────────────────
+// APP
 function App(){
   var r1=useState("learn"),tab=r1[0],setTab=r1[1];
   return h("div",{style:{display:"flex",flexDirection:"column",height:"100dvh",maxWidth:480,margin:"0 auto",background:BG,overflow:"hidden"}},
