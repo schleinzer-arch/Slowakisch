@@ -21,407 +21,442 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script>
-var h=React.createElement,useState=React.useState,useEffect=React.useEffect,useRef=React.useRef;
-
-var GOLD="#D4A937",GS="#D4A93715",GM="#D4A93745",BLK="#111111",GR="#6B6B6B",LT="#AAAAAA";
-var BG="#F7F5F0",WH="#FFFFFF",BR="#EBEBEB",GRN="#34C759",RD="#FF3B30";
-var SH="0 2px 16px rgba(0,0,0,0.06)",SSH="0 1px 4px rgba(0,0,0,0.04)",SGH="0 2px 10px rgba(212,169,55,0.28)";
-var SERIF='Georgia,"Palatino Linotype",Palatino,"Times New Roman",serif';
-
-function lsGet(k,fb){try{var v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;}}
-function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
-function loadProgress(){return lsGet("sk_prog",{});}
-function saveProgress(kn,le,counts){
-  var ka=[],la=[];kn.forEach(function(v){ka.push(v);});le.forEach(function(v){la.push(v);});
-  lsSet("sk_prog",{known:ka,learning:la,counts:counts||{}});
-}
-function loadStats(){return lsGet("sk_stats",{});}
-function saveStats(s){lsSet("sk_stats",s);}
-function loadPlan(){return lsGet("sk_plan",{dailyGoal:10});}
-function savePlan(p){lsSet("sk_plan",p);}
-function todayKey(){return new Date().toISOString().slice(0,10);}
-function recordActivity(sk,correct){
-  var s=loadStats(),k=todayKey();
-  if(!s[k])s[k]={seen:0,correct:0,words:[]};
-  s[k].seen++;if(correct)s[k].correct++;
-  if(s[k].words.indexOf(sk)===-1)s[k].words.push(sk);
-  var keys=Object.keys(s).sort();
-  if(keys.length>30)keys.slice(0,keys.length-30).forEach(function(k2){delete s[k2];});
-  saveStats(s);
-}
-function getTodayWords(){var s=loadStats(),k=todayKey();return s[k]?s[k].words||[]:[]; }
-function objSum(o,key){var t=0;Object.keys(o).forEach(function(k){t+=o[k][key]||0;});return t;}
-function shuffle(arr){var a=arr.slice(),i=a.length,j,t;while(i--){j=Math.floor(Math.random()*(i+1));t=a[i];a[i]=a[j];a[j]=t;}return a;}
-function setArr(s){var a=[];s.forEach(function(v){a.push(v);});return a;}
-function cs(){var o={};for(var i=0;i<arguments.length;i++){var a=arguments[i];if(a)Object.keys(a).forEach(function(k){o[k]=a[k];});}return o;}
-
-var PRONUC_CHARS=["\u0161","\u010d","\u017e","\u010f","\u0165","\u0148","\u013e","\u00e1","\u00e9","\u00ed","\u00fa","\u00fd","\u00f4"];
-var PRONUC_TIPS=["sch","tsch","zh","dj","tj","nj","lj","aa","ee","ii","uu","ii","uo"];
-function getPronTips(word){
-  var tips=[],low=word.toLowerCase();
-  for(var i=0;i<PRONUC_CHARS.length;i++){if(low.indexOf(PRONUC_CHARS[i])!==-1)tips.push(PRONUC_CHARS[i]+"="+PRONUC_TIPS[i]);}
-  return tips.slice(0,2);
-}
-
 const VOCAB = [
-  // ── Begrüßung & Höflichkeit (40) ──
-  { sk: "Ahoj", de: "Hallo", cat: "Grundlagen", ex: "Ahoj, ako sa máš?" },
-  { sk: "Dobrý deň", de: "Guten Tag", cat: "Grundlagen", ex: "Dobrý deň, pán Novák." },
-  { sk: "Dobré ráno", de: "Guten Morgen", cat: "Grundlagen", ex: "Dobré ráno, dobre si spal?" },
-  { sk: "Dobrý večer", de: "Guten Abend", cat: "Grundlagen", ex: "Dobrý večer, vitajte!" },
-  { sk: "Dovidenia", de: "Auf Wiedersehen", cat: "Grundlagen", ex: "Dovidenia, zajtra!" },
-  { sk: "Čau", de: "Tschüss / Hi", cat: "Grundlagen", ex: "Čau, uvidíme sa!" },
-  { sk: "Dobrú noc", de: "Gute Nacht", cat: "Grundlagen", ex: "Dobrú noc, sladké sny." },
-  { sk: "Ďakujem", de: "Danke", cat: "Grundlagen", ex: "Ďakujem veľmi pekne!" },
-  { sk: "Veľmi pekne ďakujem", de: "Vielen herzlichen Dank", cat: "Grundlagen", ex: "Veľmi pekne ďakujem za pomoc." },
-  { sk: "Prosím", de: "Bitte / Gern geschehen", cat: "Grundlagen", ex: "Prosím, pomôžte mi." },
-  { sk: "Prepáčte", de: "Entschuldigung (formal)", cat: "Grundlagen", ex: "Prepáčte, kde je záchod?" },
-  { sk: "Pardon", de: "Entschuldigung (kurz)", cat: "Grundlagen", ex: "Pardon, môžem prejsť?" },
-  { sk: "Ospravedlňujem sa", de: "Es tut mir leid", cat: "Grundlagen", ex: "Ospravedlňujem sa za meškanie." },
-  { sk: "Áno", de: "Ja", cat: "Grundlagen", ex: "Áno, rozumiem." },
-  { sk: "Nie", de: "Nein", cat: "Grundlagen", ex: "Nie, ďakujem." },
-  { sk: "Možno", de: "Vielleicht", cat: "Grundlagen", ex: "Možno prídem zajtra." },
-  { sk: "Samozrejme", de: "Natürlich / Selbstverständlich", cat: "Grundlagen", ex: "Samozrejme, pomôžem ti." },
-  { sk: "Nech sa páči", de: "Bitte sehr / Hier bitte", cat: "Grundlagen", ex: "Nech sa páči, váš káva." },
-  { sk: "Ako sa máš?", de: "Wie geht es dir?", cat: "Grundlagen", ex: "Ahoj, ako sa máš?" },
-  { sk: "Dobre, ďakujem", de: "Gut, danke", cat: "Grundlagen", ex: "Dobre, ďakujem, a ty?" },
-  { sk: "Výborne", de: "Ausgezeichnet", cat: "Grundlagen", ex: "Cítim sa výborne." },
-  { sk: "Nie veľmi dobre", de: "Nicht so gut", cat: "Grundlagen", ex: "Dnes sa cítim nie veľmi dobre." },
-  { sk: "Vitajte", de: "Willkommen", cat: "Grundlagen", ex: "Vitajte v Bratislave!" },
-  { sk: "Na zdravie", de: "Gesundheit / Prost", cat: "Grundlagen", ex: "Na zdravie! — Ďakujem." },
-  { sk: "Šťastnú cestu", de: "Gute Reise", cat: "Grundlagen", ex: "Šťastnú cestu a opatruj sa." },
-  { sk: "Veľa šťastia", de: "Viel Glück", cat: "Grundlagen", ex: "Veľa šťastia na skúške!" },
-  { sk: "Všetko najlepšie", de: "Alles Gute", cat: "Grundlagen", ex: "Všetko najlepšie k narodeninám!" },
-  { sk: "Teší ma", de: "Freut mich (Sie kennenzulernen)", cat: "Grundlagen", ex: "Teší ma, som Anna." },
-  { sk: "Ako sa voláš?", de: "Wie heißt du?", cat: "Grundlagen", ex: "Ahoj, ako sa voláš?" },
-  { sk: "Volám sa...", de: "Ich heiße...", cat: "Grundlagen", ex: "Volám sa Marek." },
-  { sk: "Odkiaľ si?", de: "Woher bist du?", cat: "Grundlagen", ex: "Odkiaľ si? Som z Viedne." },
-  { sk: "Koľko máš rokov?", de: "Wie alt bist du?", cat: "Grundlagen", ex: "Koľko máš rokov? Mám 30." },
-  { sk: "Hovoríš po slovensky?", de: "Sprichst du Slowakisch?", cat: "Grundlagen", ex: "Hovoríš po slovensky? Trochu." },
-  { sk: "Nerozumiem", de: "Ich verstehe nicht", cat: "Grundlagen", ex: "Prepáčte, nerozumiem." },
-  { sk: "Môžete to zopakovať?", de: "Können Sie das wiederholen?", cat: "Grundlagen", ex: "Môžete to zopakovať pomalšie?" },
-  { sk: "Hovorite po nemecky?", de: "Sprechen Sie Deutsch?", cat: "Grundlagen", ex: "Hovorite po nemecky? Áno, trochu." },
-  { sk: "Pomaly, prosím", de: "Langsam, bitte", cat: "Grundlagen", ex: "Hovorte pomaly, prosím." },
-  { sk: "Rozumiem", de: "Ich verstehe", cat: "Grundlagen", ex: "Áno, teraz rozumiem." },
-  { sk: "Zabudol som", de: "Ich habe vergessen", cat: "Grundlagen", ex: "Zabudol som slovo." },
-  { sk: "Neviem", de: "Ich weiß nicht", cat: "Grundlagen", ex: "Neviem, kde je stanica." },
+  // ── Grundwortschatz (100) ──────────────────────────────────────────────────
+  // Farben
+  { sk: "červený", de: "rot", cat: "Grundwortschatz", ex: "Mám červené auto." },
+  { sk: "modrý", de: "blau", cat: "Grundwortschatz", ex: "Obloha je modrá." },
+  { sk: "zelený", de: "grün", cat: "Grundwortschatz", ex: "Tráva je zelená." },
+  { sk: "žltý", de: "gelb", cat: "Grundwortschatz", ex: "Citrón je žltý." },
+  { sk: "čierny", de: "schwarz", cat: "Grundwortschatz", ex: "Mám čiernu mačku." },
+  { sk: "biely", de: "weiß", cat: "Grundwortschatz", ex: "Sneh je biely." },
+  { sk: "sivý", de: "grau", cat: "Grundwortschatz", ex: "Obloha je sivá." },
+  { sk: "hnedý", de: "braun", cat: "Grundwortschatz", ex: "Hnedý chlieb." },
+  { sk: "oranžový", de: "orange", cat: "Grundwortschatz", ex: "Oranžová farba." },
+  { sk: "ružový", de: "rosa / pink", cat: "Grundwortschatz", ex: "Ružové kvety." },
+  { sk: "fialový", de: "lila / violett", cat: "Grundwortschatz", ex: "Fialový šál." },
+  { sk: "farba", de: "Farbe", cat: "Grundwortschatz", ex: "Aká je tvoja obľúbená farba?" },
+  // Grundverben
+  { sk: "ísť", de: "gehen", cat: "Grundwortschatz", ex: "Idem domov." },
+  { sk: "prísť", de: "kommen", cat: "Grundwortschatz", ex: "Príď sem!" },
+  { sk: "vidieť", de: "sehen", cat: "Grundwortschatz", ex: "Vidím ho." },
+  { sk: "počuť", de: "hören", cat: "Grundwortschatz", ex: "Počujem hudbu." },
+  { sk: "hovoriť", de: "sprechen / sagen", cat: "Grundwortschatz", ex: "Hovorím po slovensky." },
+  { sk: "čítať", de: "lesen", cat: "Grundwortschatz", ex: "Rád čítam knihy." },
+  { sk: "písať", de: "schreiben", cat: "Grundwortschatz", ex: "Píšem email." },
+  { sk: "kupovať", de: "kaufen", cat: "Grundwortschatz", ex: "Kupujem jedlo." },
+  { sk: "platiť", de: "bezahlen", cat: "Grundwortschatz", ex: "Chcem platiť." },
+  { sk: "spať", de: "schlafen", cat: "Grundwortschatz", ex: "Idem spať." },
+  { sk: "jesť", de: "essen", cat: "Grundwortschatz", ex: "Rád jem pizzu." },
+  { sk: "piť", de: "trinken", cat: "Grundwortschatz", ex: "Pijem vodu." },
+  { sk: "otvoriť", de: "öffnen", cat: "Grundwortschatz", ex: "Otvor dvere." },
+  { sk: "zatvoriť", de: "schließen", cat: "Grundwortschatz", ex: "Zatvor okno." },
+  { sk: "hľadať", de: "suchen", cat: "Grundwortschatz", ex: "Hľadám kľúče." },
+  { sk: "nájsť", de: "finden", cat: "Grundwortschatz", ex: "Našiel som to." },
+  { sk: "dať", de: "geben", cat: "Grundwortschatz", ex: "Daj mi to." },
+  { sk: "vziať", de: "nehmen", cat: "Grundwortschatz", ex: "Vezmi si." },
+  { sk: "chcieť", de: "wollen", cat: "Grundwortschatz", ex: "Chcem kávu." },
+  { sk: "môcť", de: "können / dürfen", cat: "Grundwortschatz", ex: "Môžem ísť?" },
+  { sk: "musieť", de: "müssen", cat: "Grundwortschatz", ex: "Musím ísť." },
+  { sk: "vedieť", de: "wissen / können", cat: "Grundwortschatz", ex: "Viem plávať." },
+  { sk: "milovať", de: "lieben", cat: "Grundwortschatz", ex: "Milujem ťa." },
+  { sk: "páčiť sa", de: "gefallen / mögen", cat: "Grundwortschatz", ex: "Páči sa mi to." },
+  { sk: "pomôcť", de: "helfen", cat: "Grundwortschatz", ex: "Pomôž mi!" },
+  { sk: "pracovať", de: "arbeiten", cat: "Grundwortschatz", ex: "Pracujem v Bratislave." },
+  { sk: "bývať", de: "wohnen", cat: "Grundwortschatz", ex: "Bývam v Rakúsku." },
+  { sk: "myslieť", de: "denken / glauben", cat: "Grundwortschatz", ex: "Myslím, že áno." },
+  // Grundadjektive
+  { sk: "veľký", de: "groß", cat: "Grundwortschatz", ex: "Mám veľký dom." },
+  { sk: "malý", de: "klein", cat: "Grundwortschatz", ex: "Malé dieťa." },
+  { sk: "dobrý", de: "gut", cat: "Grundwortschatz", ex: "Dobrý deň!" },
+  { sk: "zlý", de: "schlecht / böse", cat: "Grundwortschatz", ex: "Zlé počasie." },
+  { sk: "nový", de: "neu", cat: "Grundwortschatz", ex: "Nové auto." },
+  { sk: "starý", de: "alt", cat: "Grundwortschatz", ex: "Starý dom." },
+  { sk: "rýchly", de: "schnell", cat: "Grundwortschatz", ex: "Rýchle auto." },
+  { sk: "pomalý", de: "langsam", cat: "Grundwortschatz", ex: "Pomalý vlak." },
+  { sk: "drahý", de: "teuer", cat: "Grundwortschatz", ex: "Je to príliš drahé." },
+  { sk: "lacný", de: "günstig / billig", cat: "Grundwortschatz", ex: "Lacné jedlo." },
+  { sk: "pekný", de: "schön", cat: "Grundwortschatz", ex: "Pekný deň!" },
+  { sk: "škaredý", de: "hässlich", cat: "Grundwortschatz", ex: "Škaredé počasie." },
+  { sk: "teplý", de: "warm", cat: "Grundwortschatz", ex: "Teplá voda." },
+  { sk: "studený", de: "kalt", cat: "Grundwortschatz", ex: "Studené pivo." },
+  { sk: "ťažký", de: "schwer", cat: "Grundwortschatz", ex: "Ťažká taška." },
+  { sk: "ľahký", de: "leicht / einfach", cat: "Grundwortschatz", ex: "Ľahká úloha." },
+  { sk: "správny", de: "richtig", cat: "Grundwortschatz", ex: "Správna odpoveď." },
+  { sk: "nesprávny", de: "falsch / falsch", cat: "Grundwortschatz", ex: "Nesprávna cesta." },
+  { sk: "plný", de: "voll", cat: "Grundwortschatz", ex: "Plný pohár." },
+  { sk: "prázdny", de: "leer", cat: "Grundwortschatz", ex: "Prázdna fľaša." },
+  // Richtungen & Position
+  { sk: "tu", de: "hier", cat: "Grundwortschatz", ex: "Som tu." },
+  { sk: "tam", de: "dort / da", cat: "Grundwortschatz", ex: "Je tam." },
+  { sk: "hore", de: "oben / rauf", cat: "Grundwortschatz", ex: "Choď hore." },
+  { sk: "dole", de: "unten / runter", cat: "Grundwortschatz", ex: "Choď dole." },
+  { sk: "vľavo", de: "links", cat: "Grundwortschatz", ex: "Odbočte vľavo." },
+  { sk: "vpravo", de: "rechts", cat: "Grundwortschatz", ex: "Odbočte vpravo." },
+  { sk: "rovno", de: "geradeaus", cat: "Grundwortschatz", ex: "Choďte rovno." },
+  { sk: "vedľa", de: "neben", cat: "Grundwortschatz", ex: "Sedí vedľa mňa." },
+  { sk: "pred", de: "vor", cat: "Grundwortschatz", ex: "Stojím pred domom." },
+  { sk: "za", de: "hinter", cat: "Grundwortschatz", ex: "Je za rohom." },
+  { sk: "medzi", de: "zwischen", cat: "Grundwortschatz", ex: "Medzi dvoma domami." },
+  { sk: "naproti", de: "gegenüber", cat: "Grundwortschatz", ex: "Naproti stanici." },
+  // Mengen & Pronomen
+  { sk: "všetko", de: "alles", cat: "Grundwortschatz", ex: "Všetko je v poriadku." },
+  { sk: "nič", de: "nichts", cat: "Grundwortschatz", ex: "Nič neviem." },
+  { sk: "niečo", de: "etwas", cat: "Grundwortschatz", ex: "Niečo zjem." },
+  { sk: "veľa", de: "viel / viele", cat: "Grundwortschatz", ex: "Veľa ľudí." },
+  { sk: "málo", de: "wenig", cat: "Grundwortschatz", ex: "Málo času." },
+  { sk: "viac", de: "mehr", cat: "Grundwortschatz", ex: "Chcem viac." },
+  { sk: "dosť", de: "genug", cat: "Grundwortschatz", ex: "Mám dosť." },
+  { sk: "každý", de: "jeder / alle", cat: "Grundwortschatz", ex: "Každý deň." },
+  { sk: "niekto", de: "jemand", cat: "Grundwortschatz", ex: "Niekto volá." },
+  { sk: "nikto", de: "niemand", cat: "Grundwortschatz", ex: "Nikto tu nie je." },
+  { sk: "tento", de: "dieser / dieses", cat: "Grundwortschatz", ex: "Tento dom." },
+  { sk: "tamten", de: "jener / jenes", cat: "Grundwortschatz", ex: "Tamten muž." },
+  // Länder & Sprachen
+  { sk: "Slovensko", de: "Slowakei", cat: "Grundwortschatz", ex: "Som zo Slovenska." },
+  { sk: "Rakúsko", de: "Österreich", cat: "Grundwortschatz", ex: "Bývam v Rakúsku." },
+  { sk: "Nemecko", de: "Deutschland", cat: "Grundwortschatz", ex: "Idem do Nemecka." },
+  { sk: "Česko", de: "Tschechien", cat: "Grundwortschatz", ex: "Praha je v Česku." },
+  { sk: "Maďarsko", de: "Ungarn", cat: "Grundwortschatz", ex: "Budapešť je v Maďarsku." },
+  { sk: "po slovensky", de: "auf Slowakisch", cat: "Grundwortschatz", ex: "Hovorím po slovensky." },
+  { sk: "po nemecky", de: "auf Deutsch", cat: "Grundwortschatz", ex: "Hovorím po nemecky." },
+  { sk: "po anglicky", de: "auf Englisch", cat: "Grundwortschatz", ex: "Hovorí po anglicky." },
+  { sk: "jazyk", de: "Sprache", cat: "Grundwortschatz", ex: "Aký jazyk hovoríš?" },
+  { sk: "cudzinec", de: "Ausländer", cat: "Grundwortschatz", ex: "Som cudzinec." },
+  { sk: "prekladať", de: "übersetzen", cat: "Grundwortschatz", ex: "Môžeš prekladať?" },
+  { sk: "slovo", de: "Wort", cat: "Grundwortschatz", ex: "Aké je slovenské slovo?" },
 
-  // ── Familie & Menschen (40) ──
-  { sk: "Rodina", de: "Familie", cat: "Grundlagen", ex: "Mám veľkú rodinu." },
-  { sk: "Mama", de: "Mama / Mutter", cat: "Grundlagen", ex: "Moja mama je učiteľka." },
-  { sk: "Otec", de: "Vater", cat: "Grundlagen", ex: "Môj otec pracuje v Bratislave." },
-  { sk: "Syn", de: "Sohn", cat: "Grundlagen", ex: "Môj syn má päť rokov." },
-  { sk: "Dcéra", de: "Tochter", cat: "Grundlagen", ex: "Naša dcéra chodí do školy." },
-  { sk: "Brat", de: "Bruder", cat: "Grundlagen", ex: "Môj brat býva v Košiciach." },
-  { sk: "Sestra", de: "Schwester", cat: "Grundlagen", ex: "Mám jednu sestru." },
-  { sk: "Starý otec", de: "Großvater / Opa", cat: "Grundlagen", ex: "Starý otec rozpráva príbehy." },
-  { sk: "Stará mama", de: "Großmutter / Oma", cat: "Grundlagen", ex: "Stará mama pečie koláče." },
-  { sk: "Strýko", de: "Onkel", cat: "Grundlagen", ex: "Strýko príde cez víkend." },
-  { sk: "Teta", de: "Tante", cat: "Grundlagen", ex: "Teta Marta je veselá." },
-  { sk: "Bratranec", de: "Cousin (männlich)", cat: "Grundlagen", ex: "Môj bratranec je lekár." },
-  { sk: "Sesternica", de: "Cousine (weiblich)", cat: "Grundlagen", ex: "Sesternica žije v zahraničí." },
-  { sk: "Manžel", de: "Ehemann", cat: "Grundlagen", ex: "Môj manžel varí výborne." },
-  { sk: "Manželka", de: "Ehefrau", cat: "Grundlagen", ex: "Manželka pracuje v nemocnici." },
-  { sk: "Priateľ", de: "Freund / Freundin (m)", cat: "Grundlagen", ex: "Môj priateľ je vtipný." },
-  { sk: "Priateľka", de: "Freundin (f)", cat: "Grundlagen", ex: "Moja priateľka býva blízko." },
-  { sk: "Sused", de: "Nachbar (m)", cat: "Grundlagen", ex: "Sused je veľmi milý." },
-  { sk: "Suseda", de: "Nachbarin (f)", cat: "Grundlagen", ex: "Suseda nám pomohla." },
-  { sk: "Kolega", de: "Kollege", cat: "Grundlagen", ex: "Môj kolega je z Poľska." },
-  { sk: "Šéf", de: "Chef / Boss", cat: "Grundlagen", ex: "Šéf prišiel neskoro." },
-  { sk: "Dieťa", de: "Kind", cat: "Grundlagen", ex: "Toto dieťa je roztomilé." },
-  { sk: "Chlapec", de: "Junge / Bub", cat: "Grundlagen", ex: "Ten chlapec hrá futbal." },
-  { sk: "Dievča", de: "Mädchen", cat: "Grundlagen", ex: "Dievča spieva krásne." },
-  { sk: "Muž", de: "Mann", cat: "Grundlagen", ex: "Ten muž je vysoký." },
-  { sk: "Žena", de: "Frau", cat: "Grundlagen", ex: "Táto žena je lekárka." },
-  { sk: "Starý", de: "Alt", cat: "Grundlagen", ex: "Môj dedko je starý, ale zdravý." },
-  { sk: "Mladý", de: "Jung", cat: "Grundlagen", ex: "Je ešte mladý." },
-  { sk: "Svokra", de: "Schwiegermutter", cat: "Grundlagen", ex: "Svokra nás navštívi v sobotu." },
-  { sk: "Svokor", de: "Schwiegervater", cat: "Grundlagen", ex: "Svokor rád číta." },
-  { sk: "Zať", de: "Schwiegersohn", cat: "Grundlagen", ex: "Zať pracuje v Viedni." },
-  { sk: "Nevesta", de: "Schwiegertochter / Braut", cat: "Grundlagen", ex: "Nevesta je veľmi milá." },
-  { sk: "Dvojčatá", de: "Zwillinge", cat: "Grundlagen", ex: "Majú dvojčatá." },
-  { sk: "Jedináček", de: "Einzelkind", cat: "Grundlagen", ex: "Som jedináček." },
-  { sk: "Rozvedený", de: "Geschieden", cat: "Grundlagen", ex: "Je rozvedený." },
-  { sk: "Slobodný", de: "Ledig", cat: "Grundlagen", ex: "Som slobodný." },
-  { sk: "Ženatý / Vydatá", de: "Verheiratet", cat: "Grundlagen", ex: "Sme ženatí päť rokov." },
-  { sk: "Milý", de: "Lieb / Nett", cat: "Grundlagen", ex: "Je veľmi milý človek." },
-  { sk: "Sympatický", de: "Sympathisch", cat: "Grundlagen", ex: "Moja kolegyňa je sympatická." },
-  { sk: "Adoptovaný", de: "Adoptiert", cat: "Grundlagen", ex: "Je adoptovaný." },
+  // ── Begrüßung & Alltag (40) ────────────────────────────────────────────────
+  { sk: "Ahoj", de: "Hallo", cat: "Begrüßung & Alltag", ex: "Ahoj, ako sa máš?" },
+  { sk: "Dobrý deň", de: "Guten Tag", cat: "Begrüßung & Alltag", ex: "Dobrý deň, pán Novák." },
+  { sk: "Dobré ráno", de: "Guten Morgen", cat: "Begrüßung & Alltag", ex: "Dobré ráno, dobre si spal?" },
+  { sk: "Dobrý večer", de: "Guten Abend", cat: "Begrüßung & Alltag", ex: "Dobrý večer, vitajte!" },
+  { sk: "Dovidenia", de: "Auf Wiedersehen", cat: "Begrüßung & Alltag", ex: "Dovidenia, zajtra!" },
+  { sk: "Čau", de: "Tschüss / Hi", cat: "Begrüßung & Alltag", ex: "Čau, uvidíme sa!" },
+  { sk: "Dobrú noc", de: "Gute Nacht", cat: "Begrüßung & Alltag", ex: "Dobrú noc, sladké sny." },
+  { sk: "Ďakujem", de: "Danke", cat: "Begrüßung & Alltag", ex: "Ďakujem veľmi pekne!" },
+  { sk: "Prosím", de: "Bitte / Gern geschehen", cat: "Begrüßung & Alltag", ex: "Prosím, pomôžte mi." },
+  { sk: "Prepáčte", de: "Entschuldigung", cat: "Begrüßung & Alltag", ex: "Prepáčte, kde je záchod?" },
+  { sk: "Ospravedlňujem sa", de: "Es tut mir leid", cat: "Begrüßung & Alltag", ex: "Ospravedlňujem sa za meškanie." },
+  { sk: "Áno", de: "Ja", cat: "Begrüßung & Alltag", ex: "Áno, rozumiem." },
+  { sk: "Nie", de: "Nein", cat: "Begrüßung & Alltag", ex: "Nie, ďakujem." },
+  { sk: "Možno", de: "Vielleicht", cat: "Begrüßung & Alltag", ex: "Možno prídem zajtra." },
+  { sk: "Samozrejme", de: "Natürlich", cat: "Begrüßung & Alltag", ex: "Samozrejme, pomôžem ti." },
+  { sk: "Nech sa páči", de: "Bitte sehr / Hier bitte", cat: "Begrüßung & Alltag", ex: "Nech sa páči, vaša káva." },
+  { sk: "Ako sa máš?", de: "Wie geht es dir?", cat: "Begrüßung & Alltag", ex: "Ahoj, ako sa máš?" },
+  { sk: "Dobre, ďakujem", de: "Gut, danke", cat: "Begrüßung & Alltag", ex: "Dobre, ďakujem, a ty?" },
+  { sk: "Výborne", de: "Ausgezeichnet", cat: "Begrüßung & Alltag", ex: "Cítim sa výborne." },
+  { sk: "Nie veľmi dobre", de: "Nicht so gut", cat: "Begrüßung & Alltag", ex: "Dnes sa cítim nie veľmi dobre." },
+  { sk: "Vitajte", de: "Willkommen", cat: "Begrüßung & Alltag", ex: "Vitajte v Bratislave!" },
+  { sk: "Na zdravie", de: "Gesundheit / Prost", cat: "Begrüßung & Alltag", ex: "Na zdravie!" },
+  { sk: "Veľa šťastia", de: "Viel Glück", cat: "Begrüßung & Alltag", ex: "Veľa šťastia na skúške!" },
+  { sk: "Všetko najlepšie", de: "Alles Gute", cat: "Begrüßung & Alltag", ex: "Všetko najlepšie k narodeninám!" },
+  { sk: "Teší ma", de: "Freut mich", cat: "Begrüßung & Alltag", ex: "Teší ma, som Anna." },
+  { sk: "Ako sa voláš?", de: "Wie heißt du?", cat: "Begrüßung & Alltag", ex: "Ahoj, ako sa voláš?" },
+  { sk: "Volám sa...", de: "Ich heiße...", cat: "Begrüßung & Alltag", ex: "Volám sa Marek." },
+  { sk: "Odkiaľ si?", de: "Woher bist du?", cat: "Begrüßung & Alltag", ex: "Odkiaľ si? Som z Viedne." },
+  { sk: "Nerozumiem", de: "Ich verstehe nicht", cat: "Begrüßung & Alltag", ex: "Prepáčte, nerozumiem." },
+  { sk: "Môžete to zopakovať?", de: "Können Sie das wiederholen?", cat: "Begrüßung & Alltag", ex: "Môžete to zopakovať pomalšie?" },
+  { sk: "Hovoríte po nemecky?", de: "Sprechen Sie Deutsch?", cat: "Begrüßung & Alltag", ex: "Hovoríte po nemecky?" },
+  { sk: "Pomaly, prosím", de: "Langsam, bitte", cat: "Begrüßung & Alltag", ex: "Hovorte pomaly, prosím." },
+  { sk: "Rozumiem", de: "Ich verstehe", cat: "Begrüßung & Alltag", ex: "Áno, teraz rozumiem." },
+  { sk: "Neviem", de: "Ich weiß nicht", cat: "Begrüßung & Alltag", ex: "Neviem, kde je stanica." },
+  { sk: "Pomôžte mi", de: "Helfen Sie mir", cat: "Begrüßung & Alltag", ex: "Pomôžte mi, prosím!" },
+  { sk: "Kde je...?", de: "Wo ist...?", cat: "Begrüßung & Alltag", ex: "Kde je záchod?" },
+  { sk: "Koľko stojí?", de: "Was kostet das?", cat: "Begrüßung & Alltag", ex: "Koľko stojí toto?" },
+  { sk: "Zavolajte políciu!", de: "Rufen Sie die Polizei!", cat: "Begrüßung & Alltag", ex: "Zavolajte políciu!" },
+  { sk: "Potrebujem lekára", de: "Ich brauche einen Arzt", cat: "Begrüßung & Alltag", ex: "Potrebujem lekára!" },
+  { sk: "Šťastnú cestu", de: "Gute Reise", cat: "Begrüßung & Alltag", ex: "Šťastnú cestu a opatruj sa." },
 
-  // ── Zahlen, Zeit & Datum (40) ──
-  { sk: "Jeden", de: "Eins (1)", cat: "Zahlen & Zeit", ex: "Mám jeden brat." },
-  { sk: "Dva", de: "Zwei (2)", cat: "Zahlen & Zeit", ex: "Dva kávy, prosím." },
-  { sk: "Tri", de: "Drei (3)", cat: "Zahlen & Zeit", ex: "Tri dni." },
-  { sk: "Štyri", de: "Vier (4)", cat: "Zahlen & Zeit", ex: "Štyri hodiny." },
-  { sk: "Päť", de: "Fünf (5)", cat: "Zahlen & Zeit", ex: "Päť minút." },
-  { sk: "Šesť", de: "Sechs (6)", cat: "Zahlen & Zeit", ex: "O šesť hodín." },
-  { sk: "Sedem", de: "Sieben (7)", cat: "Zahlen & Zeit", ex: "Sedem dní v týždni." },
-  { sk: "Osem", de: "Acht (8)", cat: "Zahlen & Zeit", ex: "Osem euro." },
-  { sk: "Deväť", de: "Neun (9)", cat: "Zahlen & Zeit", ex: "Deväť ráno." },
-  { sk: "Desať", de: "Zehn (10)", cat: "Zahlen & Zeit", ex: "Desať minút." },
-  { sk: "Dvadsať", de: "Zwanzig (20)", cat: "Zahlen & Zeit", ex: "Dvadsať rokov." },
-  { sk: "Päťdesiat", de: "Fünfzig (50)", cat: "Zahlen & Zeit", ex: "Päťdesiat centov." },
-  { sk: "Sto", de: "Hundert (100)", cat: "Zahlen & Zeit", ex: "Sto euro." },
-  { sk: "Tisíc", de: "Tausend (1000)", cat: "Zahlen & Zeit", ex: "Tisíc kilometrov." },
-  { sk: "Prvý", de: "Erste/r/s", cat: "Zahlen & Zeit", ex: "Prvý január." },
-  { sk: "Druhý", de: "Zweite/r/s", cat: "Zahlen & Zeit", ex: "Druhý poschodie." },
-  { sk: "Dnes", de: "Heute", cat: "Zahlen & Zeit", ex: "Dnes je pondelok." },
-  { sk: "Zajtra", de: "Morgen", cat: "Zahlen & Zeit", ex: "Zajtra prídem." },
-  { sk: "Včera", de: "Gestern", cat: "Zahlen & Zeit", ex: "Včera som bol chorý." },
-  { sk: "Teraz", de: "Jetzt / Gerade", cat: "Zahlen & Zeit", ex: "Teraz idem domov." },
-  { sk: "Neskôr", de: "Später", cat: "Zahlen & Zeit", ex: "Zavolám neskôr." },
-  { sk: "Skôr", de: "Früher / Eher", cat: "Zahlen & Zeit", ex: "Príď skôr." },
-  { sk: "Ráno", de: "Morgen (Tageszeit)", cat: "Zahlen & Zeit", ex: "Ráno pijem kávu." },
-  { sk: "Poludnie", de: "Mittag", cat: "Zahlen & Zeit", ex: "Na poludnie ideme jesť." },
-  { sk: "Večer", de: "Abend", cat: "Zahlen & Zeit", ex: "Večer pozeráme film." },
-  { sk: "Noc", de: "Nacht", cat: "Zahlen & Zeit", ex: "V noci je ticho." },
-  { sk: "Hodina", de: "Stunde / Uhr", cat: "Zahlen & Zeit", ex: "Koľko je hodín?" },
-  { sk: "Minúta", de: "Minute", cat: "Zahlen & Zeit", ex: "Päť minút." },
-  { sk: "Deň", de: "Tag", cat: "Zahlen & Zeit", ex: "Každý deň." },
-  { sk: "Týždeň", de: "Woche", cat: "Zahlen & Zeit", ex: "Tento týždeň." },
-  { sk: "Mesiac", de: "Monat", cat: "Zahlen & Zeit", ex: "Budúci mesiac." },
-  { sk: "Rok", de: "Jahr", cat: "Zahlen & Zeit", ex: "Tento rok." },
-  { sk: "Pondelok", de: "Montag", cat: "Zahlen & Zeit", ex: "V pondelok mám stretnutie." },
-  { sk: "Streda", de: "Mittwoch", cat: "Zahlen & Zeit", ex: "V stredu prídem." },
-  { sk: "Piatok", de: "Freitag", cat: "Zahlen & Zeit", ex: "V piatok ideme von." },
-  { sk: "Sobota", de: "Samstag", cat: "Zahlen & Zeit", ex: "V sobotu relaxujem." },
-  { sk: "Nedeľa", de: "Sonntag", cat: "Zahlen & Zeit", ex: "V nedeľu sme doma." },
-  { sk: "Január", de: "Jänner / Januar", cat: "Zahlen & Zeit", ex: "V januári je zima." },
-  { sk: "Júl", de: "Juli", cat: "Zahlen & Zeit", ex: "V júli ideme na dovolenku." },
-  { sk: "December", de: "Dezember", cat: "Zahlen & Zeit", ex: "V decembri je Vianoce." },
+  // ── Menschen & Familie (40) ───────────────────────────────────────────────
+  { sk: "Rodina", de: "Familie", cat: "Menschen & Familie", ex: "Mám veľkú rodinu." },
+  { sk: "Mama", de: "Mutter / Mama", cat: "Menschen & Familie", ex: "Moja mama je učiteľka." },
+  { sk: "Otec", de: "Vater", cat: "Menschen & Familie", ex: "Môj otec pracuje v Bratislave." },
+  { sk: "Syn", de: "Sohn", cat: "Menschen & Familie", ex: "Môj syn má päť rokov." },
+  { sk: "Dcéra", de: "Tochter", cat: "Menschen & Familie", ex: "Naša dcéra chodí do školy." },
+  { sk: "Brat", de: "Bruder", cat: "Menschen & Familie", ex: "Môj brat býva v Košiciach." },
+  { sk: "Sestra", de: "Schwester", cat: "Menschen & Familie", ex: "Mám jednu sestru." },
+  { sk: "Starý otec", de: "Großvater / Opa", cat: "Menschen & Familie", ex: "Starý otec rozpráva príbehy." },
+  { sk: "Stará mama", de: "Großmutter / Oma", cat: "Menschen & Familie", ex: "Stará mama pečie koláče." },
+  { sk: "Strýko", de: "Onkel", cat: "Menschen & Familie", ex: "Strýko príde cez víkend." },
+  { sk: "Teta", de: "Tante", cat: "Menschen & Familie", ex: "Teta Marta je veselá." },
+  { sk: "Manžel", de: "Ehemann", cat: "Menschen & Familie", ex: "Môj manžel varí výborne." },
+  { sk: "Manželka", de: "Ehefrau", cat: "Menschen & Familie", ex: "Manželka pracuje v nemocnici." },
+  { sk: "Priateľ", de: "Freund (m)", cat: "Menschen & Familie", ex: "Môj priateľ je vtipný." },
+  { sk: "Priateľka", de: "Freundin (f)", cat: "Menschen & Familie", ex: "Moja priateľka býva blízko." },
+  { sk: "Sused", de: "Nachbar", cat: "Menschen & Familie", ex: "Sused je veľmi milý." },
+  { sk: "Kolega", de: "Kollege", cat: "Menschen & Familie", ex: "Môj kolega je z Poľska." },
+  { sk: "Šéf", de: "Chef / Boss", cat: "Menschen & Familie", ex: "Šéf prišiel neskoro." },
+  { sk: "Dieťa", de: "Kind", cat: "Menschen & Familie", ex: "Toto dieťa je roztomilé." },
+  { sk: "Chlapec", de: "Junge / Bub", cat: "Menschen & Familie", ex: "Ten chlapec hrá futbal." },
+  { sk: "Dievča", de: "Mädchen", cat: "Menschen & Familie", ex: "Dievča spieva krásne." },
+  { sk: "Muž", de: "Mann", cat: "Menschen & Familie", ex: "Ten muž je vysoký." },
+  { sk: "Žena", de: "Frau", cat: "Menschen & Familie", ex: "Táto žena je lekárka." },
+  { sk: "Mladý", de: "jung", cat: "Menschen & Familie", ex: "Je ešte mladý." },
+  { sk: "Milý", de: "nett / lieb", cat: "Menschen & Familie", ex: "Je veľmi milý človek." },
+  { sk: "Sympatický", de: "sympathisch", cat: "Menschen & Familie", ex: "Moja kolegyňa je sympatická." },
+  { sk: "Ženatý / Vydatá", de: "verheiratet", cat: "Menschen & Familie", ex: "Sme ženatí päť rokov." },
+  { sk: "Slobodný", de: "ledig", cat: "Menschen & Familie", ex: "Som slobodný." },
+  { sk: "Rozvedený", de: "geschieden", cat: "Menschen & Familie", ex: "Je rozvedený." },
+  { sk: "Svokra", de: "Schwiegermutter", cat: "Menschen & Familie", ex: "Svokra nás navštívi v sobotu." },
+  { sk: "Svokor", de: "Schwiegervater", cat: "Menschen & Familie", ex: "Svokor rád číta." },
+  { sk: "Bratranec", de: "Cousin", cat: "Menschen & Familie", ex: "Môj bratranec je lekár." },
+  { sk: "Sesternica", de: "Cousine", cat: "Menschen & Familie", ex: "Sesternica žije v zahraničí." },
+  { sk: "Suseda", de: "Nachbarin", cat: "Menschen & Familie", ex: "Suseda nám pomohla." },
+  { sk: "Človek", de: "Mensch / Person", cat: "Menschen & Familie", ex: "Je to dobrý človek." },
+  { sk: "Ľudia", de: "Menschen / Leute", cat: "Menschen & Familie", ex: "Veľa ľudí." },
+  { sk: "Cudzinec", de: "Ausländer", cat: "Menschen & Familie", ex: "Som cudzinec." },
+  { sk: "Turista", de: "Tourist", cat: "Menschen & Familie", ex: "Sme turisti." },
+  { sk: "Lekár", de: "Arzt / Ärztin", cat: "Menschen & Familie", ex: "Idem k lekárovi." },
+  { sk: "Učiteľ", de: "Lehrer / Lehrerin", cat: "Menschen & Familie", ex: "Môj učiteľ je prísny." },
 
-  // ── Essen & Restaurant (40) ──
-  { sk: "Jedlo", de: "Essen / Speise", cat: "Essen & Reisen", ex: "Jedlo je výborné." },
-  { sk: "Voda", de: "Wasser", cat: "Essen & Reisen", ex: "Dajte mi vodu, prosím." },
-  { sk: "Káva", de: "Kaffee", cat: "Essen & Reisen", ex: "Jednu kávu, prosím." },
-  { sk: "Čaj", de: "Tee", cat: "Essen & Reisen", ex: "Chcem čaj s citrónom." },
-  { sk: "Pivo", de: "Bier", cat: "Essen & Reisen", ex: "Dve pivá, prosím." },
-  { sk: "Víno", de: "Wein", cat: "Essen & Reisen", ex: "Červené alebo biele víno?" },
-  { sk: "Džús", de: "Saft", cat: "Essen & Reisen", ex: "Pomarančový džús." },
-  { sk: "Chlieb", de: "Brot", cat: "Essen & Reisen", ex: "Kúpil som chlieb." },
-  { sk: "Mäso", de: "Fleisch", cat: "Essen & Reisen", ex: "Njem mäso." },
-  { sk: "Kura", de: "Hühnchen", cat: "Essen & Reisen", ex: "Kura s ryžou." },
-  { sk: "Ryba", de: "Fisch", cat: "Essen & Reisen", ex: "Dnes mám rybu." },
-  { sk: "Polievka", de: "Suppe", cat: "Essen & Reisen", ex: "Tanier polievky, prosím." },
-  { sk: "Šalát", de: "Salat", cat: "Essen & Reisen", ex: "Grécky šalát." },
-  { sk: "Cestoviny", de: "Nudeln / Pasta", cat: "Essen & Reisen", ex: "Milujem cestoviny." },
-  { sk: "Ryža", de: "Reis", cat: "Essen & Reisen", ex: "Ryža s kuracím mäsom." },
-  { sk: "Zemiaky", de: "Kartoffeln", cat: "Essen & Reisen", ex: "Pečené zemiaky." },
-  { sk: "Zelenina", de: "Gemüse", cat: "Essen & Reisen", ex: "Čerstvá zelenina." },
-  { sk: "Ovocie", de: "Obst", cat: "Essen & Reisen", ex: "Čerstvé ovocie." },
-  { sk: "Jablko", de: "Apfel", cat: "Essen & Reisen", ex: "Jedno jablko." },
-  { sk: "Banán", de: "Banane", cat: "Essen & Reisen", ex: "Banán je zdravý." },
-  { sk: "Syr", de: "Käse", cat: "Essen & Reisen", ex: "Sandwich so syrom." },
-  { sk: "Vajce", de: "Ei", cat: "Essen & Reisen", ex: "Vajce na tvrdo." },
-  { sk: "Maslo", de: "Butter", cat: "Essen & Reisen", ex: "Chlieb s maslom." },
-  { sk: "Soľ", de: "Salz", cat: "Essen & Reisen", ex: "Dajte mi soľ, prosím." },
-  { sk: "Cukor", de: "Zucker", cat: "Essen & Reisen", ex: "Káva bez cukru." },
-  { sk: "Jedálny lístok", de: "Speisekarte", cat: "Essen & Reisen", ex: "Môžem mať jedálny lístok?" },
-  { sk: "Čašník", de: "Kellner", cat: "Essen & Reisen", ex: "Čašník, prosím!" },
-  { sk: "Účet", de: "Rechnung", cat: "Essen & Reisen", ex: "Môžem mať účet?" },
-  { sk: "Rezervácia", de: "Reservierung", cat: "Essen & Reisen", ex: "Mám rezerváciu na osem hodín." },
-  { sk: "Stôl", de: "Tisch", cat: "Essen & Reisen", ex: "Stôl pre dvoch, prosím." },
-  { sk: "Vegetarián", de: "Vegetarier/in", cat: "Essen & Reisen", ex: "Som vegetarián." },
-  { sk: "Alergický na", de: "Allergisch auf", cat: "Essen & Reisen", ex: "Som alergický na orechy." },
-  { sk: "Chutné", de: "Lecker / Schmackhaft", cat: "Essen & Reisen", ex: "Jedlo je veľmi chutné." },
-  { sk: "Horúce", de: "Heiß / Scharf", cat: "Essen & Reisen", ex: "Je to príliš horúce." },
-  { sk: "Studené", de: "Kalt", cat: "Essen & Reisen", ex: "Polievka je studená." },
-  { sk: "Dezert", de: "Dessert / Nachtisch", cat: "Essen & Reisen", ex: "Dáte si dezert?" },
-  { sk: "Torta", de: "Torte / Kuchen", cat: "Essen & Reisen", ex: "Čokoládová torta." },
-  { sk: "Zmrzlina", de: "Eis / Speiseeis", cat: "Essen & Reisen", ex: "Dve gule zmrzliny." },
-  { sk: "Pohár", de: "Glas", cat: "Essen & Reisen", ex: "Pohár vody." },
-  { sk: "Fľaša", de: "Flasche", cat: "Essen & Reisen", ex: "Fľaša vína." },
+  // ── Zahlen, Zeit & Datum (40) ─────────────────────────────────────────────
+  { sk: "Jeden", de: "eins (1)", cat: "Zahlen, Zeit & Datum", ex: "Mám jedného brata." },
+  { sk: "Dva", de: "zwei (2)", cat: "Zahlen, Zeit & Datum", ex: "Dva kávy, prosím." },
+  { sk: "Tri", de: "drei (3)", cat: "Zahlen, Zeit & Datum", ex: "Tri dni." },
+  { sk: "Štyri", de: "vier (4)", cat: "Zahlen, Zeit & Datum", ex: "Štyri hodiny." },
+  { sk: "Päť", de: "fünf (5)", cat: "Zahlen, Zeit & Datum", ex: "Päť minút." },
+  { sk: "Šesť", de: "sechs (6)", cat: "Zahlen, Zeit & Datum", ex: "O šesť hodín." },
+  { sk: "Sedem", de: "sieben (7)", cat: "Zahlen, Zeit & Datum", ex: "Sedem dní v týždni." },
+  { sk: "Osem", de: "acht (8)", cat: "Zahlen, Zeit & Datum", ex: "Osem euro." },
+  { sk: "Deväť", de: "neun (9)", cat: "Zahlen, Zeit & Datum", ex: "Deväť ráno." },
+  { sk: "Desať", de: "zehn (10)", cat: "Zahlen, Zeit & Datum", ex: "Desať minút." },
+  { sk: "Jedenásť", de: "elf (11)", cat: "Zahlen, Zeit & Datum", ex: "Jedenásť hodín." },
+  { sk: "Dvanásť", de: "zwölf (12)", cat: "Zahlen, Zeit & Datum", ex: "Dvanásť mesiacov." },
+  { sk: "Pätnásť", de: "fünfzehn (15)", cat: "Zahlen, Zeit & Datum", ex: "O pätnásť minút." },
+  { sk: "Dvadsať", de: "zwanzig (20)", cat: "Zahlen, Zeit & Datum", ex: "Dvadsať rokov." },
+  { sk: "Dvadsaťpäť", de: "fünfundzwanzig (25)", cat: "Zahlen, Zeit & Datum", ex: "Dvadsaťpäť percent." },
+  { sk: "Tridsať", de: "dreißig (30)", cat: "Zahlen, Zeit & Datum", ex: "Tridsať eur." },
+  { sk: "Päťdesiat", de: "fünfzig (50)", cat: "Zahlen, Zeit & Datum", ex: "Päťdesiat centov." },
+  { sk: "Sto", de: "hundert (100)", cat: "Zahlen, Zeit & Datum", ex: "Sto eur." },
+  { sk: "Tisíc", de: "tausend (1000)", cat: "Zahlen, Zeit & Datum", ex: "Tisíc kilometrov." },
+  { sk: "Dnes", de: "heute", cat: "Zahlen, Zeit & Datum", ex: "Dnes je pondelok." },
+  { sk: "Zajtra", de: "morgen", cat: "Zahlen, Zeit & Datum", ex: "Zajtra prídem." },
+  { sk: "Včera", de: "gestern", cat: "Zahlen, Zeit & Datum", ex: "Včera som bol chorý." },
+  { sk: "Teraz", de: "jetzt / gerade", cat: "Zahlen, Zeit & Datum", ex: "Teraz idem domov." },
+  { sk: "Neskôr", de: "später", cat: "Zahlen, Zeit & Datum", ex: "Zavolám neskôr." },
+  { sk: "Ráno", de: "Morgen (Tageszeit)", cat: "Zahlen, Zeit & Datum", ex: "Ráno pijem kávu." },
+  { sk: "Poludnie", de: "Mittag", cat: "Zahlen, Zeit & Datum", ex: "Na poludnie ideme jesť." },
+  { sk: "Večer", de: "Abend", cat: "Zahlen, Zeit & Datum", ex: "Večer pozeráme film." },
+  { sk: "Noc", de: "Nacht", cat: "Zahlen, Zeit & Datum", ex: "V noci je ticho." },
+  { sk: "Hodina", de: "Stunde / Uhr", cat: "Zahlen, Zeit & Datum", ex: "Koľko je hodín?" },
+  { sk: "Minúta", de: "Minute", cat: "Zahlen, Zeit & Datum", ex: "Päť minút." },
+  { sk: "Pondelok", de: "Montag", cat: "Zahlen, Zeit & Datum", ex: "V pondelok mám stretnutie." },
+  { sk: "Utorok", de: "Dienstag", cat: "Zahlen, Zeit & Datum", ex: "V utorok prídem." },
+  { sk: "Streda", de: "Mittwoch", cat: "Zahlen, Zeit & Datum", ex: "V stredu prídem." },
+  { sk: "Štvrtok", de: "Donnerstag", cat: "Zahlen, Zeit & Datum", ex: "V štvrtok mám voľno." },
+  { sk: "Piatok", de: "Freitag", cat: "Zahlen, Zeit & Datum", ex: "V piatok ideme von." },
+  { sk: "Sobota", de: "Samstag", cat: "Zahlen, Zeit & Datum", ex: "V sobotu relaxujem." },
+  { sk: "Nedeľa", de: "Sonntag", cat: "Zahlen, Zeit & Datum", ex: "V nedeľu sme doma." },
+  { sk: "Mesiac", de: "Monat", cat: "Zahlen, Zeit & Datum", ex: "Budúci mesiac." },
+  { sk: "Rok", de: "Jahr", cat: "Zahlen, Zeit & Datum", ex: "Tento rok." },
+  { sk: "Deň", de: "Tag", cat: "Zahlen, Zeit & Datum", ex: "Každý deň." },
 
-  // ── Wohnen & Alltag (40) ──
-  { sk: "Dom", de: "Haus", cat: "Alltag & Einkaufen", ex: "Môj dom je veľký." },
-  { sk: "Byt", de: "Wohnung", cat: "Alltag & Einkaufen", ex: "Hľadám byt v centre." },
-  { sk: "Izba", de: "Zimmer", cat: "Alltag & Einkaufen", ex: "Mám dve izby." },
-  { sk: "Kuchyňa", de: "Küche", cat: "Alltag & Einkaufen", ex: "Varím v kuchyni." },
-  { sk: "Kúpeľňa", de: "Badezimmer", cat: "Alltag & Einkaufen", ex: "Kúpeľňa je vpravo." },
-  { sk: "Záchod", de: "Toilette / WC", cat: "Alltag & Einkaufen", ex: "Kde je záchod?" },
-  { sk: "Spálňa", de: "Schlafzimmer", cat: "Alltag & Einkaufen", ex: "Spálňa je tichá." },
-  { sk: "Obývačka", de: "Wohnzimmer", cat: "Alltag & Einkaufen", ex: "Sedíme v obývačke." },
-  { sk: "Balkón", de: "Balkon", cat: "Alltag & Einkaufen", ex: "Máme krásny balkón." },
-  { sk: "Záhrada", de: "Garten", cat: "Alltag & Einkaufen", ex: "Záhrada je plná kvetov." },
-  { sk: "Dvere", de: "Tür", cat: "Alltag & Einkaufen", ex: "Zatvor dvere, prosím." },
-  { sk: "Okno", de: "Fenster", cat: "Alltag & Einkaufen", ex: "Otvor okno." },
-  { sk: "Kľúč", de: "Schlüssel", cat: "Alltag & Einkaufen", ex: "Zabudol som kľúč." },
-  { sk: "Nájom", de: "Miete", cat: "Alltag & Einkaufen", ex: "Koľko je nájom?" },
-  { sk: "Poschodie", de: "Stockwerk / Etage", cat: "Alltag & Einkaufen", ex: "Bývam na treťom poschodí." },
-  { sk: "Výťah", de: "Aufzug / Lift", cat: "Alltag & Einkaufen", ex: "Výťah nefunguje." },
-  { sk: "Schody", de: "Treppe / Stufen", cat: "Alltag & Einkaufen", ex: "Idem po schodoch." },
-  { sk: "Susedia", de: "Nachbarn", cat: "Alltag & Einkaufen", ex: "Susedia sú hlučí." },
-  { sk: "Posteľ", de: "Bett", cat: "Alltag & Einkaufen", ex: "Idem do postele." },
-  { sk: "Stolička", de: "Stuhl", cat: "Alltag & Einkaufen", ex: "Sadni si na stoličku." },
-  { sk: "Stôl", de: "Tisch", cat: "Alltag & Einkaufen", ex: "Stôl je pri okne." },
-  { sk: "Skriňa", de: "Schrank", cat: "Alltag & Einkaufen", ex: "Oblečenie je v skrini." },
-  { sk: "Lampa", de: "Lampe", cat: "Alltag & Einkaufen", ex: "Zapni lampu." },
-  { sk: "Práčka", de: "Waschmaschine", cat: "Alltag & Einkaufen", ex: "Práčka je plná." },
-  { sk: "Chladnička", de: "Kühlschrank", cat: "Alltag & Einkaufen", ex: "Daj mlieko do chladničky." },
-  { sk: "Sporák", de: "Herd", cat: "Alltag & Einkaufen", ex: "Varím na sporáku." },
-  { sk: "Televízor", de: "Fernseher", cat: "Alltag & Einkaufen", ex: "Pozeráme televízor." },
-  { sk: "Počítač", de: "Computer", cat: "Alltag & Einkaufen", ex: "Pracujem na počítači." },
-  { sk: "Mobil", de: "Handy / Mobiltelefon", cat: "Alltag & Einkaufen", ex: "Kde je môj mobil?" },
-  { sk: "Nabíjačka", de: "Ladekabel / Ladegerät", cat: "Alltag & Einkaufen", ex: "Potrebujem nabíjačku." },
-  { sk: "Odpad", de: "Müll / Abfall", cat: "Alltag & Einkaufen", ex: "Vynes odpad." },
-  { sk: "Upratovanie", de: "Putzen / Aufräumen", cat: "Alltag & Einkaufen", ex: "V sobotu robím upratovanie." },
-  { sk: "Umývanie riadu", de: "Geschirrspülen", cat: "Alltag & Einkaufen", ex: "Umývam riad." },
-  { sk: "Nákup", de: "Einkauf", cat: "Alltag & Einkaufen", ex: "Idem na nákup." },
-  { sk: "Práca", de: "Arbeit", cat: "Alltag & Einkaufen", ex: "Idem do práce." },
-  { sk: "Škola", de: "Schule", cat: "Alltag & Einkaufen", ex: "Deti idú do školy." },
-  { sk: "Nemocnica", de: "Krankenhaus", cat: "Alltag & Einkaufen", ex: "Idem do nemocnice." },
-  { sk: "Lekáreň", de: "Apotheke", cat: "Alltag & Einkaufen", ex: "Kde je lekáreň?" },
-  { sk: "Pošta", de: "Post / Postamt", cat: "Alltag & Einkaufen", ex: "Idem na poštu." },
-  { sk: "Banka", de: "Bank", cat: "Alltag & Einkaufen", ex: "Kde je najbližšia banka?" },
+  // ── Essen & Trinken (40) ──────────────────────────────────────────────────
+  { sk: "Jedlo", de: "Essen / Speise", cat: "Essen & Trinken", ex: "Jedlo je výborné." },
+  { sk: "Voda", de: "Wasser", cat: "Essen & Trinken", ex: "Dajte mi vodu, prosím." },
+  { sk: "Káva", de: "Kaffee", cat: "Essen & Trinken", ex: "Jednu kávu, prosím." },
+  { sk: "Čaj", de: "Tee", cat: "Essen & Trinken", ex: "Chcem čaj s citrónom." },
+  { sk: "Pivo", de: "Bier", cat: "Essen & Trinken", ex: "Dve pivá, prosím." },
+  { sk: "Víno", de: "Wein", cat: "Essen & Trinken", ex: "Červené alebo biele víno?" },
+  { sk: "Džús", de: "Saft", cat: "Essen & Trinken", ex: "Pomarančový džús." },
+  { sk: "Chlieb", de: "Brot", cat: "Essen & Trinken", ex: "Kúpil som chlieb." },
+  { sk: "Mäso", de: "Fleisch", cat: "Essen & Trinken", ex: "Njem mäso." },
+  { sk: "Kura", de: "Hühnchen", cat: "Essen & Trinken", ex: "Kura s ryžou." },
+  { sk: "Ryba", de: "Fisch", cat: "Essen & Trinken", ex: "Dnes mám rybu." },
+  { sk: "Polievka", de: "Suppe", cat: "Essen & Trinken", ex: "Tanier polievky, prosím." },
+  { sk: "Šalát", de: "Salat", cat: "Essen & Trinken", ex: "Grécky šalát." },
+  { sk: "Cestoviny", de: "Nudeln / Pasta", cat: "Essen & Trinken", ex: "Milujem cestoviny." },
+  { sk: "Ryža", de: "Reis", cat: "Essen & Trinken", ex: "Ryža s kuracím mäsom." },
+  { sk: "Zemiaky", de: "Kartoffeln", cat: "Essen & Trinken", ex: "Pečené zemiaky." },
+  { sk: "Zelenina", de: "Gemüse", cat: "Essen & Trinken", ex: "Čerstvá zelenina." },
+  { sk: "Ovocie", de: "Obst", cat: "Essen & Trinken", ex: "Čerstvé ovocie." },
+  { sk: "Jablko", de: "Apfel", cat: "Essen & Trinken", ex: "Jedno jablko." },
+  { sk: "Banán", de: "Banane", cat: "Essen & Trinken", ex: "Banán je zdravý." },
+  { sk: "Syr", de: "Käse", cat: "Essen & Trinken", ex: "Sandwich so syrom." },
+  { sk: "Vajce", de: "Ei", cat: "Essen & Trinken", ex: "Vajce na tvrdo." },
+  { sk: "Maslo", de: "Butter", cat: "Essen & Trinken", ex: "Chlieb s maslom." },
+  { sk: "Soľ", de: "Salz", cat: "Essen & Trinken", ex: "Dajte mi soľ, prosím." },
+  { sk: "Cukor", de: "Zucker", cat: "Essen & Trinken", ex: "Káva bez cukru." },
+  { sk: "Jedálny lístok", de: "Speisekarte", cat: "Essen & Trinken", ex: "Môžem mať jedálny lístok?" },
+  { sk: "Čašník", de: "Kellner", cat: "Essen & Trinken", ex: "Čašník, prosím!" },
+  { sk: "Účet", de: "Rechnung", cat: "Essen & Trinken", ex: "Môžem mať účet?" },
+  { sk: "Stôl", de: "Tisch", cat: "Essen & Trinken", ex: "Stôl pre dvoch, prosím." },
+  { sk: "Rezervácia", de: "Reservierung", cat: "Essen & Trinken", ex: "Mám rezerváciu." },
+  { sk: "Vegetarián", de: "Vegetarier/in", cat: "Essen & Trinken", ex: "Som vegetarián." },
+  { sk: "Alergický na", de: "allergisch auf", cat: "Essen & Trinken", ex: "Som alergický na orechy." },
+  { sk: "Chutné", de: "lecker / schmackhaft", cat: "Essen & Trinken", ex: "Jedlo je veľmi chutné." },
+  { sk: "Horúce", de: "heiß", cat: "Essen & Trinken", ex: "Je to príliš horúce." },
+  { sk: "Studené", de: "kalt", cat: "Essen & Trinken", ex: "Polievka je studená." },
+  { sk: "Dezert", de: "Dessert / Nachtisch", cat: "Essen & Trinken", ex: "Dáte si dezert?" },
+  { sk: "Zmrzlina", de: "Eis / Speiseeis", cat: "Essen & Trinken", ex: "Dve gule zmrzliny." },
+  { sk: "Pohár", de: "Glas", cat: "Essen & Trinken", ex: "Pohár vody." },
+  { sk: "Fľaša", de: "Flasche", cat: "Essen & Trinken", ex: "Fľaša vína." },
+  { sk: "Raňajky", de: "Frühstück", cat: "Essen & Trinken", ex: "Kedy sú raňajky?" },
 
-  // ── Reisen & Transport (40) ──
-  { sk: "Vlak", de: "Zug", cat: "Essen & Reisen", ex: "Vlak má meškanie." },
-  { sk: "Autobus", de: "Bus", cat: "Essen & Reisen", ex: "Autobus číslo päť." },
-  { sk: "Auto", de: "Auto", cat: "Essen & Reisen", ex: "Mám nové auto." },
-  { sk: "Taxík", de: "Taxi", cat: "Essen & Reisen", ex: "Zavolajte mi taxík." },
-  { sk: "Lietadlo", de: "Flugzeug", cat: "Essen & Reisen", ex: "Lietadlo odlieta o ôsmej." },
-  { sk: "Loď", de: "Schiff / Boot", cat: "Essen & Reisen", ex: "Plavíme sa na lodi." },
-  { sk: "Bicykel", de: "Fahrrad", cat: "Essen & Reisen", ex: "Idem na bicykli." },
-  { sk: "Stanica", de: "Bahnhof", cat: "Essen & Reisen", ex: "Kde je stanica?" },
-  { sk: "Letisko", de: "Flughafen", cat: "Essen & Reisen", ex: "Letisko je ďaleko." },
-  { sk: "Zastávka", de: "Haltestelle", cat: "Essen & Reisen", ex: "Kde je najbližšia zastávka?" },
-  { sk: "Lístok", de: "Ticket / Fahrkarte", cat: "Essen & Reisen", ex: "Jeden lístok do Bratislavy." },
-  { sk: "Cestovný pas", de: "Reisepass", cat: "Essen & Reisen", ex: "Potrebujem cestovný pas." },
-  { sk: "Víza", de: "Visum", cat: "Essen & Reisen", ex: "Potrebujem víza?" },
-  { sk: "Hotel", de: "Hotel", cat: "Essen & Reisen", ex: "Hľadám hotel." },
-  { sk: "Izba", de: "Zimmer", cat: "Essen & Reisen", ex: "Izba pre dvoch." },
-  { sk: "Recepcia", de: "Rezeption", cat: "Essen & Reisen", ex: "Zaregistrujem sa na recepcii." },
-  { sk: "Mapu", de: "Karte / Stadtplan", cat: "Essen & Reisen", ex: "Máte mapu mesta?" },
-  { sk: "Adresa", de: "Adresse", cat: "Essen & Reisen", ex: "Aká je vaša adresa?" },
-  { sk: "Ulica", de: "Straße", cat: "Essen & Reisen", ex: "Na ktorej ulici?" },
-  { sk: "Náměstie", de: "Platz", cat: "Essen & Reisen", ex: "Hlavné námestie." },
-  { sk: "Most", de: "Brücke", cat: "Essen & Reisen", ex: "Prejdite cez most." },
-  { sk: "Rieka", de: "Fluss", cat: "Essen & Reisen", ex: "Dunaj je veľká rieka." },
-  { sk: "Vpravo", de: "Rechts", cat: "Essen & Reisen", ex: "Odbočte vpravo." },
-  { sk: "Vľavo", de: "Links", cat: "Essen & Reisen", ex: "Odbočte vľavo." },
-  { sk: "Rovno", de: "Geradeaus", cat: "Essen & Reisen", ex: "Choďte rovno." },
-  { sk: "Ďaleko", de: "Weit", cat: "Essen & Reisen", ex: "Je to ďaleko?" },
-  { sk: "Blízko", de: "Nah", cat: "Essen & Reisen", ex: "Je to blízko." },
-  { sk: "Odchod", de: "Abfahrt / Abflug", cat: "Essen & Reisen", ex: "Kedy je odchod vlaku?" },
-  { sk: "Príchod", de: "Ankunft", cat: "Essen & Reisen", ex: "Príchod o 14:00." },
-  { sk: "Meškanie", de: "Verspätung", cat: "Essen & Reisen", ex: "Vlak má meškanie." },
-  { sk: "Benzín", de: "Benzin", cat: "Essen & Reisen", ex: "Potrebujem benzín." },
-  { sk: "Parkovisko", de: "Parkplatz", cat: "Essen & Reisen", ex: "Kde je parkovisko?" },
-  { sk: "Diaľnica", de: "Autobahn", cat: "Essen & Reisen", ex: "Jazdia sme po diaľnici." },
-  { sk: "Semafor", de: "Ampel", cat: "Essen & Reisen", ex: "Zastavte na semafore." },
-  { sk: "Colnica", de: "Zoll", cat: "Essen & Reisen", ex: "Máme prejsť cez colnicu." },
-  { sk: "Batožina", de: "Gepäck", cat: "Essen & Reisen", ex: "Moja batožina je ťažká." },
-  { sk: "Cestovanie", de: "Reisen / Reise", cat: "Essen & Reisen", ex: "Milujem cestovanie." },
-  { sk: "Dovolenka", de: "Urlaub", cat: "Essen & Reisen", ex: "Ideme na dovolenku." },
-  { sk: "Turistika", de: "Tourismus / Wandern", cat: "Essen & Reisen", ex: "Rád robím turistiku." },
-  { sk: "Výlet", de: "Ausflug", cat: "Essen & Reisen", ex: "Plánujeme výlet." },
+  // ── Reisen & Transport (40) ───────────────────────────────────────────────
+  { sk: "Vlak", de: "Zug", cat: "Reisen & Transport", ex: "Vlak má meškanie." },
+  { sk: "Autobus", de: "Bus", cat: "Reisen & Transport", ex: "Autobus číslo päť." },
+  { sk: "Auto", de: "Auto", cat: "Reisen & Transport", ex: "Mám nové auto." },
+  { sk: "Taxík", de: "Taxi", cat: "Reisen & Transport", ex: "Zavolajte mi taxík." },
+  { sk: "Lietadlo", de: "Flugzeug", cat: "Reisen & Transport", ex: "Lietadlo odlieta o ôsmej." },
+  { sk: "Bicykel", de: "Fahrrad", cat: "Reisen & Transport", ex: "Idem na bicykli." },
+  { sk: "Stanica", de: "Bahnhof", cat: "Reisen & Transport", ex: "Kde je stanica?" },
+  { sk: "Letisko", de: "Flughafen", cat: "Reisen & Transport", ex: "Letisko je ďaleko." },
+  { sk: "Zastávka", de: "Haltestelle", cat: "Reisen & Transport", ex: "Kde je najbližšia zastávka?" },
+  { sk: "Lístok", de: "Ticket / Fahrkarte", cat: "Reisen & Transport", ex: "Jeden lístok do Bratislavy." },
+  { sk: "Cestovný pas", de: "Reisepass", cat: "Reisen & Transport", ex: "Potrebujem cestovný pas." },
+  { sk: "Hotel", de: "Hotel", cat: "Reisen & Transport", ex: "Hľadám hotel." },
+  { sk: "Izba", de: "Zimmer", cat: "Reisen & Transport", ex: "Izba pre dvoch." },
+  { sk: "Mapa", de: "Karte / Stadtplan", cat: "Reisen & Transport", ex: "Máte mapu mesta?" },
+  { sk: "Adresa", de: "Adresse", cat: "Reisen & Transport", ex: "Aká je vaša adresa?" },
+  { sk: "Ulica", de: "Straße", cat: "Reisen & Transport", ex: "Na ktorej ulici?" },
+  { sk: "Námestie", de: "Platz", cat: "Reisen & Transport", ex: "Hlavné námestie." },
+  { sk: "Most", de: "Brücke", cat: "Reisen & Transport", ex: "Prejdite cez most." },
+  { sk: "Ďaleko", de: "weit", cat: "Reisen & Transport", ex: "Je to ďaleko?" },
+  { sk: "Blízko", de: "nah / in der Nähe", cat: "Reisen & Transport", ex: "Je to blízko." },
+  { sk: "Odchod", de: "Abfahrt / Abflug", cat: "Reisen & Transport", ex: "Kedy je odchod vlaku?" },
+  { sk: "Príchod", de: "Ankunft", cat: "Reisen & Transport", ex: "Príchod o 14:00." },
+  { sk: "Meškanie", de: "Verspätung", cat: "Reisen & Transport", ex: "Vlak má meškanie." },
+  { sk: "Parkovisko", de: "Parkplatz", cat: "Reisen & Transport", ex: "Kde je parkovisko?" },
+  { sk: "Batožina", de: "Gepäck", cat: "Reisen & Transport", ex: "Moja batožina je ťažká." },
+  { sk: "Dovolenka", de: "Urlaub", cat: "Reisen & Transport", ex: "Ideme na dovolenku." },
+  { sk: "Výlet", de: "Ausflug", cat: "Reisen & Transport", ex: "Plánujeme výlet." },
+  { sk: "Hranica", de: "Grenze", cat: "Reisen & Transport", ex: "Sme na hranici." },
+  { sk: "Colnica", de: "Zoll", cat: "Reisen & Transport", ex: "Colnica je tu." },
+  { sk: "Recepcia", de: "Rezeption", cat: "Reisen & Transport", ex: "Zaregistrujem sa na recepcii." },
+  { sk: "Benzín", de: "Benzin", cat: "Reisen & Transport", ex: "Potrebujem benzín." },
+  { sk: "Semafor", de: "Ampel", cat: "Reisen & Transport", ex: "Zastavte na semafore." },
+  { sk: "Diaľnica", de: "Autobahn", cat: "Reisen & Transport", ex: "Jazdíme po diaľnici." },
+  { sk: "Rieka", de: "Fluss", cat: "Reisen & Transport", ex: "Dunaj je veľká rieka." },
+  { sk: "Hora", de: "Berg", cat: "Reisen & Transport", ex: "Ideme na horu." },
+  { sk: "More", de: "Meer", cat: "Reisen & Transport", ex: "Ideme k moru." },
+  { sk: "Mesto", de: "Stadt", cat: "Reisen & Transport", ex: "Bratislava je hlavné mesto." },
+  { sk: "Dedina", de: "Dorf", cat: "Reisen & Transport", ex: "Malá dedina." },
+  { sk: "Turistika", de: "Wandern / Tourismus", cat: "Reisen & Transport", ex: "Rád robím turistiku." },
+  { sk: "Ubytovanie", de: "Unterkunft", cat: "Reisen & Transport", ex: "Hľadám ubytovanie." },
 
-  // ── Körper & Gesundheit (40) ──
+  // ── Wohnen & Einkaufen (80) ───────────────────────────────────────────────
+  { sk: "Dom", de: "Haus", cat: "Wohnen & Einkaufen", ex: "Môj dom je veľký." },
+  { sk: "Byt", de: "Wohnung", cat: "Wohnen & Einkaufen", ex: "Hľadám byt v centre." },
+  { sk: "Izba", de: "Zimmer", cat: "Wohnen & Einkaufen", ex: "Mám dve izby." },
+  { sk: "Kuchyňa", de: "Küche", cat: "Wohnen & Einkaufen", ex: "Varím v kuchyni." },
+  { sk: "Kúpeľňa", de: "Badezimmer", cat: "Wohnen & Einkaufen", ex: "Kúpeľňa je vpravo." },
+  { sk: "Záchod", de: "Toilette / WC", cat: "Wohnen & Einkaufen", ex: "Kde je záchod?" },
+  { sk: "Spálňa", de: "Schlafzimmer", cat: "Wohnen & Einkaufen", ex: "Spálňa je tichá." },
+  { sk: "Obývačka", de: "Wohnzimmer", cat: "Wohnen & Einkaufen", ex: "Sedíme v obývačke." },
+  { sk: "Balkón", de: "Balkon", cat: "Wohnen & Einkaufen", ex: "Máme krásny balkón." },
+  { sk: "Záhrada", de: "Garten", cat: "Wohnen & Einkaufen", ex: "Záhrada je plná kvetov." },
+  { sk: "Dvere", de: "Tür", cat: "Wohnen & Einkaufen", ex: "Zatvor dvere, prosím." },
+  { sk: "Okno", de: "Fenster", cat: "Wohnen & Einkaufen", ex: "Otvor okno." },
+  { sk: "Kľúč", de: "Schlüssel", cat: "Wohnen & Einkaufen", ex: "Zabudol som kľúč." },
+  { sk: "Nájom", de: "Miete", cat: "Wohnen & Einkaufen", ex: "Koľko je nájom?" },
+  { sk: "Poschodie", de: "Stockwerk / Etage", cat: "Wohnen & Einkaufen", ex: "Bývam na treťom poschodí." },
+  { sk: "Výťah", de: "Aufzug / Lift", cat: "Wohnen & Einkaufen", ex: "Výťah nefunguje." },
+  { sk: "Posteľ", de: "Bett", cat: "Wohnen & Einkaufen", ex: "Idem do postele." },
+  { sk: "Stôl", de: "Tisch", cat: "Wohnen & Einkaufen", ex: "Stôl je pri okne." },
+  { sk: "Stolička", de: "Stuhl", cat: "Wohnen & Einkaufen", ex: "Sadni si na stoličku." },
+  { sk: "Skriňa", de: "Schrank", cat: "Wohnen & Einkaufen", ex: "Oblečenie je v skrini." },
+  { sk: "Chladnička", de: "Kühlschrank", cat: "Wohnen & Einkaufen", ex: "Daj mlieko do chladničky." },
+  { sk: "Sporák", de: "Herd", cat: "Wohnen & Einkaufen", ex: "Varím na sporáku." },
+  { sk: "Televízor", de: "Fernseher", cat: "Wohnen & Einkaufen", ex: "Pozeráme televízor." },
+  { sk: "Počítač", de: "Computer", cat: "Wohnen & Einkaufen", ex: "Pracujem na počítači." },
+  { sk: "Mobil", de: "Handy / Mobiltelefon", cat: "Wohnen & Einkaufen", ex: "Kde je môj mobil?" },
+  { sk: "Nabíjačka", de: "Ladekabel", cat: "Wohnen & Einkaufen", ex: "Potrebujem nabíjačku." },
+  { sk: "Práca", de: "Arbeit", cat: "Wohnen & Einkaufen", ex: "Idem do práce." },
+  { sk: "Škola", de: "Schule", cat: "Wohnen & Einkaufen", ex: "Deti idú do školy." },
+  { sk: "Nemocnica", de: "Krankenhaus", cat: "Wohnen & Einkaufen", ex: "Idem do nemocnice." },
+  { sk: "Lekáreň", de: "Apotheke", cat: "Wohnen & Einkaufen", ex: "Kde je lekáreň?" },
+  { sk: "Pošta", de: "Post / Postamt", cat: "Wohnen & Einkaufen", ex: "Idem na poštu." },
+  { sk: "Banka", de: "Bank", cat: "Wohnen & Einkaufen", ex: "Kde je najbližšia banka?" },
+  { sk: "Obchod", de: "Geschäft / Laden", cat: "Wohnen & Einkaufen", ex: "Kde je obchod?" },
+  { sk: "Supermarket", de: "Supermarkt", cat: "Wohnen & Einkaufen", ex: "Idem do supermarketu." },
+  { sk: "Cena", de: "Preis", cat: "Wohnen & Einkaufen", ex: "Aká je cena?" },
+  { sk: "Lacný", de: "günstig / billig", cat: "Wohnen & Einkaufen", ex: "Je to veľmi lacné." },
+  { sk: "Drahý", de: "teuer", cat: "Wohnen & Einkaufen", ex: "Je to príliš drahé." },
+  { sk: "Zľava", de: "Rabatt", cat: "Wohnen & Einkaufen", ex: "Máte nejakú zľavu?" },
+  { sk: "Výpredaj", de: "Ausverkauf / Sale", cat: "Wohnen & Einkaufen", ex: "Je výpredaj!" },
+  { sk: "Pokladňa", de: "Kasse", cat: "Wohnen & Einkaufen", ex: "Platím pri pokladni." },
+  { sk: "Hotovosť", de: "Bargeld", cat: "Wohnen & Einkaufen", ex: "Platím hotovosťou." },
+  { sk: "Karta", de: "Karte / EC-Karte", cat: "Wohnen & Einkaufen", ex: "Môžem platiť kartou?" },
+  { sk: "Euro", de: "Euro", cat: "Wohnen & Einkaufen", ex: "Dvadsať euro." },
+  { sk: "Bankomat", de: "Geldautomat / ATM", cat: "Wohnen & Einkaufen", ex: "Kde je bankomat?" },
+  { sk: "Oblečenie", de: "Kleidung", cat: "Wohnen & Einkaufen", ex: "Kupujem nové oblečenie." },
+  { sk: "Topánky", de: "Schuhe", cat: "Wohnen & Einkaufen", ex: "Tieto topánky sú pohodlné." },
+  { sk: "Veľkosť", de: "Größe", cat: "Wohnen & Einkaufen", ex: "Akú máte veľkosť?" },
+  { sk: "Nákupný zoznam", de: "Einkaufsliste", cat: "Wohnen & Einkaufen", ex: "Napísal som nákupný zoznam." },
+  { sk: "Otvorené", de: "geöffnet", cat: "Wohnen & Einkaufen", ex: "Obchod je otvorený." },
+  { sk: "Zatvorené", de: "geschlossen", cat: "Wohnen & Einkaufen", ex: "Obchod je zatvorený." },
+  { sk: "Otváracie hodiny", de: "Öffnungszeiten", cat: "Wohnen & Einkaufen", ex: "Aké sú otváracie hodiny?" },
+  { sk: "Nákupné centrum", de: "Einkaufszentrum", cat: "Wohnen & Einkaufen", ex: "Ideme do nákupného centra." },
+  { sk: "Trh", de: "Markt", cat: "Wohnen & Einkaufen", ex: "Na trhu je čerstvé ovocie." },
+  { sk: "Vrátenie tovaru", de: "Rückgabe", cat: "Wohnen & Einkaufen", ex: "Chcem vrátiť tovar." },
+  { sk: "Záruka", de: "Garantie", cat: "Wohnen & Einkaufen", ex: "Aká je záruka?" },
+  { sk: "Účtenka", de: "Kassenbon / Quittung", cat: "Wohnen & Einkaufen", ex: "Môžem dostať účtenku?" },
+  { sk: "Upratovanie", de: "Putzen / Aufräumen", cat: "Wohnen & Einkaufen", ex: "V sobotu robím upratovanie." },
+  { sk: "Odpad", de: "Müll / Abfall", cat: "Wohnen & Einkaufen", ex: "Vynes odpad." },
+  { sk: "Práčka", de: "Waschmaschine", cat: "Wohnen & Einkaufen", ex: "Práčka je plná." },
+  { sk: "Susedia", de: "Nachbarn", cat: "Wohnen & Einkaufen", ex: "Susedia sú hlučí." },
+  { sk: "Dar", de: "Geschenk", cat: "Wohnen & Einkaufen", ex: "Hľadám dar pre priateľa." },
+  { sk: "Taška", de: "Tasche / Tüte", cat: "Wohnen & Einkaufen", ex: "Môžem dostať tašku?" },
+  { sk: "Ušetriť", de: "sparen", cat: "Wohnen & Einkaufen", ex: "Chcem ušetriť peniaze." },
+  { sk: "Požičať", de: "leihen / ausleihen", cat: "Wohnen & Einkaufen", ex: "Môžeš mi požičať peniaze?" },
+  { sk: "Objednávka", de: "Bestellung", cat: "Wohnen & Einkaufen", ex: "Chcem podať objednávku." },
+  { sk: "Potvrdenie", de: "Bestätigung / Beleg", cat: "Wohnen & Einkaufen", ex: "Pošlite mi potvrdenie." },
+  { sk: "Lampa", de: "Lampe", cat: "Wohnen & Einkaufen", ex: "Zapni lampu." },
+  { sk: "Polícia", de: "Polizei", cat: "Wohnen & Einkaufen", ex: "Zavolajte políciu!" },
+  { sk: "Hasič", de: "Feuerwehr", cat: "Wohnen & Einkaufen", ex: "Zavolajte hasičov!" },
+  { sk: "Poistenie", de: "Versicherung", cat: "Wohnen & Einkaufen", ex: "Mám poistenie." },
+  { sk: "Zmluva", de: "Vertrag", cat: "Wohnen & Einkaufen", ex: "Podpísal som zmluvu." },
+  { sk: "Klúče od auta", de: "Autoschlüssel", cat: "Wohnen & Einkaufen", ex: "Kde sú kľúče od auta?" },
+  { sk: "Recept", de: "Rezept", cat: "Wohnen & Einkaufen", ex: "Lekár mi dal recept." },
+  { sk: "Tlač", de: "Presse / Drucken", cat: "Wohnen & Einkaufen", ex: "Kde môžem tlačiť?" },
+  { sk: "Predajca", de: "Verkäufer/in", cat: "Wohnen & Einkaufen", ex: "Predajca mi pomohol." },
+  { sk: "Zákazník", de: "Kunde / Kundin", cat: "Wohnen & Einkaufen", ex: "Zákazník má vždy pravdu." },
+
+  // ── Gesundheit & Notfall (40) ─────────────────────────────────────────────
   { sk: "Telo", de: "Körper", cat: "Gesundheit & Notfall", ex: "Zdravé telo." },
   { sk: "Hlava", de: "Kopf", cat: "Gesundheit & Notfall", ex: "Bolí ma hlava." },
-  { sk: "Tvár", de: "Gesicht", cat: "Gesundheit & Notfall", ex: "Umyte si tvár." },
   { sk: "Oči", de: "Augen", cat: "Gesundheit & Notfall", ex: "Má modré oči." },
   { sk: "Uši", de: "Ohren", cat: "Gesundheit & Notfall", ex: "Bolí ma ucho." },
   { sk: "Nos", de: "Nase", cat: "Gesundheit & Notfall", ex: "Tečie mi z nosa." },
   { sk: "Ústa", de: "Mund", cat: "Gesundheit & Notfall", ex: "Otvorte ústa." },
   { sk: "Zuby", de: "Zähne", cat: "Gesundheit & Notfall", ex: "Bolí ma zub." },
   { sk: "Hrdlo", de: "Hals / Kehle", cat: "Gesundheit & Notfall", ex: "Bolí ma hrdlo." },
-  { sk: "Rameno", de: "Schulter", cat: "Gesundheit & Notfall", ex: "Bolí ma rameno." },
   { sk: "Ruka", de: "Hand / Arm", cat: "Gesundheit & Notfall", ex: "Zlomil som si ruku." },
-  { sk: "Prst", de: "Finger", cat: "Gesundheit & Notfall", ex: "Rezol som si prst." },
-  { sk: "Brucho", de: "Bauch", cat: "Gesundheit & Notfall", ex: "Bolí ma brucho." },
-  { sk: "Chrbát", de: "Rücken", cat: "Gesundheit & Notfall", ex: "Mám bolesti chrbáta." },
   { sk: "Noha", de: "Bein / Fuß", cat: "Gesundheit & Notfall", ex: "Bolí ma noha." },
-  { sk: "Koleno", de: "Knie", cat: "Gesundheit & Notfall", ex: "Mám problémy s kolenom." },
+  { sk: "Chrbát", de: "Rücken", cat: "Gesundheit & Notfall", ex: "Mám bolesti chrbáta." },
+  { sk: "Brucho", de: "Bauch", cat: "Gesundheit & Notfall", ex: "Bolí ma brucho." },
   { sk: "Srdce", de: "Herz", cat: "Gesundheit & Notfall", ex: "Mám zdravé srdce." },
-  { sk: "Pľúca", de: "Lunge", cat: "Gesundheit & Notfall", ex: "Fajčenie škodí pľúcam." },
-  { sk: "Chorý", de: "Krank", cat: "Gesundheit & Notfall", ex: "Cítim sa chorý." },
-  { sk: "Zdravý", de: "Gesund", cat: "Gesundheit & Notfall", ex: "Som zdravý." },
+  { sk: "Chorý", de: "krank", cat: "Gesundheit & Notfall", ex: "Cítim sa chorý." },
+  { sk: "Zdravý", de: "gesund", cat: "Gesundheit & Notfall", ex: "Som zdravý." },
   { sk: "Horúčka", de: "Fieber", cat: "Gesundheit & Notfall", ex: "Mám horúčku." },
   { sk: "Kašeľ", de: "Husten", cat: "Gesundheit & Notfall", ex: "Mám silný kašeľ." },
   { sk: "Nádcha", de: "Schnupfen", cat: "Gesundheit & Notfall", ex: "Mám nádchu." },
   { sk: "Bolesť", de: "Schmerz", cat: "Gesundheit & Notfall", ex: "Mám bolesť." },
+  { sk: "Bolí ma", de: "es tut mir weh / ich habe Schmerzen", cat: "Gesundheit & Notfall", ex: "Bolí ma hlava." },
   { sk: "Liek", de: "Medikament", cat: "Gesundheit & Notfall", ex: "Potrebujem liek." },
-  { sk: "Lekár", de: "Arzt / Ärztin", cat: "Gesundheit & Notfall", ex: "Idem k lekárovi." },
   { sk: "Nemocnica", de: "Krankenhaus", cat: "Gesundheit & Notfall", ex: "Odvezme ma do nemocnice." },
   { sk: "Sanitka", de: "Krankenwagen", cat: "Gesundheit & Notfall", ex: "Zavolajte sanitku!" },
   { sk: "Alergia", de: "Allergie", cat: "Gesundheit & Notfall", ex: "Mám alergiu na peľ." },
   { sk: "Operácia", de: "Operation", cat: "Gesundheit & Notfall", ex: "Potrebujem operáciu." },
-  { sk: "Recept", de: "Rezept", cat: "Gesundheit & Notfall", ex: "Lekár mi dal recept." },
-  { sk: "Poistenie", de: "Versicherung", cat: "Gesundheit & Notfall", ex: "Mám zdravotné poistenie." },
-  { sk: "Únava", de: "Müdigkeit / Erschöpfung", cat: "Gesundheit & Notfall", ex: "Cítim veľkú únavu." },
+  { sk: "Únava", de: "Müdigkeit", cat: "Gesundheit & Notfall", ex: "Cítim veľkú únavu." },
   { sk: "Stres", de: "Stress", cat: "Gesundheit & Notfall", ex: "Mám veľa stresu." },
   { sk: "Spánok", de: "Schlaf", cat: "Gesundheit & Notfall", ex: "Potrebujem viac spánku." },
   { sk: "Cvičenie", de: "Sport / Übung", cat: "Gesundheit & Notfall", ex: "Každý deň cvičím." },
-  { sk: "Diéta", de: "Diät", cat: "Gesundheit & Notfall", ex: "Držím diétu." },
-  { sk: "Váha", de: "Gewicht", cat: "Gesundheit & Notfall", ex: "Chcem schudnúť." },
-  { sk: "Krv", de: "Blut", cat: "Gesundheit & Notfall", ex: "Odber krvi." },
   { sk: "Zranenie", de: "Verletzung", cat: "Gesundheit & Notfall", ex: "Mám zranenie." },
+  { sk: "Krv", de: "Blut", cat: "Gesundheit & Notfall", ex: "Odber krvi." },
+  { sk: "Núdza", de: "Notfall", cat: "Gesundheit & Notfall", ex: "Je to núdza!" },
+  { sk: "Pomoc!", de: "Hilfe!", cat: "Gesundheit & Notfall", ex: "Pomoc! Potrebujem pomoc!" },
+  { sk: "Nebezpečný", de: "gefährlich", cat: "Gesundheit & Notfall", ex: "Je to nebezpečné." },
+  { sk: "Bezpečný", de: "sicher / ungefährlich", cat: "Gesundheit & Notfall", ex: "Je tu bezpečno." },
+  { sk: "Poistenie", de: "Versicherung", cat: "Gesundheit & Notfall", ex: "Mám zdravotné poistenie." },
+  { sk: "Lekáreň", de: "Apotheke", cat: "Gesundheit & Notfall", ex: "Kde je lekáreň?" },
+  { sk: "Recept", de: "Rezept", cat: "Gesundheit & Notfall", ex: "Lekár mi dal recept." },
+  { sk: "Teplota", de: "Temperatur", cat: "Gesundheit & Notfall", ex: "Aká je tvoja teplota?" },
+  { sk: "Rameno", de: "Schulter", cat: "Gesundheit & Notfall", ex: "Bolí ma rameno." },
+];
 
-  // ── Einkaufen & Geld (40) ──
-  { sk: "Obchod", de: "Geschäft / Laden", cat: "Alltag & Einkaufen", ex: "Kde je obchod?" },
-  { sk: "Supermarket", de: "Supermarkt", cat: "Alltag & Einkaufen", ex: "Idem do supermarketu." },
-  { sk: "Cena", de: "Preis", cat: "Alltag & Einkaufen", ex: "Aká je cena?" },
-  { sk: "Koľko stojí?", de: "Was kostet es?", cat: "Alltag & Einkaufen", ex: "Koľko stojí toto?" },
-  { sk: "Lacný", de: "Günstig / Billig", cat: "Alltag & Einkaufen", ex: "Je to veľmi lacné." },
-  { sk: "Drahý", de: "Teuer", cat: "Alltag & Einkaufen", ex: "Je to príliš drahé." },
-  { sk: "Zľava", de: "Rabatt / Ermäßigung", cat: "Alltag & Einkaufen", ex: "Máte nejakú zľavu?" },
-  { sk: "Výpredaj", de: "Ausverkauf / Sale", cat: "Alltag & Einkaufen", ex: "Je výpredaj!" },
-  { sk: "Pokladňa", de: "Kasse", cat: "Alltag & Einkaufen", ex: "Platím pri pokladni." },
-  { sk: "Účtenka", de: "Kassenbon / Quittung", cat: "Alltag & Einkaufen", ex: "Môžem dostať účtenku?" },
-  { sk: "Hotovosť", de: "Bargeld", cat: "Alltag & Einkaufen", ex: "Platím hotovosťou." },
-  { sk: "Karta", de: "Karte / EC-Karte", cat: "Alltag & Einkaufen", ex: "Môžem platiť kartou?" },
-  { sk: "Euro", de: "Euro", cat: "Alltag & Einkaufen", ex: "Dvadsať euro." },
-  { sk: "Cent", de: "Cent", cat: "Alltag & Einkaufen", ex: "Päťdesiat centov." },
-  { sk: "Minca", de: "Münze", cat: "Alltag & Einkaufen", ex: "Mám len mince." },
-  { sk: "Bankovka", de: "Geldschein", cat: "Alltag & Einkaufen", ex: "Mám päťdesiat-eurovú bankovku." },
-  { sk: "Bankomat", de: "Geldautomat / ATM", cat: "Alltag & Einkaufen", ex: "Kde je bankomat?" },
-  { sk: "Výmena peňazí", de: "Geldwechsel", cat: "Alltag & Einkaufen", ex: "Kde vymeniam peniaze?" },
-  { sk: "Oblečenie", de: "Kleidung", cat: "Alltag & Einkaufen", ex: "Kupujem nové oblečenie." },
-  { sk: "Veľkosť", de: "Größe", cat: "Alltag & Einkaufen", ex: "Akú máte veľkosť?" },
-  { sk: "Skúšobňa", de: "Umkleidekabine", cat: "Alltag & Einkaufen", ex: "Kde je skúšobňa?" },
-  { sk: "Topánky", de: "Schuhe", cat: "Alltag & Einkaufen", ex: "Tieto topánky sú pohodlné." },
-  { sk: "Nákupné centrum", de: "Einkaufszentrum", cat: "Alltag & Einkaufen", ex: "Ideme do nákupného centra." },
-  { sk: "Trhnica", de: "Markt", cat: "Alltag & Einkaufen", ex: "Na trhnici je čerstvé ovocie." },
-  { sk: "Vrátenie tovaru", de: "Rückgabe", cat: "Alltag & Einkaufen", ex: "Chcem vrátiť tovar." },
-  { sk: "Záruka", de: "Garantie", cat: "Alltag & Einkaufen", ex: "Aká je záruka?" },
-  { sk: "Dar", de: "Geschenk", cat: "Alltag & Einkaufen", ex: "Hľadám dar pre priateľa." },
-  { sk: "Taška", de: "Tasche / Tüte", cat: "Alltag & Einkaufen", ex: "Môžem dostať tašku?" },
-  { sk: "Nákupný zoznam", de: "Einkaufsliste", cat: "Alltag & Einkaufen", ex: "Napísal som nákupný zoznam." },
-  { sk: "Zákazník", de: "Kunde / Kundin", cat: "Alltag & Einkaufen", ex: "Zákazník má vždy pravdu." },
-  { sk: "Predajca", de: "Verkäufer/in", cat: "Alltag & Einkaufen", ex: "Predajca mi pomohol." },
-  { sk: "Otvorené", de: "Geöffnet / Offen", cat: "Alltag & Einkaufen", ex: "Obchod je otvorený." },
-  { sk: "Zatvorené", de: "Geschlossen", cat: "Alltag & Einkaufen", ex: "Obchod je zatvorený." },
-  { sk: "Otváracie hodiny", de: "Öffnungszeiten", cat: "Alltag & Einkaufen", ex: "Aké sú otváracie hodiny?" },
-  { sk: "Ušetriť", de: "Sparen", cat: "Alltag & Einkaufen", ex: "Chcem ušetriť peniaze." },
-  { sk: "Platiť", de: "Zahlen / Bezahlen", cat: "Alltag & Einkaufen", ex: "Chcem platiť." },
-  { sk: "Požičať", de: "Leihen / Ausleihen", cat: "Alltag & Einkaufen", ex: "Môžeš mi požičať peniaze?" },
-  { sk: "Dlh", de: "Schulden", cat: "Alltag & Einkaufen", ex: "Mám dlh." },
-  { sk: "Potvrdenie", de: "Bestätigung / Beleg", cat: "Alltag & Einkaufen", ex: "Pošlite mi potvrdenie." },
-  { sk: "Objednávka", de: "Bestellung", cat: "Alltag & Einkaufen", ex: "Chcem podať objednávku." },
-];
-const PHRASES = [
-  { sk: "Ako sa voláte?", de: "Wie heißen Sie?", context: "Kennenlernen" },
-  { sk: "Volám sa...", de: "Ich heiße...", context: "Kennenlernen" },
-  { sk: "Odkiaľ ste?", de: "Woher kommen Sie?", context: "Kennenlernen" },
-  { sk: "Som z Rakúska.", de: "Ich bin aus Österreich.", context: "Kennenlernen" },
-  { sk: "Ako sa máte?", de: "Wie geht es Ihnen?", context: "Begrüßung" },
-  { sk: "Dobre, ďakujem.", de: "Gut, danke.", context: "Begrüßung" },
-  { sk: "Nerozumiem.", de: "Ich verstehe nicht.", context: "Sprachprobleme" },
-  { sk: "Hovoríte po nemecky?", de: "Sprechen Sie Deutsch?", context: "Sprachprobleme" },
-  { sk: "Môžete to zopakovať?", de: "Können Sie das wiederholen?", context: "Sprachprobleme" },
-  { sk: "Koľko to stojí?", de: "Was kostet das?", context: "Einkaufen" },
-  { sk: "Kde je zastávka?", de: "Wo ist die Haltestelle?", context: "Orientierung" },
-  { sk: "Pomôžte mi, prosím.", de: "Bitte helfen Sie mir.", context: "Hilfe" },
-  { sk: "Zavolajte políciu!", de: "Rufen Sie die Polizei!", context: "Notfall" },
-  { sk: "Potrebujem lekára.", de: "Ich brauche einen Arzt.", context: "Notfall" },
-  { sk: "Kde je nemocnica?", de: "Wo ist das Krankenhaus?", context: "Notfall" },
-  { sk: "Mám rezerváciu.", de: "Ich habe eine Reservierung.", context: "Hotel" },
-  { sk: "Kedy je raňajky?", de: "Wann gibt es Frühstück?", context: "Hotel" },
-  { sk: "Chcem zaplatiť.", de: "Ich möchte zahlen.", context: "Restaurant" },
-  { sk: "Bez mäsa, prosím.", de: "Ohne Fleisch, bitte.", context: "Restaurant" },
-  { sk: "Je tu voľné miesto?", de: "Ist hier noch frei?", context: "Restaurant" },
-];
 const GRAMMAR = [
   {
     title: "Persönliche Fürwörter",
@@ -508,9 +543,87 @@ const GRAMMAR = [
     tip: "Ab 11 endet die Zahl auf -násť (entspricht dem deutschen -zehn)."
   }
 ];
+const PHRASES = [
+  { sk: "Ako sa voláte?", de: "Wie heißen Sie?", context: "Kennenlernen" },
+  { sk: "Volám sa...", de: "Ich heiße...", context: "Kennenlernen" },
+  { sk: "Odkiaľ ste?", de: "Woher kommen Sie?", context: "Kennenlernen" },
+  { sk: "Som z Rakúska.", de: "Ich bin aus Österreich.", context: "Kennenlernen" },
+  { sk: "Ako sa máte?", de: "Wie geht es Ihnen?", context: "Begrüßung" },
+  { sk: "Dobre, ďakujem.", de: "Gut, danke.", context: "Begrüßung" },
+  { sk: "Nerozumiem.", de: "Ich verstehe nicht.", context: "Sprachprobleme" },
+  { sk: "Hovoríte po nemecky?", de: "Sprechen Sie Deutsch?", context: "Sprachprobleme" },
+  { sk: "Môžete to zopakovať?", de: "Können Sie das wiederholen?", context: "Sprachprobleme" },
+  { sk: "Koľko to stojí?", de: "Was kostet das?", context: "Einkaufen" },
+  { sk: "Kde je zastávka?", de: "Wo ist die Haltestelle?", context: "Orientierung" },
+  { sk: "Pomôžte mi, prosím.", de: "Bitte helfen Sie mir.", context: "Hilfe" },
+  { sk: "Zavolajte políciu!", de: "Rufen Sie die Polizei!", context: "Notfall" },
+  { sk: "Potrebujem lekára.", de: "Ich brauche einen Arzt.", context: "Notfall" },
+  { sk: "Kde je nemocnica?", de: "Wo ist das Krankenhaus?", context: "Notfall" },
+  { sk: "Mám rezerváciu.", de: "Ich habe eine Reservierung.", context: "Hotel" },
+  { sk: "Kedy je raňajky?", de: "Wann gibt es Frühstück?", context: "Hotel" },
+  { sk: "Chcem zaplatiť.", de: "Ich möchte zahlen.", context: "Restaurant" },
+  { sk: "Bez mäsa, prosím.", de: "Ohne Fleisch, bitte.", context: "Restaurant" },
+  { sk: "Je tu voľné miesto?", de: "Ist hier noch frei?", context: "Restaurant" },
+];
+var CATS=["Alle","Grundwortschatz","Begrüßung & Alltag","Menschen & Familie","Zahlen, Zeit & Datum","Essen & Trinken","Reisen & Transport","Wohnen & Einkaufen","Gesundheit & Notfall"];
+var h=React.createElement,useState=React.useState,useEffect=React.useEffect,useRef=React.useRef;
 
-var CATS=["Alle","Grundlagen","Zahlen & Zeit","Essen & Reisen","Alltag & Einkaufen","Gesundheit & Notfall"];
+var GOLD="#D4A937",GS="#D4A93715",GM="#D4A93745",BLK="#111111",GR="#6B6B6B",LT="#AAAAAA";
+var BG="#F7F5F0",WH="#FFFFFF",BR="#EBEBEB",GRN="#34C759",RD="#FF3B30";
+var SH="0 2px 16px rgba(0,0,0,0.06)",SSH="0 1px 4px rgba(0,0,0,0.04)",SGH="0 2px 10px rgba(212,169,55,0.28)";
+var SERIF='Georgia,"Palatino Linotype",Palatino,"Times New Roman",serif';
 
+// STORAGE
+function lsGet(k,fb){try{var v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function loadProgress(){return lsGet("sk_prog",{});}
+function saveProgress(kn,le,counts){
+  var ka=[],la=[];kn.forEach(function(v){ka.push(v);});le.forEach(function(v){la.push(v);});
+  lsSet("sk_prog",{known:ka,learning:la,counts:counts||{}});
+}
+function loadStats(){return lsGet("sk_stats",{});}
+function saveStats(s){lsSet("sk_stats",s);}
+function loadPlan(){return lsGet("sk_plan",{dailyGoal:10});}
+function savePlan(p){lsSet("sk_plan",p);}
+function todayKey(){return new Date().toISOString().slice(0,10);}
+function recordActivity(sk,correct){
+  var s=loadStats(),k=todayKey();
+  if(!s[k])s[k]={seen:0,correct:0,words:[]};
+  s[k].seen++;if(correct)s[k].correct++;
+  if(s[k].words.indexOf(sk)===-1)s[k].words.push(sk);
+  var keys=Object.keys(s).sort();
+  if(keys.length>30)keys.slice(0,keys.length-30).forEach(function(k2){delete s[k2];});
+  saveStats(s);
+}
+function getTodayWords(){var s=loadStats(),k=todayKey();return s[k]?s[k].words||[]:[]; }
+function objSum(o,key){var t=0;Object.keys(o).forEach(function(k){t+=o[k][key]||0;});return t;}
+function shuffle(arr){var a=arr.slice(),i=a.length,j,t;while(i--){j=Math.floor(Math.random()*(i+1));t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function setArr(s){var a=[];s.forEach(function(v){a.push(v);});return a;}
+function cs(){var o={};for(var i=0;i<arguments.length;i++){var a=arguments[i];if(a)Object.keys(a).forEach(function(k){o[k]=a[k];});}return o;}
+
+// PRONUNCIATION
+var PRONUC_CHARS=["\u0161","\u010d","\u017e","\u010f","\u0165","\u0148","\u013e","\u00e1","\u00e9","\u00ed","\u00fa","\u00fd","\u00f4"];
+var PRONUC_TIPS=["sch","tsch","zh","dj","tj","nj","lj","aa","ee","ii","uu","ii","uo"];
+function getPronTips(word){
+  var tips=[],low=word.toLowerCase();
+  for(var i=0;i<PRONUC_CHARS.length;i++){if(low.indexOf(PRONUC_CHARS[i])!==-1)tips.push(PRONUC_CHARS[i]+"="+PRONUC_TIPS[i]);}
+  return tips.slice(0,2);
+}
+
+// CATEGORIES
+var CAT_ICONS={
+  "Alle":"\u2605",
+  "Grundwortschatz":"\uD83D\uDCD6",
+  "Begr\u00fc\u00dfung & Alltag":"\uD83D\uDC4B",
+  "Menschen & Familie":"\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67",
+  "Zahlen, Zeit & Datum":"\uD83D\uDD22",
+  "Essen & Trinken":"\uD83C\uDF7D",
+  "Reisen & Transport":"\u2708\uFE0F",
+  "Wohnen & Einkaufen":"\uD83C\uDFE0",
+  "Gesundheit & Notfall":"\uD83D\uDC89"
+};
+
+// AUDIO
 function speak(text){
   if(!window.speechSynthesis)return;
   window.speechSynthesis.cancel();
@@ -521,11 +634,13 @@ function speak(text){
   window.speechSynthesis.speak(u);
 }
 
+// STYLES
 function cardSt(ex){return cs({background:WH,borderRadius:20,boxShadow:SH,padding:20},ex||{});}
-function pillSt(active){return{padding:"7px 15px",borderRadius:999,border:"none",fontFamily:"inherit",whiteSpace:"nowrap",cursor:"pointer",fontSize:13,fontWeight:active?600:400,background:active?GOLD:"transparent",color:active?"#fff":GR};}
+function pillSt(active){return{padding:"7px 14px",borderRadius:999,border:"none",fontFamily:"inherit",whiteSpace:"nowrap",cursor:"pointer",fontSize:13,fontWeight:active?600:400,background:active?GOLD:"transparent",color:active?"#fff":GR};}
 function lblSt(){return{fontSize:11,fontWeight:600,letterSpacing:0.8,color:LT,textTransform:"uppercase",marginBottom:8};}
 function btnSt(){return{width:"100%",padding:"15px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:16,fontWeight:600,cursor:"pointer",background:GOLD,color:"#fff",boxShadow:SGH};}
 
+// ICONS
 function IcoLearn(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("path",{d:"M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"}),h("path",{d:"M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"}));}
 function IcoFlash(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("rect",{x:2,y:3,width:20,height:14,rx:2}),h("path",{d:"M8 21h8M12 17v4"}));}
 function IcoQuiz(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("circle",{cx:12,cy:12,r:10}),h("path",{d:"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"}),h("line",{x1:12,y1:17,x2:12.01,y2:17,strokeWidth:3}));}
@@ -533,7 +648,9 @@ function IcoKnow(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:
 function IcoProg(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("line",{x1:18,y1:20,x2:18,y2:10}),h("line",{x1:12,y1:20,x2:12,y2:4}),h("line",{x1:6,y1:20,x2:6,y2:14}));}
 function IcoSpeak(c){return h("svg",{width:15,height:15,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:2,strokeLinecap:"round"},h("polygon",{points:"11 5 6 9 2 9 2 15 6 15 11 19 11 5"}),h("path",{d:"M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"}));}
 function IcoDn(c){return h("svg",{width:15,height:15,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:2,strokeLinecap:"round"},h("path",{d:"M6 9l6 6 6-6"}));}
+function IcoFilter(c){return h("svg",{width:18,height:18,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:2,strokeLinecap:"round"},h("line",{x1:4,y1:6,x2:20,y2:6}),h("line",{x1:8,y1:12,x2:16,y2:12}),h("line",{x1:11,y1:18,x2:13,y2:18}));}
 
+// RING
 function Ring(props){
   var size=props.size||72,stroke=props.stroke||5,color=props.color||GOLD;
   var pct=Math.min(props.pct||0,100),r=(size-stroke)/2,circ=2*Math.PI*r;
@@ -544,6 +661,42 @@ function Ring(props){
       style:{transition:"stroke-dashoffset 0.6s"}}));
 }
 
+// CATEGORY SHEET
+function CatSheet(props){
+  var cats=props.cats,current=props.current,onSelect=props.onSelect,onClose=props.onClose;
+  var prog=loadProgress(),known=new Set(prog.known||[]);
+  return h("div",{style:{position:"fixed",inset:0,zIndex:50}},
+    h("div",{onClick:onClose,style:{position:"absolute",inset:0,background:"rgba(0,0,0,0.35)"}}),
+    h("div",{style:{position:"absolute",bottom:0,left:0,right:0,background:WH,borderRadius:"24px 24px 0 0",maxHeight:"75vh",overflowY:"auto",paddingBottom:32}},
+      h("div",{style:{width:36,height:4,background:BR,borderRadius:2,margin:"12px auto 4px"}}),
+      h("div",{style:{padding:"8px 20px 12px",fontSize:13,fontWeight:600,color:LT,letterSpacing:0.8,textTransform:"uppercase"}},"Kategorie w\u00e4hlen"),
+      cats.map(function(cat,i){
+        var tot=0,kk=0;
+        for(var j=0;j<VOCAB.length;j++){if(cat==="Alle"||VOCAB[j].cat===cat){tot++;if(known.has(VOCAB[j].sk))kk++;}}
+        var p=tot?Math.round(kk/tot*100):0;
+        var active=current===cat;
+        return h("div",{key:cat},
+          i>0?h("div",{style:{height:1,background:"#F5F5F5",margin:"0 20px"}}):null,
+          h("div",{onClick:function(){onSelect(cat);onClose();},style:{padding:"13px 20px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",background:active?"#D4A93708":WH}},
+            h("span",{style:{fontSize:20,width:28,textAlign:"center"}},CAT_ICONS[cat]||"\uD83D\uDCDA"),
+            h("div",{style:{flex:1}},
+              h("div",{style:{fontSize:15,color:active?GOLD:BLK,fontWeight:active?600:400}},cat),
+              cat!=="Alle"?h("div",{style:{marginTop:4,height:2,background:BR,borderRadius:1,width:120}},
+                h("div",{style:{height:"100%",width:p+"%",background:active?GOLD:GR,borderRadius:1}})
+              ):null
+            ),
+            h("div",{style:{display:"flex",alignItems:"center",gap:8}},
+              h("span",{style:{fontSize:12,color:LT}},cat==="Alle"?VOCAB.length+"":tot+""),
+              active?h("span",{style:{color:GOLD,fontSize:14}},"\u2713"):null
+            )
+          )
+        );
+      })
+    )
+  );
+}
+
+// LEARN SCREEN
 function LearnScreen(props){
   var prog=loadProgress(),known=new Set(prog.known||[]);
   var plan=loadPlan(),stats=loadStats();
@@ -577,38 +730,44 @@ function LearnScreen(props){
     h("div",{style:{marginBottom:24}},h("button",{onClick:function(){props.onGo("flash");},style:btnSt()},"Weiterlernen")),
     h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},
       h("div",{style:lblSt()},"THEMEN"),
-      h("span",{style:{fontSize:13,color:GOLD,cursor:"pointer"},onClick:function(){props.onGo("know");}},"Alle anzeigen")
+      h("span",{style:{fontSize:13,color:GOLD,cursor:"pointer"},onClick:function(){props.onGo("flash");}},"Alle anzeigen")
     ),
     h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}},
       cats.map(function(cat){
         var tot=0,kk=0;
         for(var i=0;i<VOCAB.length;i++){if(VOCAB[i].cat===cat){tot++;if(known.has(VOCAB[i].sk))kk++;}}
         var p=tot?Math.round(kk/tot*100):0;
-        return h("div",{key:cat,onClick:function(){props.onGo("flash");},style:{background:WH,borderRadius:16,padding:"14px 16px",boxShadow:SSH,cursor:"pointer"}},
-          h("div",{style:{fontSize:13,fontWeight:500,color:BLK,marginBottom:4}},cat),
-          h("div",{style:{fontSize:11,color:LT,marginBottom:8}},kk+"/"+tot),
-          h("div",{style:{height:3,background:BR,borderRadius:2}},h("div",{style:{height:"100%",width:p+"%",background:GOLD,borderRadius:2}}))
+        return h("div",{key:cat,onClick:function(){props.onGo("flash");},style:{background:WH,borderRadius:16,padding:"12px 14px",boxShadow:SSH,cursor:"pointer"}},
+          h("div",{style:{display:"flex",alignItems:"center",gap:8,marginBottom:4}},
+            h("span",{style:{fontSize:16}},CAT_ICONS[cat]||"\uD83D\uDCDA"),
+            h("div",{style:{fontSize:12,fontWeight:500,color:BLK,lineHeight:1.3}},cat)
+          ),
+          h("div",{style:{fontSize:11,color:LT,marginBottom:6}},kk+"/"+tot+" \u2022 "+p+"%"),
+          h("div",{style:{height:2,background:BR,borderRadius:1}},h("div",{style:{height:"100%",width:p+"%",background:GOLD,borderRadius:1}}))
         );
       })
     )
   );
 }
 
+// FLASH SCREEN
 function FlashScreen(){
   var r1=useState("Alle"),cat=r1[0],setCat=r1[1];
   var r2=useState("de2sk"),dir=r2[0],setDir=r2[1];
   var r3=useState(false),flipped=r3[0],setFlipped=r3[1];
   var r4=useState(0),fkey=r4[0],setFkey=r4[1];
+  var r5=useState(false),showSheet=r5[0],setShowSheet=r5[1];
   var prog=loadProgress();
-  var r5=useState(function(){return new Set(prog.known||[]);}),known=r5[0],setKnown=r5[1];
-  var r6=useState(function(){return new Set(prog.learning||[]);}),learning=r6[0],setLearning=r6[1];
-  var r7=useState(function(){return prog.counts||{};}),counts=r7[0],setCounts=r7[1];
-  var r8=useState(false),ankiMode=r8[0],setAnkiMode=r8[1];
-  var r9=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),shuffled=r9[0],setShuffled=r9[1];
-  var r10=useState(0),pos=r10[0],setPos=r10[1];
-  var r11=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),srQ=r11[0],setSrQ=r11[1];
-  var r12=useState(0),srPos=r12[0],setSrPos=r12[1];
-  var r13=useState(false),lit=r13[0],setLit=r13[1];
+  var r6=useState(function(){return new Set(prog.known||[]);}),known=r6[0],setKnown=r6[1];
+  var r7=useState(function(){return new Set(prog.learning||[]);}),learning=r7[0],setLearning=r7[1];
+  var r8=useState(function(){return prog.counts||{};}),counts=r8[0],setCounts=r8[1];
+  var r9=useState(false),ankiMode=r9[0],setAnkiMode=r9[1];
+  var r10=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),shuffled=r10[0],setShuffled=r10[1];
+  var r11=useState(0),pos=r11[0],setPos=r11[1];
+  var r12=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),srQ=r12[0],setSrQ=r12[1];
+  var r13=useState(0),srPos=r13[0],setSrPos=r13[1];
+  var r14=useState(false),lit=r14[0],setLit=r14[1];
+
   var poolIdx=[];
   for(var i=0;i<shuffled.length;i++){var vi=shuffled[i];if(cat==="Alle"||VOCAB[vi].cat===cat)poolIdx.push(vi);}
   var safePos=poolIdx.length?pos%poolIdx.length:0;
@@ -622,6 +781,7 @@ function FlashScreen(){
   var tips=getPronTips(card.sk);
   var gPct=Math.round(known.size/VOCAB.length*100);
   var cardCount=counts[card.sk]||0;
+
   function flip(){setFkey(function(k){return k+1;});setFlipped(function(f){return !f;});}
   function switchCat(c){setCat(c);setPos(0);setFlipped(false);setFkey(function(k){return k+1;});setAnkiMode(false);setShuffled(shuffle(VOCAB.map(function(_,i){return i;})));}
   function nextCard(mark){
@@ -640,24 +800,37 @@ function FlashScreen(){
     }
   }
   function tapSpeak(e){e.stopPropagation();speak(card.sk);setLit(true);setTimeout(function(){setLit(false);},600);}
+
   var dots=[];
   for(var di=0;di<3;di++){dots.push(h("div",{key:di,style:{width:6,height:6,borderRadius:999,background:di<cardCount?GOLD:BR,transition:"background 0.2s"}}));}
-  return h("div",{style:{padding:"20px 20px 8px"}},
-    h("div",{style:{display:"flex",gap:6,marginBottom:12,alignItems:"center"}},
+
+  return h("div",{style:{padding:"16px 20px 8px",position:"relative"}},
+    // Top bar: direction + anki
+    h("div",{style:{display:"flex",gap:6,marginBottom:14,alignItems:"center"}},
       h("button",{onClick:function(){setDir("de2sk");setFlipped(false);setFkey(function(k){return k+1;});},style:pillSt(dir==="de2sk")},"\uD83C\uDDE9\uD83C\uDDEA \u2192 \uD83C\uDDF8\uD83C\uDDF0"),
       h("button",{onClick:function(){setDir("sk2de");setFlipped(false);setFkey(function(k){return k+1;});},style:pillSt(dir==="sk2de")},"\uD83C\uDDF8\uD83C\uDDF0 \u2192 \uD83C\uDDE9\uD83C\uDDEA"),
       h("button",{onClick:function(){setSrQ(shuffle(VOCAB.map(function(_,i){return i;})));setSrPos(0);setAnkiMode(function(a){return !a;});setFlipped(false);setFkey(function(k){return k+1;});},
         style:{marginLeft:"auto",padding:"7px 14px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:13,cursor:"pointer",background:ankiMode?GS:"transparent",color:ankiMode?GOLD:GR}},"\uD83E\uDDE0 Anki")
     ),
-    h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:10,marginBottom:10}},
-      CATS.map(function(c){return h("button",{key:c,onClick:function(){switchCat(c);},style:pillSt(!ankiMode&&cat===c)},c);})
+    // Category filter bar
+    h("div",{style:{display:"flex",gap:8,marginBottom:14,alignItems:"center"}},
+      h("div",{style:{flex:1,background:WH,borderRadius:999,padding:"9px 14px",boxShadow:SSH,display:"flex",alignItems:"center",gap:6}},
+        h("span",{style:{fontSize:16}},CAT_ICONS[cat]||"\u2605"),
+        h("span",{style:{fontSize:13,color:BLK,fontWeight:500,flex:1}},cat),
+        h("span",{style:{fontSize:11,color:LT}},ankiMode?"Anki":tot+" Karten")
+      ),
+      h("button",{onClick:function(){setShowSheet(true);},style:{padding:"9px 14px",borderRadius:999,border:"none",background:WH,boxShadow:SSH,cursor:"pointer",display:"flex",alignItems:"center",gap:6,fontFamily:"inherit",color:GOLD,fontSize:13,fontWeight:500}},
+        IcoFilter(GOLD),"\u00c4ndern"
+      )
     ),
+    // Progress bar
     h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:16}},
       h("div",{style:{flex:1,height:3,background:BR,borderRadius:2}},
         h("div",{style:{height:"100%",width:Math.round((cur+1)/Math.max(tot,1)*100)+"%",background:GOLD,borderRadius:2,transition:"width 0.4s"}})
       ),
       h("span",{style:{fontSize:12,color:LT,flexShrink:0}},(cur+1)+"/"+tot)
     ),
+    // Card
     h("div",{key:fkey,className:"fi",onClick:flip,style:{background:WH,borderRadius:28,boxShadow:SH,cursor:"pointer",padding:"32px 24px",textAlign:"center",position:"relative",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:240,marginBottom:16}},
       h("div",{style:{position:"absolute",top:14,left:14}},
         h("span",{style:{fontSize:11,fontWeight:500,color:LT,background:BR,padding:"3px 9px",borderRadius:999}},
@@ -674,20 +847,25 @@ function FlashScreen(){
         tips.map(function(t){return h("span",{key:t,style:{fontSize:11,color:GOLD,background:GS,padding:"2px 8px",borderRadius:999}},t);})):null,
       h("div",{style:{display:"flex",gap:4,justifyContent:"center",marginTop:10}},dots)
     ),
+    // Action buttons
     flipped
       ?h("div",{style:{display:"flex",gap:10,marginBottom:12}},
           h("button",{onClick:function(){nextCard("learning");},style:{flex:1,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"1.5px solid rgba(255,59,48,0.2)",background:"rgba(255,59,48,0.05)",color:RD,fontSize:15,fontWeight:500,cursor:"pointer"}},"\u2715 Schwer"),
           h("button",{onClick:function(){nextCard("known");},style:{flex:2,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"none",background:GOLD,color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer",boxShadow:SGH}},"Einfach \u2713")
         )
       :h("div",{style:{marginBottom:12}},h("button",{onClick:flip,style:btnSt()},"L\u00f6sung anzeigen")),
+    // Micro stats
     h("div",{style:{display:"flex",justifyContent:"center",gap:32,paddingBottom:4}},
       h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:GRN}},known.size),h("div",{style:{fontSize:11,color:LT}},"Gelernt")),
       h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:GOLD}},gPct+"%"),h("div",{style:{fontSize:11,color:LT}},"Gesamt")),
       h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:RD}},learning.size),h("div",{style:{fontSize:11,color:LT}},"\u00dcben"))
-    )
+    ),
+    // Category sheet
+    showSheet?h(CatSheet,{cats:CATS,current:cat,onSelect:switchCat,onClose:function(){setShowSheet(false);}}):null
   );
 }
 
+// QUIZ SCREEN
 function QuizScreen(){
   var r1=useState("de2sk"),mode=r1[0],setMode=r1[1];
   var r2=useState("Alle"),cat=r2[0],setCat=r2[1];
@@ -696,6 +874,7 @@ function QuizScreen(){
   var r5=useState({r:0,w:0}),score=r5[0],setScore=r5[1];
   var r6=useState(0),qkey=r6[0],setQkey=r6[1];
   var r7=useState(false),noWords=r7[0],setNoWords=r7[1];
+  var r8=useState(false),showSheet=r8[0],setShowSheet=r8[1];
 
   function gen(){
     var pool;
@@ -729,7 +908,6 @@ function QuizScreen(){
     else setScore(function(s){return{r:s.r,w:s.w+1};});
     recordActivity(q.card.sk,ok);
   }
-
   var tot=score.r+score.w,pct=tot?Math.round(score.r/tot*100):0;
   var modes=[
     {id:"de2sk",label:"\uD83C\uDDE9\uD83C\uDDEA \u2192 \uD83C\uDDF8\uD83C\uDDF0"},
@@ -738,16 +916,25 @@ function QuizScreen(){
     {id:"today",label:"\uD83D\uDCC5 Heute"},
   ];
 
-  return h("div",{style:{padding:"16px 20px 24px"}},
-    h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:10}},
+  return h("div",{style:{padding:"16px 20px 24px",position:"relative"}},
+    // Mode pills
+    h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:12}},
       modes.map(function(m){return h("button",{key:m.id,onClick:function(){setMode(m.id);setScore({r:0,w:0});},style:pillSt(mode===m.id)},m.label);})
     ),
-    mode!=="today"?h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:6,marginBottom:12}},
-      CATS.map(function(c){return h("button",{key:c,onClick:function(){setCat(c);setScore({r:0,w:0});},style:pillSt(cat===c)},c);})
-    ):h("div",{style:{marginBottom:12}},
+    // Category bar (not in today mode)
+    mode!=="today"?h("div",{style:{display:"flex",gap:8,marginBottom:14,alignItems:"center"}},
+      h("div",{style:{flex:1,background:WH,borderRadius:999,padding:"9px 14px",boxShadow:SSH,display:"flex",alignItems:"center",gap:6}},
+        h("span",{style:{fontSize:16}},CAT_ICONS[cat]||"\u2605"),
+        h("span",{style:{fontSize:13,color:BLK,fontWeight:500}},cat)
+      ),
+      h("button",{onClick:function(){setShowSheet(true);},style:{padding:"9px 14px",borderRadius:999,border:"none",background:WH,boxShadow:SSH,cursor:"pointer",display:"flex",alignItems:"center",gap:6,fontFamily:"inherit",color:GOLD,fontSize:13,fontWeight:500}},
+        IcoFilter(GOLD),"\u00c4ndern"
+      )
+    ):h("div",{style:{marginBottom:14}},
       h("div",{style:{background:GS,borderRadius:10,padding:"8px 14px",fontSize:12,color:GOLD}},"\uD83D\uDCC5 Nur W\u00f6rter die du heute in den Flashcards gesehen hast")
     ),
-    h("div",{style:{display:"flex",gap:8,marginBottom:12}},
+    // Score
+    h("div",{style:{display:"flex",gap:8,marginBottom:14}},
       [{v:score.r,l:"Richtig",col:GRN},{v:pct+"%",l:"Quote",col:GOLD},{v:score.w,l:"Falsch",col:RD}].map(function(item){
         return h("div",{key:item.l,style:{flex:1,background:WH,borderRadius:12,padding:"10px 6px",textAlign:"center",boxShadow:SSH}},
           h("div",{style:{fontSize:18,fontWeight:600,color:item.col}},item.v),
@@ -769,17 +956,12 @@ function QuizScreen(){
         q.options.map(function(opt){
           var isC=opt===q.answer,isP=chosen===opt;
           var bg=WH,border=BR,col=BLK;
-          if(chosen){
-            if(isC){bg="rgba(52,199,89,0.08)";border=GRN;col=GRN;}
-            else if(isP){bg="rgba(255,59,48,0.07)";border=RD;col=RD;}
-            else{col=LT;}
-          }
+          if(chosen){if(isC){bg="rgba(52,199,89,0.08)";border=GRN;col=GRN;}else if(isP){bg="rgba(255,59,48,0.07)";border=RD;col=RD;}else{col=LT;}}
           return h("button",{key:opt,onClick:function(){pick(opt);},style:{
             padding:"13px 16px",borderRadius:14,fontFamily:"inherit",textAlign:"left",
             background:bg,border:"1.5px solid "+border,color:col,
             fontSize:14,fontWeight:chosen&&isC?600:400,
-            cursor:chosen?"default":"pointer",transition:"all 0.18s",
-            boxShadow:chosen?"none":SSH}},
+            cursor:chosen?"default":"pointer",transition:"all 0.18s",boxShadow:chosen?"none":SSH}},
             h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}},
               h("span",null,(chosen&&isC?"\u2713 ":(chosen&&isP?"\u2715 ":""))+opt),
               chosen&&isC?h("span",{style:{fontSize:11,color:GRN,flexShrink:0}},q.card.de+" = "+q.card.sk):null
@@ -787,14 +969,13 @@ function QuizScreen(){
           );
         })
       ),
-      chosen?h("button",{onClick:gen,style:{width:"100%",padding:"14px",borderRadius:14,fontFamily:"inherit",border:"none",background:GOLD,color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer",boxShadow:SGH}},
-        "Weiter →"
-      ):null
-    ):null
+      chosen?h("button",{onClick:gen,style:btnSt()},"Weiter \u2192"):null
+    ):null,
+    showSheet?h(CatSheet,{cats:CATS,current:cat,onSelect:function(c){setCat(c);setScore({r:0,w:0});},onClose:function(){setShowSheet(false);}}):null
   );
 }
 
-
+// KNOWLEDGE SCREEN
 function KnowledgeScreen(){
   var r1=useState("Grammatik"),sec=r1[0],setSec=r1[1];
   var r2=useState(-1),open=r2[0],setOpen=r2[1];
@@ -825,8 +1006,7 @@ function KnowledgeScreen(){
                 }))
               ),
               h("div",{style:{marginTop:12,padding:"10px 14px",background:GS,borderRadius:10,borderLeft:"3px solid "+GOLD}},
-                h("div",{style:{fontSize:12,color:GOLD}},"\uD83D\uDCA1 "+g.tip)
-              )
+                h("div",{style:{fontSize:12,color:GOLD}},"\uD83D\uDCA1 "+g.tip))
             ):null
           );
         })
@@ -846,6 +1026,7 @@ function KnowledgeScreen(){
   );
 }
 
+// PROGRESS SCREEN
 function ProgressScreen(){
   var stats=loadStats(),prog=loadProgress(),known=new Set(prog.known||[]);
   var plan=loadPlan(),tod=stats[todayKey()]||{seen:0,correct:0};
@@ -961,6 +1142,7 @@ function ProgressScreen(){
   );
 }
 
+// IMPRESSUM SCREEN
 function ImpressumScreen(){
   var year=new Date().getFullYear();
   return h("div",{style:{padding:"32px 20px 48px"}},
@@ -969,9 +1151,7 @@ function ImpressumScreen(){
     h("div",{style:cardSt({marginBottom:12})},
       h("div",{style:lblSt()},"BETREIBER"),
       h("div",{style:{fontSize:15,fontWeight:500,color:BLK,marginBottom:6}},"Clemens Schleinzer"),
-      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7}},
-        "Enzersdorfer Stra\u00dfe 9/2/2",h("br",null),"2401 Fischamend",h("br",null),"\u00d6sterreich"
-      ),
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7}},"Enzersdorfer Stra\u00dfe 9/2/2",h("br",null),"2401 Fischamend",h("br",null),"\u00d6sterreich"),
       h("a",{href:"mailto:schleinzer@gmail.com",style:{display:"block",marginTop:10,fontSize:14,color:GOLD,textDecoration:"none"}},"schleinzer@gmail.com")
     ),
     h("div",{style:cardSt({marginBottom:12})},
@@ -1002,6 +1182,7 @@ function ImpressumScreen(){
   );
 }
 
+// TAB BAR
 function TabBar(props){
   var tab=props.tab,setTab=props.setTab;
   var tabs=[
@@ -1025,6 +1206,7 @@ function TabBar(props){
   );
 }
 
+// APP
 function App(){
   var r1=useState("learn"),tab=r1[0],setTab=r1[1];
   return h("div",{style:{display:"flex",flexDirection:"column",height:"100dvh",maxWidth:480,margin:"0 auto",background:BG,overflow:"hidden"}},
