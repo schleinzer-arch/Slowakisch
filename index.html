@@ -696,6 +696,7 @@ function QuizScreen(){
   var r5=useState({r:0,w:0}),score=r5[0],setScore=r5[1];
   var r6=useState(0),qkey=r6[0],setQkey=r6[1];
   var r7=useState(false),noWords=r7[0],setNoWords=r7[1];
+
   function gen(){
     var pool;
     if(mode==="today"){
@@ -721,11 +722,14 @@ function QuizScreen(){
     setChosen(null);setQkey(function(k){return k+1;});
   }
   useEffect(function(){gen();},[mode,cat]);
+
   function pick(opt){
     if(chosen!==null)return;setChosen(opt);var ok=opt===q.answer;
-    if(ok)setScore(function(s){return{r:s.r+1,w:s.w};});else setScore(function(s){return{r:s.r,w:s.w+1};});
+    if(ok)setScore(function(s){return{r:s.r+1,w:s.w};});
+    else setScore(function(s){return{r:s.r,w:s.w+1};});
     recordActivity(q.card.sk,ok);
   }
+
   var tot=score.r+score.w,pct=tot?Math.round(score.r/tot*100):0;
   var modes=[
     {id:"de2sk",label:"\uD83C\uDDE9\uD83C\uDDEA \u2192 \uD83C\uDDF8\uD83C\uDDF0"},
@@ -733,54 +737,63 @@ function QuizScreen(){
     {id:"mixed",label:"\uD83D\uDD04 Gemischt"},
     {id:"today",label:"\uD83D\uDCC5 Heute"},
   ];
-  return h("div",{style:{padding:"20px 20px 24px"}},
-    h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:12}},
+
+  return h("div",{style:{padding:"16px 20px 24px"}},
+    h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:10}},
       modes.map(function(m){return h("button",{key:m.id,onClick:function(){setMode(m.id);setScore({r:0,w:0});},style:pillSt(mode===m.id)},m.label);})
     ),
-    mode!=="today"?h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:16}},
+    mode!=="today"?h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:6,marginBottom:12}},
       CATS.map(function(c){return h("button",{key:c,onClick:function(){setCat(c);setScore({r:0,w:0});},style:pillSt(cat===c)},c);})
-    ):h("div",{style:{marginBottom:16}},
-      h("div",{style:{background:GS,borderRadius:12,padding:"10px 16px",fontSize:13,color:GOLD}},"\uD83D\uDCC5 Nur W\u00f6rter die du heute in den Flashcards gesehen hast")
+    ):h("div",{style:{marginBottom:12}},
+      h("div",{style:{background:GS,borderRadius:10,padding:"8px 14px",fontSize:12,color:GOLD}},"\uD83D\uDCC5 Nur W\u00f6rter die du heute in den Flashcards gesehen hast")
     ),
-    h("div",{style:{display:"flex",gap:10,marginBottom:16}},
+    h("div",{style:{display:"flex",gap:8,marginBottom:12}},
       [{v:score.r,l:"Richtig",col:GRN},{v:pct+"%",l:"Quote",col:GOLD},{v:score.w,l:"Falsch",col:RD}].map(function(item){
-        return h("div",{key:item.l,style:{flex:1,background:WH,borderRadius:14,padding:"12px 8px",textAlign:"center",boxShadow:SSH}},
-          h("div",{style:{fontSize:20,fontWeight:600,color:item.col}},item.v),h("div",{style:{fontSize:11,color:LT}},item.l));
+        return h("div",{key:item.l,style:{flex:1,background:WH,borderRadius:12,padding:"10px 6px",textAlign:"center",boxShadow:SSH}},
+          h("div",{style:{fontSize:18,fontWeight:600,color:item.col}},item.v),
+          h("div",{style:{fontSize:10,color:LT}},item.l));
       })
     ),
-    noWords?h("div",{style:cardSt({textAlign:"center",padding:"40px 20px"})},
-      h("div",{style:{fontSize:32,marginBottom:12}},"\uD83D\uDCC5"),
-      h("div",{style:{fontSize:16,fontWeight:500,color:BLK,marginBottom:8}},"Noch keine W\u00f6rter heute"),
-      h("div",{style:{fontSize:14,color:GR}},"Lerne zuerst ein paar Vokabeln in den Flashcards!")
+    noWords?h("div",{style:cardSt({textAlign:"center",padding:"32px 20px"})},
+      h("div",{style:{fontSize:28,marginBottom:10}},"\uD83D\uDCC5"),
+      h("div",{style:{fontSize:15,fontWeight:500,color:BLK,marginBottom:6}},"Noch keine W\u00f6rter heute"),
+      h("div",{style:{fontSize:13,color:GR}},"Lerne zuerst Vokabeln in den Flashcards!")
     ):null,
     q&&!noWords?h("div",{key:qkey},
-      h("div",{style:cardSt({textAlign:"center",padding:"28px 20px",marginBottom:16})},
-        h("div",{style:{fontSize:12,color:LT,marginBottom:12}},q.dir==="de2sk"?"Wie hei\u00dft auf Slowakisch...":"Was bedeutet auf Deutsch..."),
-        h("div",{style:{fontSize:36,fontWeight:300,fontFamily:SERIF,color:BLK,lineHeight:1.2,marginBottom:8}},q.question),
-        h("span",{style:{fontSize:11,color:GOLD,background:GS,padding:"3px 10px",borderRadius:999}},q.card.cat)
+      h("div",{style:{background:WH,borderRadius:18,boxShadow:SH,padding:"18px 18px 14px",marginBottom:10,textAlign:"center"}},
+        h("div",{style:{fontSize:11,color:LT,marginBottom:8}},q.dir==="de2sk"?"Wie hei\u00dft auf Slowakisch...":"Was bedeutet auf Deutsch..."),
+        h("div",{style:{fontSize:30,fontWeight:300,fontFamily:SERIF,color:BLK,lineHeight:1.2,marginBottom:6}},q.question),
+        h("span",{style:{fontSize:10,color:GOLD,background:GS,padding:"2px 8px",borderRadius:999}},q.card.cat)
       ),
-      h("div",{style:{display:"flex",flexDirection:"column",gap:10,marginBottom:12}},
+      h("div",{style:{display:"flex",flexDirection:"column",gap:8,marginBottom:10}},
         q.options.map(function(opt){
           var isC=opt===q.answer,isP=chosen===opt;
-          return h("button",{key:opt,onClick:function(){pick(opt);},style:{padding:"16px 20px",borderRadius:14,fontFamily:"inherit",textAlign:"left",
-            background:chosen?(isC?"rgba(52,199,89,0.08)":isP?"rgba(255,59,48,0.07)":WH):WH,
-            border:"1.5px solid "+(chosen?(isC?GRN:isP?RD:BR):BR),
-            color:chosen?(isC?GRN:isP?RD:BLK):BLK,
-            fontSize:15,fontWeight:chosen&&isC?600:400,cursor:chosen?"default":"pointer",boxShadow:SSH}},
-            (chosen&&isC?"\u2713 ":(chosen&&isP?"\u2715 ":""))+opt);
-        }),
-        !chosen?h("button",{onClick:function(){pick("");},style:{fontSize:13,color:LT,background:"none",border:"none",cursor:"pointer",fontFamily:"inherit",textAlign:"center",padding:8}},"Ich wei\u00df es nicht"):null
+          var bg=WH,border=BR,col=BLK;
+          if(chosen){
+            if(isC){bg="rgba(52,199,89,0.08)";border=GRN;col=GRN;}
+            else if(isP){bg="rgba(255,59,48,0.07)";border=RD;col=RD;}
+            else{col=LT;}
+          }
+          return h("button",{key:opt,onClick:function(){pick(opt);},style:{
+            padding:"13px 16px",borderRadius:14,fontFamily:"inherit",textAlign:"left",
+            background:bg,border:"1.5px solid "+border,color:col,
+            fontSize:14,fontWeight:chosen&&isC?600:400,
+            cursor:chosen?"default":"pointer",transition:"all 0.18s",
+            boxShadow:chosen?"none":SSH}},
+            h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}},
+              h("span",null,(chosen&&isC?"\u2713 ":(chosen&&isP?"\u2715 ":""))+opt),
+              chosen&&isC?h("span",{style:{fontSize:11,color:GRN,flexShrink:0}},q.card.de+" = "+q.card.sk):null
+            )
+          );
+        })
       ),
-      chosen?h("div",null,
-        h("div",{style:{background:chosen===q.answer?"rgba(52,199,89,0.08)":"rgba(255,59,48,0.07)",border:"1px solid "+(chosen===q.answer?"rgba(52,199,89,0.25)":"rgba(255,59,48,0.2)"),borderRadius:14,padding:"14px 20px",textAlign:"center",marginBottom:12}},
-          h("div",{style:{fontSize:15,fontWeight:600,color:chosen===q.answer?GRN:RD}},chosen===q.answer?"Richtig! \uD83C\uDF89":"Leider falsch."),
-          h("div",{style:{fontSize:13,color:GR,marginTop:4}},q.card.de+" = "+q.card.sk)
-        ),
-        h("button",{onClick:gen,style:btnSt()},"Weiter")
+      chosen?h("button",{onClick:gen,style:{width:"100%",padding:"14px",borderRadius:14,fontFamily:"inherit",border:"none",background:GOLD,color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer",boxShadow:SGH}},
+        "Weiter →"
       ):null
     ):null
   );
 }
+
 
 function KnowledgeScreen(){
   var r1=useState("Grammatik"),sec=r1[0],setSec=r1[1];
@@ -898,6 +911,45 @@ function ProgressScreen(){
             h("span",{style:{fontSize:13,color:BLK}},cat),h("span",{style:{fontSize:12,color:LT}},ct.k+"/"+ct.t)),
           h("div",{style:{height:4,background:BR,borderRadius:2}},h("div",{style:{height:"100%",width:p+"%",background:p===100?GRN:GOLD,borderRadius:2}})));
       })
+    ),
+    h("div",{style:{marginBottom:16}},
+      h("div",{style:lblSt()},"FORTSCHRITT SICHERN"),
+      h("div",{style:{display:"flex",gap:10}},
+        h("button",{onClick:function(){
+          var data={progress:lsGet("sk_prog",{}),stats:lsGet("sk_stats",{}),plan:lsGet("sk_plan",{})};
+          var blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+          var url=URL.createObjectURL(blob);
+          var a=document.createElement("a");
+          a.href=url;a.download="sloven\u010dina-fortschritt.json";
+          document.body.appendChild(a);a.click();
+          document.body.removeChild(a);URL.revokeObjectURL(url);
+        },style:{flex:1,padding:"12px",borderRadius:14,border:"1.5px solid "+BR,background:WH,fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:"pointer",color:BLK,boxShadow:SSH}},
+          "\uD83D\uDCE4 Exportieren"
+        ),
+        h("button",{onClick:function(){
+          var inp=document.createElement("input");
+          inp.type="file";inp.accept=".json";
+          inp.onchange=function(e){
+            var file=e.target.files[0];if(!file)return;
+            var reader=new FileReader();
+            reader.onload=function(ev){
+              try{
+                var data=JSON.parse(ev.target.result);
+                if(data.progress)lsSet("sk_prog",data.progress);
+                if(data.stats)lsSet("sk_stats",data.stats);
+                if(data.plan)lsSet("sk_plan",data.plan);
+                alert("Fortschritt importiert! Seite wird neu geladen.");
+                window.location.reload();
+              }catch(err){alert("Fehler beim Importieren.");}
+            };
+            reader.readAsText(file);
+          };
+          document.body.appendChild(inp);inp.click();
+          document.body.removeChild(inp);
+        },style:{flex:1,padding:"12px",borderRadius:14,border:"1.5px solid "+BR,background:WH,fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:"pointer",color:BLK,boxShadow:SSH}},
+          "\uD83D\uDCE5 Importieren"
+        )
+      )
     ),
     h("div",{style:cardSt(null)},
       h("div",{style:lblSt()},"TAGESZIEL"),
