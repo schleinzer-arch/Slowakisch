@@ -829,22 +829,22 @@ function FlashScreen(){
       setSrQ(function(q){var nq=q.slice();nq.splice(srPos+iv,0,ci);return nq;});
       setTimeout(function(){setSrPos(function(p){return p+1;});},120);
     } else {
-      // After "Einfach": reinsert current card 1-5 positions ahead for reinforcement
+      // After "Einfach": insert one reinforcement copy at position 5-15 ahead.
+      // Only one copy is inserted (not stacking), so no loop possible.
       if(mark==="known"){
         var curIdx=queue[safeQpos];
-        var iv2=Math.floor(Math.random()*5)+1; // 1-5 cards ahead
-        var insertAt=safeQpos+1+iv2;
+        var iv2=Math.floor(Math.random()*11)+5; // 5-15 ahead
         setQueue(function(q){
           var nq=q.slice();
-          // Remove current occurrence first to avoid stacking
+          // Remove current position first
           nq.splice(safeQpos,1);
-          // Insert at calculated position
-          var realInsert=Math.min(insertAt-1,nq.length);
-          nq.splice(realInsert,0,curIdx);
+          // Insert one reinforcement copy at 5-15 positions ahead
+          var insertAt=Math.min(safeQpos+iv2,nq.length);
+          nq.splice(insertAt,0,curIdx);
           return nq;
         });
-        // pos stays same since we removed current item, next card shifts into place
-        setTimeout(function(){setQpos(function(p){return p;});setFkey(function(k){return k+1;});},120);
+        // Advance to next card (current was removed, next slides in)
+        setTimeout(function(){setQpos(function(p){return p;});},120);
       } else {
         var qlen=queue.length;
         setTimeout(function(){setQpos(function(p){return qlen?(p+1)%qlen:0;});},120);
