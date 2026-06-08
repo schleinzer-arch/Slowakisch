@@ -762,20 +762,38 @@ function FlashScreen(){
   var r7=useState(function(){return new Set(prog.learning||[]);}),learning=r7[0],setLearning=r7[1];
   var r8=useState(function(){return prog.counts||{};}),counts=r8[0],setCounts=r8[1];
   var r9=useState(false),ankiMode=r9[0],setAnkiMode=r9[1];
-  var r10=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),shuffled=r10[0],setShuffled=r10[1];
-  var r11=useState(0),pos=r11[0],setPos=r11[1];
+  // Queue: array of VOCAB indices, rebuilt on cat change or anki start
+  var r10=useState(function(){return buildQueue("Alle",prog.counts||{},new Set(prog.known||[])); }),queue=r10[0],setQueue=r10[1];
+  var r11=useState(0),qpos=r11[0],setQpos=r11[1];
+  // Anki queue
   var r12=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),srQ=r12[0],setSrQ=r12[1];
   var r13=useState(0),srPos=r13[0],setSrPos=r13[1];
   var r14=useState(false),lit=r14[0],setLit=r14[1];
 
-  var poolIdx=[];
-  for(var i=0;i<shuffled.length;i++){var vi=shuffled[i];if(cat==="Alle"||VOCAB[vi].cat===cat)poolIdx.push(vi);}
-  var safePos=poolIdx.length?pos%poolIdx.length:0;
+  // Build a weighted, shuffled queue for normal mode
+  // Known (3x) words appear at ~25% frequency, others at full frequency
+  function buildQueue(c,cnts,kn){
+    var pool=[];
+    for(var i=0;i<VOCAB.length;i++){
+      if(c!=="Alle"&&VOCAB[i].cat!==c)continue;
+      var sk=VOCAB[i].sk;
+      var isKnown=kn.has(sk);
+      // 25% reduction: skip known words ~75% of the time by adding them 1x vs 4x weight
+      if(isKnown){
+        pool.push(i); // 1 copy = 25% relative weight
+      } else {
+        pool.push(i);pool.push(i);pool.push(i);pool.push(i); // 4 copies = full weight
+      }
+    }
+    return shuffle(pool);
+  }
+
+  var safeQpos=queue.length?qpos%queue.length:0;
   var safeAnki=srQ.length?srPos%srQ.length:0;
-  var card=ankiMode?VOCAB[srQ[safeAnki]]:VOCAB[poolIdx[safePos]];
+  var card=ankiMode?VOCAB[srQ[safeAnki]]:VOCAB[queue[safeQpos]];
   if(!card)card=VOCAB[0];
-  var cur=ankiMode?safeAnki:safePos;
-  var tot=ankiMode?srQ.length:poolIdx.length;
+  var cur=ankiMode?safeAnki:safeQpos;
+  var tot=ankiMode?srQ.length:queue.length;
   var front=dir==="de2sk"?card.de:card.sk;
   var back=dir==="de2sk"?card.sk:card.de;
   var tips=getPronTips(card.sk);
@@ -783,36 +801,69 @@ function FlashScreen(){
   var cardCount=counts[card.sk]||0;
 
   function flip(){setFkey(function(k){return k+1;});setFlipped(function(f){return !f;});}
-  function switchCat(c){setCat(c);setPos(0);setFlipped(false);setFkey(function(k){return k+1;});setAnkiMode(false);setShuffled(shuffle(VOCAB.map(function(_,i){return i;})));}
+
+  function switchCat(c){
+    setCat(c);setQpos(0);setFlipped(false);
+    setFkey(function(k){return k+1;});
+    setAnkiMode(false);
+    setQueue(buildQueue(c,counts,known));
+  }
+
   function nextCard(mark){
     var sk=card.sk;
     var nk=new Set(setArr(known)),nl=new Set(setArr(learning)),nc=cs({},counts);
-    if(mark==="known"){nc[sk]=(nc[sk]||0)+1;if(nc[sk]>=3){nk.add(sk);nl.delete(sk);}else{nl.add(sk);}}
-    else{nc[sk]=0;nl.add(sk);nk.delete(sk);}
-    setKnown(nk);setLearning(nl);setCounts(nc);saveProgress(nk,nl,nc);recordActivity(sk,mark==="known");
+    if(mark==="known"){
+      nc[sk]=(nc[sk]||0)+1;
+      if(nc[sk]>=3){nk.add(sk);nl.delete(sk);}else{nl.add(sk);}
+    } else {
+      nc[sk]=0;nl.add(sk);nk.delete(sk);
+    }
+    setKnown(nk);setLearning(nl);setCounts(nc);
+    saveProgress(nk,nl,nc);
+    recordActivity(sk,mark==="known");
     setFlipped(false);setFkey(function(k){return k+1;});
+
     if(ankiMode){
-      var ci=srQ[safeAnki],iv=mark==="known"?Math.floor(Math.random()*11)+20:Math.floor(Math.random()*8)+3;
+      var ci=srQ[safeAnki];
+      var iv=mark==="known"?Math.floor(Math.random()*11)+20:Math.floor(Math.random()*8)+3;
       setSrQ(function(q){var nq=q.slice();nq.splice(srPos+iv,0,ci);return nq;});
       setTimeout(function(){setSrPos(function(p){return p+1;});},120);
     } else {
-      var pl=poolIdx.length;setTimeout(function(){setPos(function(p){return pl?(p+1)%pl:0;});},120);
+      // After "Einfach": reinsert current card 1-5 positions ahead for reinforcement
+      if(mark==="known"){
+        var curIdx=queue[safeQpos];
+        var iv2=Math.floor(Math.random()*5)+1; // 1-5 cards ahead
+        var insertAt=safeQpos+1+iv2;
+        setQueue(function(q){
+          var nq=q.slice();
+          // Remove current occurrence first to avoid stacking
+          nq.splice(safeQpos,1);
+          // Insert at calculated position
+          var realInsert=Math.min(insertAt-1,nq.length);
+          nq.splice(realInsert,0,curIdx);
+          return nq;
+        });
+        // pos stays same since we removed current item, next card shifts into place
+        setTimeout(function(){setQpos(function(p){return p;});setFkey(function(k){return k+1;});},120);
+      } else {
+        var qlen=queue.length;
+        setTimeout(function(){setQpos(function(p){return qlen?(p+1)%qlen:0;});},120);
+      }
     }
   }
+
   function tapSpeak(e){e.stopPropagation();speak(card.sk);setLit(true);setTimeout(function(){setLit(false);},600);}
 
   var dots=[];
   for(var di=0;di<3;di++){dots.push(h("div",{key:di,style:{width:6,height:6,borderRadius:999,background:di<cardCount?GOLD:BR,transition:"background 0.2s"}}));}
 
   return h("div",{style:{padding:"16px 20px 8px",position:"relative"}},
-    // Top bar: direction + anki
     h("div",{style:{display:"flex",gap:6,marginBottom:14,alignItems:"center"}},
       h("button",{onClick:function(){setDir("de2sk");setFlipped(false);setFkey(function(k){return k+1;});},style:pillSt(dir==="de2sk")},"\uD83C\uDDE9\uD83C\uDDEA \u2192 \uD83C\uDDF8\uD83C\uDDF0"),
       h("button",{onClick:function(){setDir("sk2de");setFlipped(false);setFkey(function(k){return k+1;});},style:pillSt(dir==="sk2de")},"\uD83C\uDDF8\uD83C\uDDF0 \u2192 \uD83C\uDDE9\uD83C\uDDEA"),
       h("button",{onClick:function(){setSrQ(shuffle(VOCAB.map(function(_,i){return i;})));setSrPos(0);setAnkiMode(function(a){return !a;});setFlipped(false);setFkey(function(k){return k+1;});},
         style:{marginLeft:"auto",padding:"7px 14px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:13,cursor:"pointer",background:ankiMode?GS:"transparent",color:ankiMode?GOLD:GR}},"\uD83E\uDDE0 Anki")
     ),
-    // Category filter bar
     h("div",{style:{display:"flex",gap:8,marginBottom:14,alignItems:"center"}},
       h("div",{style:{flex:1,background:WH,borderRadius:999,padding:"9px 14px",boxShadow:SSH,display:"flex",alignItems:"center",gap:6}},
         h("span",{style:{fontSize:16}},CAT_ICONS[cat]||"\u2605"),
@@ -823,14 +874,12 @@ function FlashScreen(){
         IcoFilter(GOLD),"\u00c4ndern"
       )
     ),
-    // Progress bar
     h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:16}},
       h("div",{style:{flex:1,height:3,background:BR,borderRadius:2}},
         h("div",{style:{height:"100%",width:Math.round((cur+1)/Math.max(tot,1)*100)+"%",background:GOLD,borderRadius:2,transition:"width 0.4s"}})
       ),
       h("span",{style:{fontSize:12,color:LT,flexShrink:0}},(cur+1)+"/"+tot)
     ),
-    // Card
     h("div",{key:fkey,className:"fi",onClick:flip,style:{background:WH,borderRadius:28,boxShadow:SH,cursor:"pointer",padding:"32px 24px",textAlign:"center",position:"relative",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:240,marginBottom:16}},
       h("div",{style:{position:"absolute",top:14,left:14}},
         h("span",{style:{fontSize:11,fontWeight:500,color:LT,background:BR,padding:"3px 9px",borderRadius:999}},
@@ -847,27 +896,23 @@ function FlashScreen(){
         tips.map(function(t){return h("span",{key:t,style:{fontSize:11,color:GOLD,background:GS,padding:"2px 8px",borderRadius:999}},t);})):null,
       h("div",{style:{display:"flex",gap:4,justifyContent:"center",marginTop:10}},dots)
     ),
-    // Action buttons
     flipped
       ?h("div",{style:{display:"flex",gap:10,marginBottom:12}},
           h("button",{onClick:function(){nextCard("learning");},style:{flex:1,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"1.5px solid rgba(255,59,48,0.2)",background:"rgba(255,59,48,0.05)",color:RD,fontSize:15,fontWeight:500,cursor:"pointer"}},"\u2715 Schwer"),
           h("button",{onClick:function(){nextCard("known");},style:{flex:2,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"none",background:GOLD,color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer",boxShadow:SGH}},"Einfach \u2713")
         )
       :h("div",{style:{marginBottom:12}},h("button",{onClick:flip,style:btnSt()},"L\u00f6sung anzeigen")),
-    // Micro stats
     h("div",{style:{display:"flex",justifyContent:"center",gap:32,paddingBottom:4}},
       h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:GRN}},known.size),h("div",{style:{fontSize:11,color:LT}},"Gelernt")),
       h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:GOLD}},gPct+"%"),h("div",{style:{fontSize:11,color:LT}},"Gesamt")),
       h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:RD}},learning.size),h("div",{style:{fontSize:11,color:LT}},"\u00dcben"))
     ),
-    // Category sheet
     showSheet?h(CatSheet,{cats:CATS,current:cat,onSelect:switchCat,onClose:function(){setShowSheet(false);}}):null
   );
 }
 
-// QUIZ SCREEN
 function QuizScreen(){
-  var r1=useState("de2sk"),mode=r1[0],setMode=r1[1];
+  var r1=useState("today"),mode=r1[0],setMode=r1[1];
   var r2=useState("Alle"),cat=r2[0],setCat=r2[1];
   var r3=useState(null),q=r3[0],setQ=r3[1];
   var r4=useState(null),chosen=r4[0],setChosen=r4[1];
