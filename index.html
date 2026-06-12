@@ -22,9 +22,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script>
 const VOCAB = [
-  // ── Grundwortschatz (100) ──────────────────────────────────────────────────
-  // Farben
-  { sk: "červený", de: "rot", cat: "Grundwortschatz", ex: "Mám červené auto." },
+  { sk: "červený", de: "rot", cat: "Grundwortschatz", ex: "Farben der Herbst ist rot." },
   { sk: "modrý", de: "blau", cat: "Grundwortschatz", ex: "Obloha je modrá." },
   { sk: "zelený", de: "grün", cat: "Grundwortschatz", ex: "Tráva je zelená." },
   { sk: "žltý", de: "gelb", cat: "Grundwortschatz", ex: "Citrón je žltý." },
@@ -36,7 +34,6 @@ const VOCAB = [
   { sk: "ružový", de: "rosa / pink", cat: "Grundwortschatz", ex: "Ružové kvety." },
   { sk: "fialový", de: "lila / violett", cat: "Grundwortschatz", ex: "Fialový šál." },
   { sk: "farba", de: "Farbe", cat: "Grundwortschatz", ex: "Aká je tvoja obľúbená farba?" },
-  // Grundverben
   { sk: "ísť", de: "gehen", cat: "Grundwortschatz", ex: "Idem domov." },
   { sk: "prísť", de: "kommen", cat: "Grundwortschatz", ex: "Príď sem!" },
   { sk: "vidieť", de: "sehen", cat: "Grundwortschatz", ex: "Vidím ho." },
@@ -65,7 +62,6 @@ const VOCAB = [
   { sk: "pracovať", de: "arbeiten", cat: "Grundwortschatz", ex: "Pracujem v Bratislave." },
   { sk: "bývať", de: "wohnen", cat: "Grundwortschatz", ex: "Bývam v Rakúsku." },
   { sk: "myslieť", de: "denken / glauben", cat: "Grundwortschatz", ex: "Myslím, že áno." },
-  // Grundadjektive
   { sk: "veľký", de: "groß", cat: "Grundwortschatz", ex: "Mám veľký dom." },
   { sk: "malý", de: "klein", cat: "Grundwortschatz", ex: "Malé dieťa." },
   { sk: "dobrý", de: "gut", cat: "Grundwortschatz", ex: "Dobrý deň!" },
@@ -83,10 +79,9 @@ const VOCAB = [
   { sk: "ťažký", de: "schwer", cat: "Grundwortschatz", ex: "Ťažká taška." },
   { sk: "ľahký", de: "leicht / einfach", cat: "Grundwortschatz", ex: "Ľahká úloha." },
   { sk: "správny", de: "richtig", cat: "Grundwortschatz", ex: "Správna odpoveď." },
-  { sk: "nesprávny", de: "falsch / falsch", cat: "Grundwortschatz", ex: "Nesprávna cesta." },
+  { sk: "nesprávny", de: "falsch", cat: "Grundwortschatz", ex: "Nesprávna cesta." },
   { sk: "plný", de: "voll", cat: "Grundwortschatz", ex: "Plný pohár." },
   { sk: "prázdny", de: "leer", cat: "Grundwortschatz", ex: "Prázdna fľaša." },
-  // Richtungen & Position
   { sk: "tu", de: "hier", cat: "Grundwortschatz", ex: "Som tu." },
   { sk: "tam", de: "dort / da", cat: "Grundwortschatz", ex: "Je tam." },
   { sk: "hore", de: "oben / rauf", cat: "Grundwortschatz", ex: "Choď hore." },
@@ -99,7 +94,6 @@ const VOCAB = [
   { sk: "za", de: "hinter", cat: "Grundwortschatz", ex: "Je za rohom." },
   { sk: "medzi", de: "zwischen", cat: "Grundwortschatz", ex: "Medzi dvoma domami." },
   { sk: "naproti", de: "gegenüber", cat: "Grundwortschatz", ex: "Naproti stanici." },
-  // Mengen & Pronomen
   { sk: "všetko", de: "alles", cat: "Grundwortschatz", ex: "Všetko je v poriadku." },
   { sk: "nič", de: "nichts", cat: "Grundwortschatz", ex: "Nič neviem." },
   { sk: "niečo", de: "etwas", cat: "Grundwortschatz", ex: "Niečo zjem." },
@@ -112,7 +106,6 @@ const VOCAB = [
   { sk: "nikto", de: "niemand", cat: "Grundwortschatz", ex: "Nikto tu nie je." },
   { sk: "tento", de: "dieser / dieses", cat: "Grundwortschatz", ex: "Tento dom." },
   { sk: "tamten", de: "jener / jenes", cat: "Grundwortschatz", ex: "Tamten muž." },
-  // Länder & Sprachen
   { sk: "Slovensko", de: "Slowakei", cat: "Grundwortschatz", ex: "Som zo Slovenska." },
   { sk: "Rakúsko", de: "Österreich", cat: "Grundwortschatz", ex: "Bývam v Rakúsku." },
   { sk: "Nemecko", de: "Deutschland", cat: "Grundwortschatz", ex: "Idem do Nemecka." },
@@ -125,8 +118,6 @@ const VOCAB = [
   { sk: "cudzinec", de: "Ausländer", cat: "Grundwortschatz", ex: "Som cudzinec." },
   { sk: "prekladať", de: "übersetzen", cat: "Grundwortschatz", ex: "Môžeš prekladať?" },
   { sk: "slovo", de: "Wort", cat: "Grundwortschatz", ex: "Aké je slovenské slovo?" },
-
-  // ── Begrüßung & Alltag (40) ────────────────────────────────────────────────
   { sk: "Ahoj", de: "Hallo", cat: "Begrüßung & Alltag", ex: "Ahoj, ako sa máš?" },
   { sk: "Dobrý deň", de: "Guten Tag", cat: "Begrüßung & Alltag", ex: "Dobrý deň, pán Novák." },
   { sk: "Dobré ráno", de: "Guten Morgen", cat: "Begrüßung & Alltag", ex: "Dobré ráno, dobre si spal?" },
@@ -167,8 +158,6 @@ const VOCAB = [
   { sk: "Zavolajte políciu!", de: "Rufen Sie die Polizei!", cat: "Begrüßung & Alltag", ex: "Zavolajte políciu!" },
   { sk: "Potrebujem lekára", de: "Ich brauche einen Arzt", cat: "Begrüßung & Alltag", ex: "Potrebujem lekára!" },
   { sk: "Šťastnú cestu", de: "Gute Reise", cat: "Begrüßung & Alltag", ex: "Šťastnú cestu a opatruj sa." },
-
-  // ── Menschen & Familie (40) ───────────────────────────────────────────────
   { sk: "Rodina", de: "Familie", cat: "Menschen & Familie", ex: "Mám veľkú rodinu." },
   { sk: "Mama", de: "Mutter / Mama", cat: "Menschen & Familie", ex: "Moja mama je učiteľka." },
   { sk: "Otec", de: "Vater", cat: "Menschen & Familie", ex: "Môj otec pracuje v Bratislave." },
@@ -205,12 +194,10 @@ const VOCAB = [
   { sk: "Suseda", de: "Nachbarin", cat: "Menschen & Familie", ex: "Suseda nám pomohla." },
   { sk: "Človek", de: "Mensch / Person", cat: "Menschen & Familie", ex: "Je to dobrý človek." },
   { sk: "Ľudia", de: "Menschen / Leute", cat: "Menschen & Familie", ex: "Veľa ľudí." },
-  { sk: "Cudzinec", de: "Ausländer", cat: "Menschen & Familie", ex: "Som cudzinec." },
   { sk: "Turista", de: "Tourist", cat: "Menschen & Familie", ex: "Sme turisti." },
   { sk: "Lekár", de: "Arzt / Ärztin", cat: "Menschen & Familie", ex: "Idem k lekárovi." },
   { sk: "Učiteľ", de: "Lehrer / Lehrerin", cat: "Menschen & Familie", ex: "Môj učiteľ je prísny." },
-
-  // ── Zahlen, Zeit & Datum (40) ─────────────────────────────────────────────
+  { sk: "Právnik", de: "Anwalt / Anwältin", cat: "Menschen & Familie", ex: "Potrebujem právnika." },
   { sk: "Jeden", de: "eins (1)", cat: "Zahlen, Zeit & Datum", ex: "Mám jedného brata." },
   { sk: "Dva", de: "zwei (2)", cat: "Zahlen, Zeit & Datum", ex: "Dva kávy, prosím." },
   { sk: "Tri", de: "drei (3)", cat: "Zahlen, Zeit & Datum", ex: "Tri dni." },
@@ -225,7 +212,6 @@ const VOCAB = [
   { sk: "Dvanásť", de: "zwölf (12)", cat: "Zahlen, Zeit & Datum", ex: "Dvanásť mesiacov." },
   { sk: "Pätnásť", de: "fünfzehn (15)", cat: "Zahlen, Zeit & Datum", ex: "O pätnásť minút." },
   { sk: "Dvadsať", de: "zwanzig (20)", cat: "Zahlen, Zeit & Datum", ex: "Dvadsať rokov." },
-  { sk: "Dvadsaťpäť", de: "fünfundzwanzig (25)", cat: "Zahlen, Zeit & Datum", ex: "Dvadsaťpäť percent." },
   { sk: "Tridsať", de: "dreißig (30)", cat: "Zahlen, Zeit & Datum", ex: "Tridsať eur." },
   { sk: "Päťdesiat", de: "fünfzig (50)", cat: "Zahlen, Zeit & Datum", ex: "Päťdesiat centov." },
   { sk: "Sto", de: "hundert (100)", cat: "Zahlen, Zeit & Datum", ex: "Sto eur." },
@@ -251,8 +237,7 @@ const VOCAB = [
   { sk: "Mesiac", de: "Monat", cat: "Zahlen, Zeit & Datum", ex: "Budúci mesiac." },
   { sk: "Rok", de: "Jahr", cat: "Zahlen, Zeit & Datum", ex: "Tento rok." },
   { sk: "Deň", de: "Tag", cat: "Zahlen, Zeit & Datum", ex: "Každý deň." },
-
-  // ── Essen & Trinken (40) ──────────────────────────────────────────────────
+  { sk: "Týždeň", de: "Woche", cat: "Zahlen, Zeit & Datum", ex: "Tento týždeň." },
   { sk: "Jedlo", de: "Essen / Speise", cat: "Essen & Trinken", ex: "Jedlo je výborné." },
   { sk: "Voda", de: "Wasser", cat: "Essen & Trinken", ex: "Dajte mi vodu, prosím." },
   { sk: "Káva", de: "Kaffee", cat: "Essen & Trinken", ex: "Jednu kávu, prosím." },
@@ -293,8 +278,6 @@ const VOCAB = [
   { sk: "Pohár", de: "Glas", cat: "Essen & Trinken", ex: "Pohár vody." },
   { sk: "Fľaša", de: "Flasche", cat: "Essen & Trinken", ex: "Fľaša vína." },
   { sk: "Raňajky", de: "Frühstück", cat: "Essen & Trinken", ex: "Kedy sú raňajky?" },
-
-  // ── Reisen & Transport (40) ───────────────────────────────────────────────
   { sk: "Vlak", de: "Zug", cat: "Reisen & Transport", ex: "Vlak má meškanie." },
   { sk: "Autobus", de: "Bus", cat: "Reisen & Transport", ex: "Autobus číslo päť." },
   { sk: "Auto", de: "Auto", cat: "Reisen & Transport", ex: "Mám nové auto." },
@@ -323,7 +306,6 @@ const VOCAB = [
   { sk: "Dovolenka", de: "Urlaub", cat: "Reisen & Transport", ex: "Ideme na dovolenku." },
   { sk: "Výlet", de: "Ausflug", cat: "Reisen & Transport", ex: "Plánujeme výlet." },
   { sk: "Hranica", de: "Grenze", cat: "Reisen & Transport", ex: "Sme na hranici." },
-  { sk: "Colnica", de: "Zoll", cat: "Reisen & Transport", ex: "Colnica je tu." },
   { sk: "Recepcia", de: "Rezeption", cat: "Reisen & Transport", ex: "Zaregistrujem sa na recepcii." },
   { sk: "Benzín", de: "Benzin", cat: "Reisen & Transport", ex: "Potrebujem benzín." },
   { sk: "Semafor", de: "Ampel", cat: "Reisen & Transport", ex: "Zastavte na semafore." },
@@ -335,11 +317,9 @@ const VOCAB = [
   { sk: "Dedina", de: "Dorf", cat: "Reisen & Transport", ex: "Malá dedina." },
   { sk: "Turistika", de: "Wandern / Tourismus", cat: "Reisen & Transport", ex: "Rád robím turistiku." },
   { sk: "Ubytovanie", de: "Unterkunft", cat: "Reisen & Transport", ex: "Hľadám ubytovanie." },
-
-  // ── Wohnen & Einkaufen (80) ───────────────────────────────────────────────
+  { sk: "Colnica", de: "Zoll", cat: "Reisen & Transport", ex: "Colnica je tu." },
   { sk: "Dom", de: "Haus", cat: "Wohnen & Einkaufen", ex: "Môj dom je veľký." },
   { sk: "Byt", de: "Wohnung", cat: "Wohnen & Einkaufen", ex: "Hľadám byt v centre." },
-  { sk: "Izba", de: "Zimmer", cat: "Wohnen & Einkaufen", ex: "Mám dve izby." },
   { sk: "Kuchyňa", de: "Küche", cat: "Wohnen & Einkaufen", ex: "Varím v kuchyni." },
   { sk: "Kúpeľňa", de: "Badezimmer", cat: "Wohnen & Einkaufen", ex: "Kúpeľňa je vpravo." },
   { sk: "Záchod", de: "Toilette / WC", cat: "Wohnen & Einkaufen", ex: "Kde je záchod?" },
@@ -384,7 +364,6 @@ const VOCAB = [
   { sk: "Oblečenie", de: "Kleidung", cat: "Wohnen & Einkaufen", ex: "Kupujem nové oblečenie." },
   { sk: "Topánky", de: "Schuhe", cat: "Wohnen & Einkaufen", ex: "Tieto topánky sú pohodlné." },
   { sk: "Veľkosť", de: "Größe", cat: "Wohnen & Einkaufen", ex: "Akú máte veľkosť?" },
-  { sk: "Nákupný zoznam", de: "Einkaufsliste", cat: "Wohnen & Einkaufen", ex: "Napísal som nákupný zoznam." },
   { sk: "Otvorené", de: "geöffnet", cat: "Wohnen & Einkaufen", ex: "Obchod je otvorený." },
   { sk: "Zatvorené", de: "geschlossen", cat: "Wohnen & Einkaufen", ex: "Obchod je zatvorený." },
   { sk: "Otváracie hodiny", de: "Öffnungszeiten", cat: "Wohnen & Einkaufen", ex: "Aké sú otváracie hodiny?" },
@@ -396,7 +375,6 @@ const VOCAB = [
   { sk: "Upratovanie", de: "Putzen / Aufräumen", cat: "Wohnen & Einkaufen", ex: "V sobotu robím upratovanie." },
   { sk: "Odpad", de: "Müll / Abfall", cat: "Wohnen & Einkaufen", ex: "Vynes odpad." },
   { sk: "Práčka", de: "Waschmaschine", cat: "Wohnen & Einkaufen", ex: "Práčka je plná." },
-  { sk: "Susedia", de: "Nachbarn", cat: "Wohnen & Einkaufen", ex: "Susedia sú hlučí." },
   { sk: "Dar", de: "Geschenk", cat: "Wohnen & Einkaufen", ex: "Hľadám dar pre priateľa." },
   { sk: "Taška", de: "Tasche / Tüte", cat: "Wohnen & Einkaufen", ex: "Môžem dostať tašku?" },
   { sk: "Ušetriť", de: "sparen", cat: "Wohnen & Einkaufen", ex: "Chcem ušetriť peniaze." },
@@ -408,13 +386,11 @@ const VOCAB = [
   { sk: "Hasič", de: "Feuerwehr", cat: "Wohnen & Einkaufen", ex: "Zavolajte hasičov!" },
   { sk: "Poistenie", de: "Versicherung", cat: "Wohnen & Einkaufen", ex: "Mám poistenie." },
   { sk: "Zmluva", de: "Vertrag", cat: "Wohnen & Einkaufen", ex: "Podpísal som zmluvu." },
-  { sk: "Klúče od auta", de: "Autoschlüssel", cat: "Wohnen & Einkaufen", ex: "Kde sú kľúče od auta?" },
   { sk: "Recept", de: "Rezept", cat: "Wohnen & Einkaufen", ex: "Lekár mi dal recept." },
-  { sk: "Tlač", de: "Presse / Drucken", cat: "Wohnen & Einkaufen", ex: "Kde môžem tlačiť?" },
   { sk: "Predajca", de: "Verkäufer/in", cat: "Wohnen & Einkaufen", ex: "Predajca mi pomohol." },
   { sk: "Zákazník", de: "Kunde / Kundin", cat: "Wohnen & Einkaufen", ex: "Zákazník má vždy pravdu." },
-
-  // ── Gesundheit & Notfall (40) ─────────────────────────────────────────────
+  { sk: "Nákupný zoznam", de: "Einkaufsliste", cat: "Wohnen & Einkaufen", ex: "Napísal som nákupný zoznam." },
+  { sk: "Susedia", de: "Nachbarn", cat: "Wohnen & Einkaufen", ex: "Susedia sú hlučí." },
   { sk: "Telo", de: "Körper", cat: "Gesundheit & Notfall", ex: "Zdravé telo." },
   { sk: "Hlava", de: "Kopf", cat: "Gesundheit & Notfall", ex: "Bolí ma hlava." },
   { sk: "Oči", de: "Augen", cat: "Gesundheit & Notfall", ex: "Má modré oči." },
@@ -434,7 +410,7 @@ const VOCAB = [
   { sk: "Kašeľ", de: "Husten", cat: "Gesundheit & Notfall", ex: "Mám silný kašeľ." },
   { sk: "Nádcha", de: "Schnupfen", cat: "Gesundheit & Notfall", ex: "Mám nádchu." },
   { sk: "Bolesť", de: "Schmerz", cat: "Gesundheit & Notfall", ex: "Mám bolesť." },
-  { sk: "Bolí ma", de: "es tut mir weh / ich habe Schmerzen", cat: "Gesundheit & Notfall", ex: "Bolí ma hlava." },
+  { sk: "Bolí ma", de: "es tut mir weh", cat: "Gesundheit & Notfall", ex: "Bolí ma hlava." },
   { sk: "Liek", de: "Medikament", cat: "Gesundheit & Notfall", ex: "Potrebujem liek." },
   { sk: "Nemocnica", de: "Krankenhaus", cat: "Gesundheit & Notfall", ex: "Odvezme ma do nemocnice." },
   { sk: "Sanitka", de: "Krankenwagen", cat: "Gesundheit & Notfall", ex: "Zavolajte sanitku!" },
@@ -456,116 +432,73 @@ const VOCAB = [
   { sk: "Teplota", de: "Temperatur", cat: "Gesundheit & Notfall", ex: "Aká je tvoja teplota?" },
   { sk: "Rameno", de: "Schulter", cat: "Gesundheit & Notfall", ex: "Bolí ma rameno." },
 ];
-
 const GRAMMAR = [
-  {
-    title: "Persönliche Fürwörter",
-    description: "ich, du, er, sie...",
+  { title: "Persönliche Fürwörter", description: "ich, du, er, sie...",
     table: [["Ich","ja"],["Du","ty"],["Er","on"],["Sie (f)","ona"],["Es","ono"],["Wir","my"],["Ihr","vy"],["Sie (formal)","Vy"],["Sie (pl)","oni/ony"]],
-    tip: "Das formelle Vy wird großgeschrieben — wie das deutsche Sie."
-  },
-  {
-    title: "Verb byť — sein",
-    description: "Ich bin, du bist...",
+    tip: "Das formelle Vy wird großgeschrieben — wie das deutsche Sie." },
+  { title: "Verb byť — sein", description: "Ich bin, du bist...",
     table: [["Ich bin","ja som"],["Du bist","ty si"],["Er/Sie ist","on/ona je"],["Wir sind","my sme"],["Ihr seid","vy ste"],["Sie sind","oni sú"]],
-    tip: "som klingt wie englisch some — ich BIN etwas."
-  },
-  {
-    title: "Verb mať — haben",
-    description: "Ich habe, du hast...",
+    tip: "som klingt wie englisch some — ich BIN etwas." },
+  { title: "Verb mať — haben", description: "Ich habe, du hast...",
     table: [["Ich habe","ja mám"],["Du hast","ty máš"],["Er/Sie hat","on/ona má"],["Wir haben","my máme"],["Ihr habt","vy máte"],["Sie haben","oni majú"]],
-    tip: "mám = ich habe. Sehr häufig im Alltag!"
-  },
-  {
-    title: "Verb ísť — gehen",
-    description: "Ich gehe, du gehst...",
+    tip: "mám = ich habe. Sehr häufig im Alltag!" },
+  { title: "Verb ísť — gehen", description: "Ich gehe, du gehst...",
     table: [["Ich gehe","ja idem"],["Du gehst","ty ideš"],["Er/Sie geht","on/ona ide"],["Wir gehen","my ideme"],["Ihr geht","vy idete"],["Sie gehen","oni idú"]],
-    tip: "Idem domov = Ich gehe nach Hause."
-  },
-  {
-    title: "Verb hovoriť — sprechen",
-    description: "Ich spreche, du sprichst...",
+    tip: "Idem domov = Ich gehe nach Hause." },
+  { title: "Verb hovoriť — sprechen", description: "Ich spreche, du sprichst...",
     table: [["Ich spreche","ja hovorím"],["Du sprichst","ty hovoríš"],["Er/Sie spricht","on/ona hovorí"],["Wir sprechen","my hovoríme"],["Ihr sprecht","vy hovoríte"],["Sie sprechen","oni hovoria"]],
-    tip: "Hovoríte po slovensky? = Sprechen Sie Slowakisch?"
-  },
-  {
-    title: "Verb jesť — essen",
-    description: "Ich esse, du isst...",
+    tip: "Hovoríte po nemecky? = Sprechen Sie Deutsch?" },
+  { title: "Verb jesť — essen", description: "Ich esse, du isst...",
     table: [["Ich esse","ja jem"],["Du isst","ty ješ"],["Er/Sie isst","on/ona je"],["Wir essen","my jeme"],["Ihr esst","vy jete"],["Sie essen","oni jedia"]],
-    tip: "Achtung: je bedeutet sowohl er isst als auch er ist!"
-  },
-  {
-    title: "Verneinung",
-    description: "Wie man Nein sagt",
+    tip: "Achtung: je bedeutet sowohl er isst als auch er ist!" },
+  { title: "Verneinung", description: "Wie man Nein sagt",
     table: [["Ich habe","Mám"],["Ich habe nicht","Nemám"],["Ich gehe","Idem"],["Ich gehe nicht","Nejdem"],["Ich bin","Som"],["Ich bin nicht","Nie som"],["Ich spreche","Hovorím"],["Ich spreche nicht","Nehovorím"]],
-    tip: "Verneinung = ne- vor das Verb setzen. Einfach!"
-  },
-  {
-    title: "Fragewörter",
-    description: "Wo? Wann? Wer? Wie?",
+    tip: "Verneinung = ne- vor das Verb setzen. Einfach!" },
+  { title: "Fragewörter", description: "Wo? Wann? Wer? Wie?",
     table: [["Wer?","Kto?"],["Was?","Čo?"],["Wo?","Kde?"],["Wohin?","Kam?"],["Wann?","Kedy?"],["Wie?","Ako?"],["Wie viel?","Koľko?"],["Warum?","Prečo?"],["Welche/r/s?","Ktorý/á/é?"]],
-    tip: "Kde = Wo (Ort), Kam = Wohin (Richtung). Wichtiger Unterschied!"
-  },
-  {
-    title: "Possessivpronomen",
-    description: "mein, dein, sein...",
+    tip: "Kde = Wo (Ort), Kam = Wohin (Richtung). Wichtiger Unterschied!" },
+  { title: "Possessivpronomen", description: "mein, dein, sein...",
     table: [["mein (m)","môj"],["mein (f)","moja"],["mein (n)","moje"],["dein (m)","tvoj"],["dein (f)","tvoja"],["sein/ihr (m)","jeho/jej"],["unser","náš/naša"],["euer","váš/vaša"]],
-    tip: "Das Possessivpronomen richtet sich nach dem Geschlecht des Substantivs."
-  },
-  {
-    title: "Adjektive — Grundformen",
-    description: "groß, klein, gut, schlecht...",
+    tip: "Das Possessivpronomen richtet sich nach dem Geschlecht des Substantivs." },
+  { title: "Adjektive — Grundformen", description: "groß, klein, gut, schlecht...",
     table: [["groß","veľký/á/é"],["klein","malý/á/é"],["gut","dobrý/á/é"],["schlecht","zlý/á/é"],["schön","pekný/á/é"],["neu","nový/á/é"],["alt","starý/á/é"],["schnell","rýchly/á/é"],["langsam","pomalý/á/é"],["teuer","drahý/á/é"]],
-    tip: "Adjektive ändern ihre Endung je nach Geschlecht: -ý (m), -á (f), -é (n)."
-  },
-  {
-    title: "Plural — Mehrzahl",
-    description: "Wie man Mehrzahl bildet",
+    tip: "Adjektive ändern ihre Endung je nach Geschlecht: -ý (m), -á (f), -é (n)." },
+  { title: "Plural — Mehrzahl", description: "Wie man Mehrzahl bildet",
     table: [["Haus — Häuser","dom — domy"],["Auto — Autos","auto — autá"],["Mann — Männer","muž — muži"],["Frau — Frauen","žena — ženy"],["Kind — Kinder","dieťa — deti"],["Tag — Tage","deň — dni"],["Stadt — Städte","mesto — mestá"]],
-    tip: "Die häufigste Pluralendung ist -y oder -i. Es gibt aber viele Ausnahmen!"
-  },
-  {
-    title: "Uhrzeiten",
-    description: "Wie spät ist es?",
+    tip: "Die häufigste Pluralendung ist -y oder -i. Es gibt aber viele Ausnahmen!" },
+  { title: "Uhrzeiten", description: "Wie spät ist es?",
     table: [["Wie spät ist es?","Koľko je hodín?"],["Es ist 1 Uhr","Je jedna hodina"],["Es ist 2 Uhr","Sú dve hodiny"],["Es ist 5 Uhr","Je päť hodín"],["Um 8 Uhr","O ôsmej"],["halb 3","pol tretej"],["Viertel nach 4","štvrt na päť"],["Mittag","poludnie"],["Mitternacht","polnoc"]],
-    tip: "pol tretej = halb drei (wörtlich: Hälfte des dritten). Etwas gewöhnungsbedürftig!"
-  },
-  {
-    title: "Kasus — Einführung",
-    description: "Nominativ & Akkusativ",
-    table: [["Wer/Was? (Nom.)","Nominatív"],["der Mann","muž"],["Wen/Was? (Akk.)","Akuzatív"],["den Mann (sehen)","muža (vidieť)"],["die Frau (Nom.)","žena"],["die Frau (Akk.)","ženu (vidieť)"],["das Kind (Nom.)","dieťa"],["das Kind (Akk.)","dieťa (vidieť)"]],
-    tip: "Im Slowakischen gibt es 6 Fälle. Nominativ und Akkusativ sind der Einstieg."
-  },
-  {
-    title: "Zahlen 1–20",
-    description: "Slowakische Zahlen",
-    table: [["1","jeden"],["2","dva"],["3","tri"],["4","štyri"],["5","päť"],["6","šesť"],["7","sedem"],["8","osem"],["9","deväť"],["10","desať"],["11","jedenásť"],["15","pätnásť"],["20","dvadsať"]],
-    tip: "Ab 11 endet die Zahl auf -násť (entspricht dem deutschen -zehn)."
-  }
+    tip: "pol tretej = halb drei (wörtlich: Hälfte des dritten). Etwas gewöhnungsbedürftig!" },
+  { title: "Kasus — Einführung", description: "Nominativ & Akkusativ",
+    table: [["Wer/Was? (Nom.)","Nominatív"],["der Mann","muž"],["Wen/Was? (Akk.)","Akuzatív"],["den Mann (sehen)","muža (vidieť)"],["die Frau (Nom.)","zеna"],["die Frau (Akk.)","zеnu (vidieť)"],["das Kind (Nom.)","dieťa"],["das Kind (Akk.)","dieťa (vidieť)"]],
+    tip: "Im Slowakischen gibt es 6 Fälle. Nominativ und Akkusativ sind der Einstieg." },
+  { title: "Zahlen 1–20", description: "Slowakische Zahlen",
+    table: [["1","jeden"],["2","dva"],["3","tri"],["4","štyri"],["5","päť"],["6","šesť"],["7","sedem"],["8","osem"],["9","deväť"],["10","desať"],["11","jednásť"],["15","pätnsť"],["20","dvadsať"]],
+    tip: "Ab 11 endet die Zahl auf -násť (entspricht dem deutschen -zehn)." }
 ];
 const PHRASES = [
-  { sk: "Ako sa voláte?", de: "Wie heißen Sie?", context: "Kennenlernen" },
-  { sk: "Volám sa...", de: "Ich heiße...", context: "Kennenlernen" },
-  { sk: "Odkiaľ ste?", de: "Woher kommen Sie?", context: "Kennenlernen" },
-  { sk: "Som z Rakúska.", de: "Ich bin aus Österreich.", context: "Kennenlernen" },
-  { sk: "Ako sa máte?", de: "Wie geht es Ihnen?", context: "Begrüßung" },
-  { sk: "Dobre, ďakujem.", de: "Gut, danke.", context: "Begrüßung" },
+  { sk: "Ako sa vol\u00e1te?", de: "Wie hei\u00dfen Sie?", context: "Kennenlernen" },
+  { sk: "Vol\u00e1m sa...", de: "Ich hei\u00dfe...", context: "Kennenlernen" },
+  { sk: "Odkia\u013e ste?", de: "Woher kommen Sie?", context: "Kennenlernen" },
+  { sk: "Som z Rak\u00fasska.", de: "Ich bin aus \u00d6sterreich.", context: "Kennenlernen" },
+  { sk: "Ako sa m\u00e1te?", de: "Wie geht es Ihnen?", context: "Begr\u00fc\u00dfung" },
+  { sk: "Dobre, \u010fakujem.", de: "Gut, danke.", context: "Begr\u00fc\u00dfung" },
   { sk: "Nerozumiem.", de: "Ich verstehe nicht.", context: "Sprachprobleme" },
-  { sk: "Hovoríte po nemecky?", de: "Sprechen Sie Deutsch?", context: "Sprachprobleme" },
-  { sk: "Môžete to zopakovať?", de: "Können Sie das wiederholen?", context: "Sprachprobleme" },
-  { sk: "Koľko to stojí?", de: "Was kostet das?", context: "Einkaufen" },
-  { sk: "Kde je zastávka?", de: "Wo ist die Haltestelle?", context: "Orientierung" },
-  { sk: "Pomôžte mi, prosím.", de: "Bitte helfen Sie mir.", context: "Hilfe" },
-  { sk: "Zavolajte políciu!", de: "Rufen Sie die Polizei!", context: "Notfall" },
-  { sk: "Potrebujem lekára.", de: "Ich brauche einen Arzt.", context: "Notfall" },
+  { sk: "Hovor\u00edte po nemecky?", de: "Sprechen Sie Deutsch?", context: "Sprachprobleme" },
+  { sk: "M\u00f4\u017eete to zopakova\u0165?", de: "K\u00f6nnen Sie das wiederholen?", context: "Sprachprobleme" },
+  { sk: "Ko\u013eko to stoj\u00ed?", de: "Was kostet das?", context: "Einkaufen" },
+  { sk: "Kde je zast\u00e1vka?", de: "Wo ist die Haltestelle?", context: "Orientierung" },
+  { sk: "Pom\u00f4\u017ete mi, pros\u00edm.", de: "Bitte helfen Sie mir.", context: "Hilfe" },
+  { sk: "Zavol\u00e1te polic\u00edu!", de: "Rufen Sie die Polizei!", context: "Notfall" },
+  { sk: "Potrebujem lek\u00e1ra.", de: "Ich brauche einen Arzt.", context: "Notfall" },
   { sk: "Kde je nemocnica?", de: "Wo ist das Krankenhaus?", context: "Notfall" },
-  { sk: "Mám rezerváciu.", de: "Ich habe eine Reservierung.", context: "Hotel" },
-  { sk: "Kedy je raňajky?", de: "Wann gibt es Frühstück?", context: "Hotel" },
-  { sk: "Chcem zaplatiť.", de: "Ich möchte zahlen.", context: "Restaurant" },
-  { sk: "Bez mäsa, prosím.", de: "Ohne Fleisch, bitte.", context: "Restaurant" },
-  { sk: "Je tu voľné miesto?", de: "Ist hier noch frei?", context: "Restaurant" },
+  { sk: "Mam rezerv\u00e1ciu.", de: "Ich habe eine Reservierung.", context: "Hotel" },
+  { sk: "Kedy s\u00fa ra\u0148ajky?", de: "Wann gibt es Fr\u00fchst\u00fcck?", context: "Hotel" },
+  { sk: "Chcem zaplati\u0165.", de: "Ich m\u00f6chte zahlen.", context: "Restaurant" },
+  { sk: "Bez m\u00e4sa, pros\u00edm.", de: "Ohne Fleisch, bitte.", context: "Restaurant" },
+  { sk: "Je tu vo\u013en\u00e9 miesto?", de: "Ist hier noch frei?", context: "Restaurant" },
 ];
-var CATS=["Alle","Grundwortschatz","Begrüßung & Alltag","Menschen & Familie","Zahlen, Zeit & Datum","Essen & Trinken","Reisen & Transport","Wohnen & Einkaufen","Gesundheit & Notfall"];
+
 var h=React.createElement,useState=React.useState,useEffect=React.useEffect,useRef=React.useRef;
 
 var GOLD="#D4A937",GS="#D4A93715",GM="#D4A93745",BLK="#111111",GR="#6B6B6B",LT="#AAAAAA";
@@ -611,17 +544,8 @@ function getPronTips(word){
 }
 
 // CATEGORIES
-var CAT_ICONS={
-  "Alle":"\u2605",
-  "Grundwortschatz":"\uD83D\uDCD6",
-  "Begr\u00fc\u00dfung & Alltag":"\uD83D\uDC4B",
-  "Menschen & Familie":"\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67",
-  "Zahlen, Zeit & Datum":"\uD83D\uDD22",
-  "Essen & Trinken":"\uD83C\uDF7D",
-  "Reisen & Transport":"\u2708\uFE0F",
-  "Wohnen & Einkaufen":"\uD83C\uDFE0",
-  "Gesundheit & Notfall":"\uD83D\uDC89"
-};
+var CATS=["Alle","Grundwortschatz","Begr\u00fc\u00dfung & Alltag","Menschen & Familie","Zahlen, Zeit & Datum","Essen & Trinken","Reisen & Transport","Wohnen & Einkaufen","Gesundheit & Notfall"];
+var CAT_ICONS={"Alle":"\u2605","Grundwortschatz":"\uD83D\uDCD6","Begr\u00fc\u00dfung & Alltag":"\uD83D\uDC4B","Menschen & Familie":"\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67","Zahlen, Zeit & Datum":"\uD83D\uDD22","Essen & Trinken":"\uD83C\uDF7D\uFE0F","Reisen & Transport":"\u2708\uFE0F","Wohnen & Einkaufen":"\uD83C\uDFE0","Gesundheit & Notfall":"\uD83D\uDC89"};
 
 // AUDIO
 function speak(text){
@@ -663,27 +587,25 @@ function Ring(props){
 
 // CATEGORY SHEET
 function CatSheet(props){
-  var cats=props.cats,current=props.current,onSelect=props.onSelect,onClose=props.onClose;
-  var prog=loadProgress(),known=new Set(prog.known||[]);
+  var known=new Set((loadProgress().known)||[]);
   return h("div",{style:{position:"fixed",inset:0,zIndex:50}},
-    h("div",{onClick:onClose,style:{position:"absolute",inset:0,background:"rgba(0,0,0,0.35)"}}),
+    h("div",{onClick:props.onClose,style:{position:"absolute",inset:0,background:"rgba(0,0,0,0.35)"}}),
     h("div",{style:{position:"absolute",bottom:0,left:0,right:0,background:WH,borderRadius:"24px 24px 0 0",maxHeight:"75vh",overflowY:"auto",paddingBottom:32}},
       h("div",{style:{width:36,height:4,background:BR,borderRadius:2,margin:"12px auto 4px"}}),
       h("div",{style:{padding:"8px 20px 12px",fontSize:13,fontWeight:600,color:LT,letterSpacing:0.8,textTransform:"uppercase"}},"Kategorie w\u00e4hlen"),
-      cats.map(function(cat,i){
+      props.cats.map(function(cat,i){
         var tot=0,kk=0;
         for(var j=0;j<VOCAB.length;j++){if(cat==="Alle"||VOCAB[j].cat===cat){tot++;if(known.has(VOCAB[j].sk))kk++;}}
         var p=tot?Math.round(kk/tot*100):0;
-        var active=current===cat;
+        var active=props.current===cat;
         return h("div",{key:cat},
           i>0?h("div",{style:{height:1,background:"#F5F5F5",margin:"0 20px"}}):null,
-          h("div",{onClick:function(){onSelect(cat);onClose();},style:{padding:"13px 20px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",background:active?"#D4A93708":WH}},
+          h("div",{onClick:function(){props.onSelect(cat);props.onClose();},style:{padding:"13px 20px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",background:active?"#D4A93708":WH}},
             h("span",{style:{fontSize:20,width:28,textAlign:"center"}},CAT_ICONS[cat]||"\uD83D\uDCDA"),
             h("div",{style:{flex:1}},
               h("div",{style:{fontSize:15,color:active?GOLD:BLK,fontWeight:active?600:400}},cat),
               cat!=="Alle"?h("div",{style:{marginTop:4,height:2,background:BR,borderRadius:1,width:120}},
-                h("div",{style:{height:"100%",width:p+"%",background:active?GOLD:GR,borderRadius:1}})
-              ):null
+                h("div",{style:{height:"100%",width:p+"%",background:active?GOLD:GR,borderRadius:1}})):null
             ),
             h("div",{style:{display:"flex",alignItems:"center",gap:8}},
               h("span",{style:{fontSize:12,color:LT}},cat==="Alle"?VOCAB.length+"":tot+""),
@@ -694,6 +616,24 @@ function CatSheet(props){
       })
     )
   );
+}
+
+// BUILD QUEUE: one copy per word, known words interleaved at ~25%
+function buildQueue(cat,kn){
+  var unknown=[],known2=[];
+  for(var i=0;i<VOCAB.length;i++){
+    if(cat!=="Alle"&&VOCAB[i].cat!==cat)continue;
+    if(kn.has(VOCAB[i].sk))known2.push(i);
+    else unknown.push(i);
+  }
+  unknown=shuffle(unknown);known2=shuffle(known2);
+  var result=[],ki=0;
+  for(var ui=0;ui<unknown.length;ui++){
+    result.push(unknown[ui]);
+    if(ki<known2.length&&(ui+1)%3===0)result.push(known2[ki++]);
+  }
+  while(ki<known2.length)result.push(known2[ki++]);
+  return result;
 }
 
 // LEARN SCREEN
@@ -730,7 +670,7 @@ function LearnScreen(props){
     h("div",{style:{marginBottom:24}},h("button",{onClick:function(){props.onGo("flash");},style:btnSt()},"Weiterlernen")),
     h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},
       h("div",{style:lblSt()},"THEMEN"),
-      h("span",{style:{fontSize:13,color:GOLD,cursor:"pointer"},onClick:function(){props.onGo("flash");}},"Alle anzeigen")
+      h("span",{style:{fontSize:13,color:GOLD,cursor:"pointer"},onClick:function(){props.onGo("know");}},"\u00dcbersicht")
     ),
     h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}},
       cats.map(function(cat){
@@ -752,47 +692,28 @@ function LearnScreen(props){
 
 // FLASH SCREEN
 function FlashScreen(){
+  var p=loadProgress();
   var r1=useState("Alle"),cat=r1[0],setCat=r1[1];
   var r2=useState("de2sk"),dir=r2[0],setDir=r2[1];
   var r3=useState(false),flipped=r3[0],setFlipped=r3[1];
   var r4=useState(0),fkey=r4[0],setFkey=r4[1];
   var r5=useState(false),showSheet=r5[0],setShowSheet=r5[1];
-  var prog=loadProgress();
-  var r6=useState(function(){return new Set(prog.known||[]);}),known=r6[0],setKnown=r6[1];
-  var r7=useState(function(){return new Set(prog.learning||[]);}),learning=r7[0],setLearning=r7[1];
-  var r8=useState(function(){return prog.counts||{};}),counts=r8[0],setCounts=r8[1];
+  var r6=useState(function(){return new Set(p.known||[]);}),known=r6[0],setKnown=r6[1];
+  var r7=useState(function(){return new Set(p.learning||[]);}),learning=r7[0],setLearning=r7[1];
+  var r8=useState(function(){return p.counts||{};}),counts=r8[0],setCounts=r8[1];
   var r9=useState(false),ankiMode=r9[0],setAnkiMode=r9[1];
-  // Queue: array of VOCAB indices, rebuilt on cat change or anki start
-  var r10=useState(function(){return buildQueue("Alle",prog.counts||{},new Set(prog.known||[])); }),queue=r10[0],setQueue=r10[1];
+  var r10=useState(function(){return buildQueue("Alle",new Set(p.known||[]));  }),queue=r10[0],setQueue=r10[1];
   var r11=useState(0),qpos=r11[0],setQpos=r11[1];
-  // Anki queue
   var r12=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),srQ=r12[0],setSrQ=r12[1];
   var r13=useState(0),srPos=r13[0],setSrPos=r13[1];
   var r14=useState(false),lit=r14[0],setLit=r14[1];
+  var r15=useState({}),reinforced=r15[0],setReinforced=r15[1];
 
-  // Build a weighted, shuffled queue for normal mode
-  // Known (3x) words appear at ~25% frequency, others at full frequency
-  function buildQueue(c,cnts,kn){
-    var pool=[];
-    for(var i=0;i<VOCAB.length;i++){
-      if(c!=="Alle"&&VOCAB[i].cat!==c)continue;
-      var sk=VOCAB[i].sk;
-      var isKnown=kn.has(sk);
-      // 25% reduction: skip known words ~75% of the time by adding them 1x vs 4x weight
-      if(isKnown){
-        pool.push(i); // 1 copy = 25% relative weight
-      } else {
-        pool.push(i);pool.push(i);pool.push(i);pool.push(i); // 4 copies = full weight
-      }
-    }
-    return shuffle(pool);
-  }
-
-  var safeQpos=queue.length?qpos%queue.length:0;
-  var safeAnki=srQ.length?srPos%srQ.length:0;
-  var card=ankiMode?VOCAB[srQ[safeAnki]]:VOCAB[queue[safeQpos]];
+  var safeQ=queue.length?qpos%queue.length:0;
+  var safeA=srQ.length?srPos%srQ.length:0;
+  var card=ankiMode?VOCAB[srQ[safeA]]:VOCAB[queue[safeQ]];
   if(!card)card=VOCAB[0];
-  var cur=ankiMode?safeAnki:safeQpos;
+  var cur=ankiMode?safeA:safeQ;
   var tot=ankiMode?srQ.length:queue.length;
   var front=dir==="de2sk"?card.de:card.sk;
   var back=dir==="de2sk"?card.sk:card.de;
@@ -801,49 +722,35 @@ function FlashScreen(){
   var cardCount=counts[card.sk]||0;
 
   function flip(){setFkey(function(k){return k+1;});setFlipped(function(f){return !f;});}
-
-  function switchCat(c){
-    setCat(c);setQpos(0);setFlipped(false);
-    setFkey(function(k){return k+1;});
-    setAnkiMode(false);
-    setQueue(buildQueue(c,counts,known));
-  }
+  function switchCat(c){setCat(c);setQpos(0);setFlipped(false);setFkey(function(k){return k+1;});setAnkiMode(false);setQueue(buildQueue(c,known));setReinforced({});}
+  function startAnki(){setSrQ(shuffle(VOCAB.map(function(_,i){return i;})));setSrPos(0);setAnkiMode(true);setFlipped(false);setFkey(function(k){return k+1;});}
+  function stopAnki(){setAnkiMode(false);setFlipped(false);setFkey(function(k){return k+1;});}
 
   function nextCard(mark){
     var sk=card.sk;
     var nk=new Set(setArr(known)),nl=new Set(setArr(learning)),nc=cs({},counts);
-    if(mark==="known"){
-      nc[sk]=(nc[sk]||0)+1;
-      if(nc[sk]>=3){nk.add(sk);nl.delete(sk);}else{nl.add(sk);}
-    } else {
-      nc[sk]=0;nl.add(sk);nk.delete(sk);
-    }
-    setKnown(nk);setLearning(nl);setCounts(nc);
-    saveProgress(nk,nl,nc);
-    recordActivity(sk,mark==="known");
+    if(mark==="known"){nc[sk]=(nc[sk]||0)+1;if(nc[sk]>=3){nk.add(sk);nl.delete(sk);}else nl.add(sk);}
+    else{nc[sk]=0;nl.add(sk);nk.delete(sk);}
+    setKnown(nk);setLearning(nl);setCounts(nc);saveProgress(nk,nl,nc);recordActivity(sk,mark==="known");
     setFlipped(false);setFkey(function(k){return k+1;});
-
     if(ankiMode){
-      var ci=srQ[safeAnki];
+      var ci=srQ[safeA];
       var iv=mark==="known"?Math.floor(Math.random()*11)+20:Math.floor(Math.random()*8)+3;
       setSrQ(function(q){var nq=q.slice();nq.splice(srPos+iv,0,ci);return nq;});
       setTimeout(function(){setSrPos(function(p){return p+1;});},120);
     } else {
-      // After "Einfach": insert one reinforcement copy at position 5-15 ahead.
-      // Only one copy is inserted (not stacking), so no loop possible.
-      if(mark==="known"){
-        var curIdx=queue[safeQpos];
-        var iv2=Math.floor(Math.random()*11)+5; // 5-15 ahead
+      if(mark==="known"&&!reinforced[sk]){
+        // Insert ONE reinforcement copy at 5-15 ahead, once per word per round
+        var curIdx=queue[safeQ];
+        var iv2=Math.floor(Math.random()*11)+5;
+        var nr=cs({},reinforced);nr[sk]=true;setReinforced(nr);
         setQueue(function(q){
           var nq=q.slice();
-          // Remove current position first
-          nq.splice(safeQpos,1);
-          // Insert one reinforcement copy at 5-15 positions ahead
-          var insertAt=Math.min(safeQpos+iv2,nq.length);
-          nq.splice(insertAt,0,curIdx);
+          nq.splice(safeQ,1);
+          var ins=Math.min(safeQ+iv2,nq.length);
+          nq.splice(ins,0,curIdx);
           return nq;
         });
-        // Advance to next card (current was removed, next slides in)
         setTimeout(function(){setQpos(function(p){return p;});},120);
       } else {
         var qlen=queue.length;
@@ -853,33 +760,44 @@ function FlashScreen(){
   }
 
   function tapSpeak(e){e.stopPropagation();speak(card.sk);setLit(true);setTimeout(function(){setLit(false);},600);}
-
   var dots=[];
   for(var di=0;di<3;di++){dots.push(h("div",{key:di,style:{width:6,height:6,borderRadius:999,background:di<cardCount?GOLD:BR,transition:"background 0.2s"}}));}
 
   return h("div",{style:{padding:"16px 20px 8px",position:"relative"}},
+    // Direction + Anki toggle
     h("div",{style:{display:"flex",gap:6,marginBottom:14,alignItems:"center"}},
       h("button",{onClick:function(){setDir("de2sk");setFlipped(false);setFkey(function(k){return k+1;});},style:pillSt(dir==="de2sk")},"\uD83C\uDDE9\uD83C\uDDEA \u2192 \uD83C\uDDF8\uD83C\uDDF0"),
       h("button",{onClick:function(){setDir("sk2de");setFlipped(false);setFkey(function(k){return k+1;});},style:pillSt(dir==="sk2de")},"\uD83C\uDDF8\uD83C\uDDF0 \u2192 \uD83C\uDDE9\uD83C\uDDEA"),
-      h("button",{onClick:function(){setSrQ(shuffle(VOCAB.map(function(_,i){return i;})));setSrPos(0);setAnkiMode(function(a){return !a;});setFlipped(false);setFkey(function(k){return k+1;});},
+      h("button",{onClick:ankiMode?stopAnki:startAnki,
         style:{marginLeft:"auto",padding:"7px 14px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:13,cursor:"pointer",background:ankiMode?GS:"transparent",color:ankiMode?GOLD:GR}},"\uD83E\uDDE0 Anki")
     ),
-    h("div",{style:{display:"flex",gap:8,marginBottom:14,alignItems:"center"}},
-      h("div",{style:{flex:1,background:WH,borderRadius:999,padding:"9px 14px",boxShadow:SSH,display:"flex",alignItems:"center",gap:6}},
-        h("span",{style:{fontSize:16}},CAT_ICONS[cat]||"\u2605"),
-        h("span",{style:{fontSize:13,color:BLK,fontWeight:500,flex:1}},cat),
-        h("span",{style:{fontSize:11,color:LT}},ankiMode?"Anki":tot+" Karten")
-      ),
-      h("button",{onClick:function(){setShowSheet(true);},style:{padding:"9px 14px",borderRadius:999,border:"none",background:WH,boxShadow:SSH,cursor:"pointer",display:"flex",alignItems:"center",gap:6,fontFamily:"inherit",color:GOLD,fontSize:13,fontWeight:500}},
-        IcoFilter(GOLD),"\u00c4ndern"
-      )
-    ),
+    // Anki banner OR category bar
+    ankiMode
+      ?h("div",{style:{background:GS,borderRadius:12,padding:"10px 16px",marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"center"}},
+          h("div",null,
+            h("div",{style:{fontSize:13,fontWeight:600,color:GOLD}},"\uD83E\uDDE0 Anki-Modus"),
+            h("div",{style:{fontSize:11,color:GR,marginTop:2}},"Alle "+VOCAB.length+" W\u00f6rter \u2014 kategorieunabh\u00e4ngig")
+          ),
+          h("button",{onClick:stopAnki,style:{background:"none",border:"none",cursor:"pointer",fontSize:12,color:GR,fontFamily:"inherit",padding:"4px 8px"}},"\u2715 Beenden")
+        )
+      :h("div",{style:{display:"flex",gap:8,marginBottom:14,alignItems:"center"}},
+          h("div",{style:{flex:1,background:WH,borderRadius:999,padding:"9px 14px",boxShadow:SSH,display:"flex",alignItems:"center",gap:6}},
+            h("span",{style:{fontSize:16}},CAT_ICONS[cat]||"\u2605"),
+            h("span",{style:{fontSize:13,color:BLK,fontWeight:500,flex:1}},cat),
+            h("span",{style:{fontSize:11,color:LT}},queue.length+" Karten")
+          ),
+          h("button",{onClick:function(){setShowSheet(true);},style:{padding:"9px 14px",borderRadius:999,border:"none",background:WH,boxShadow:SSH,cursor:"pointer",display:"flex",alignItems:"center",gap:6,fontFamily:"inherit",color:GOLD,fontSize:13,fontWeight:500}},
+            IcoFilter(GOLD),"\u00c4ndern"
+          )
+        ),
+    // Progress bar
     h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:16}},
       h("div",{style:{flex:1,height:3,background:BR,borderRadius:2}},
         h("div",{style:{height:"100%",width:Math.round((cur+1)/Math.max(tot,1)*100)+"%",background:GOLD,borderRadius:2,transition:"width 0.4s"}})
       ),
       h("span",{style:{fontSize:12,color:LT,flexShrink:0}},(cur+1)+"/"+tot)
     ),
+    // Card
     h("div",{key:fkey,className:"fi",onClick:flip,style:{background:WH,borderRadius:28,boxShadow:SH,cursor:"pointer",padding:"32px 24px",textAlign:"center",position:"relative",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:240,marginBottom:16}},
       h("div",{style:{position:"absolute",top:14,left:14}},
         h("span",{style:{fontSize:11,fontWeight:500,color:LT,background:BR,padding:"3px 9px",borderRadius:999}},
@@ -896,12 +814,14 @@ function FlashScreen(){
         tips.map(function(t){return h("span",{key:t,style:{fontSize:11,color:GOLD,background:GS,padding:"2px 8px",borderRadius:999}},t);})):null,
       h("div",{style:{display:"flex",gap:4,justifyContent:"center",marginTop:10}},dots)
     ),
+    // Buttons
     flipped
       ?h("div",{style:{display:"flex",gap:10,marginBottom:12}},
           h("button",{onClick:function(){nextCard("learning");},style:{flex:1,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"1.5px solid rgba(255,59,48,0.2)",background:"rgba(255,59,48,0.05)",color:RD,fontSize:15,fontWeight:500,cursor:"pointer"}},"\u2715 Schwer"),
           h("button",{onClick:function(){nextCard("known");},style:{flex:2,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"none",background:GOLD,color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer",boxShadow:SGH}},"Einfach \u2713")
         )
       :h("div",{style:{marginBottom:12}},h("button",{onClick:flip,style:btnSt()},"L\u00f6sung anzeigen")),
+    // Stats
     h("div",{style:{display:"flex",justifyContent:"center",gap:32,paddingBottom:4}},
       h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:GRN}},known.size),h("div",{style:{fontSize:11,color:LT}},"Gelernt")),
       h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:GOLD}},gPct+"%"),h("div",{style:{fontSize:11,color:LT}},"Gesamt")),
@@ -911,6 +831,7 @@ function FlashScreen(){
   );
 }
 
+// QUIZ SCREEN
 function QuizScreen(){
   var r1=useState("today"),mode=r1[0],setMode=r1[1];
   var r2=useState("Alle"),cat=r2[0],setCat=r2[1];
@@ -924,10 +845,13 @@ function QuizScreen(){
   function gen(){
     var pool;
     if(mode==="today"){
-      var tw=getTodayWords();if(!tw.length){setNoWords(true);setQ(null);return;}
-      setNoWords(false);pool=VOCAB.filter(function(v){return tw.indexOf(v.sk)!==-1;});
+      var tw=getTodayWords();
+      if(!tw.length){setNoWords(true);setQ(null);return;}
+      setNoWords(false);
+      pool=VOCAB.filter(function(v){return tw.indexOf(v.sk)!==-1;});
     } else {
-      setNoWords(false);pool=cat==="Alle"?VOCAB:VOCAB.filter(function(v){return v.cat===cat;});
+      setNoWords(false);
+      pool=cat==="Alle"?VOCAB:VOCAB.filter(function(v){return v.cat===cat;});
     }
     if(pool.length<2){setQ(null);return;}
     var c=pool[Math.floor(Math.random()*pool.length)];
@@ -955,18 +879,16 @@ function QuizScreen(){
   }
   var tot=score.r+score.w,pct=tot?Math.round(score.r/tot*100):0;
   var modes=[
+    {id:"today",label:"\uD83D\uDCC5 Heute"},
     {id:"de2sk",label:"\uD83C\uDDE9\uD83C\uDDEA \u2192 \uD83C\uDDF8\uD83C\uDDF0"},
     {id:"sk2de",label:"\uD83C\uDDF8\uD83C\uDDF0 \u2192 \uD83C\uDDE9\uD83C\uDDEA"},
     {id:"mixed",label:"\uD83D\uDD04 Gemischt"},
-    {id:"today",label:"\uD83D\uDCC5 Heute"},
   ];
 
   return h("div",{style:{padding:"16px 20px 24px",position:"relative"}},
-    // Mode pills
     h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:12}},
       modes.map(function(m){return h("button",{key:m.id,onClick:function(){setMode(m.id);setScore({r:0,w:0});},style:pillSt(mode===m.id)},m.label);})
     ),
-    // Category bar (not in today mode)
     mode!=="today"?h("div",{style:{display:"flex",gap:8,marginBottom:14,alignItems:"center"}},
       h("div",{style:{flex:1,background:WH,borderRadius:999,padding:"9px 14px",boxShadow:SSH,display:"flex",alignItems:"center",gap:6}},
         h("span",{style:{fontSize:16}},CAT_ICONS[cat]||"\u2605"),
@@ -978,7 +900,6 @@ function QuizScreen(){
     ):h("div",{style:{marginBottom:14}},
       h("div",{style:{background:GS,borderRadius:10,padding:"8px 14px",fontSize:12,color:GOLD}},"\uD83D\uDCC5 Nur W\u00f6rter die du heute in den Flashcards gesehen hast")
     ),
-    // Score
     h("div",{style:{display:"flex",gap:8,marginBottom:14}},
       [{v:score.r,l:"Richtig",col:GRN},{v:pct+"%",l:"Quote",col:GOLD},{v:score.w,l:"Falsch",col:RD}].map(function(item){
         return h("div",{key:item.l,style:{flex:1,background:WH,borderRadius:12,padding:"10px 6px",textAlign:"center",boxShadow:SSH}},
@@ -1001,7 +922,7 @@ function QuizScreen(){
         q.options.map(function(opt){
           var isC=opt===q.answer,isP=chosen===opt;
           var bg=WH,border=BR,col=BLK;
-          if(chosen){if(isC){bg="rgba(52,199,89,0.08)";border=GRN;col=GRN;}else if(isP){bg="rgba(255,59,48,0.07)";border=RD;col=RD;}else{col=LT;}}
+          if(chosen){if(isC){bg="rgba(52,199,89,0.08)";border=GRN;col=GRN;}else if(isP){bg="rgba(255,59,48,0.07)";border=RD;col=RD;}else col=LT;}
           return h("button",{key:opt,onClick:function(){pick(opt);},style:{
             padding:"13px 16px",borderRadius:14,fontFamily:"inherit",textAlign:"left",
             background:bg,border:"1.5px solid "+border,color:col,
@@ -1020,15 +941,160 @@ function QuizScreen(){
   );
 }
 
+// GRAMMAR LEARN SCREEN
+function GrammarLearnScreen(props){
+  var chapter=props.chapter;
+  var ra=useState("rule"),phase=ra[0],setPhase=ra[1];
+  var rb=useState(0),qidx=rb[0],setQidx=rb[1];
+  var rc=useState(null),chosen=rc[0],setChosen=rc[1];
+  var rd=useState({r:0,w:0}),score=rd[0],setScore=rd[1];
+  var re=useState(false),isDone=re[0],setIsDone=re[1];
+  var rf=useState(0),qkey=rf[0],setQkey=rf[1];
+  var rg=useState(null),questions=rg[0],setQuestions=rg[1];
+
+  useEffect(function(){
+    var rows=chapter.table;
+    var qs=[];
+    for(var i=0;i<rows.length;i++){
+      var correct=rows[i];
+      var others=rows.filter(function(_,j){return j!==i;}).sort(function(){return Math.random()-0.5;}).slice(0,3).map(function(r){return r[1];});
+      if(others.length<3){
+        var pool=[];
+        for(var gi=0;gi<GRAMMAR.length;gi++){
+          for(var ri=0;ri<GRAMMAR[gi].table.length;ri++){
+            var val=GRAMMAR[gi].table[ri][1];
+            if(val!==correct[1]&&others.indexOf(val)===-1)pool.push(val);
+          }
+        }
+        pool=pool.sort(function(){return Math.random()-0.5;});
+        while(others.length<3&&pool.length)others.push(pool.shift());
+      }
+      var opts=others.concat([correct[1]]).sort(function(){return Math.random()-0.5;});
+      qs.push({question:correct[0],answer:correct[1],options:opts});
+    }
+    setQuestions(qs.sort(function(){return Math.random()-0.5;}));
+  },[]);
+
+  if(!questions)return h("div",{style:{padding:40,textAlign:"center",color:LT}},"Laden...");
+  var currentQ=questions[qidx]||null;
+
+  function pick(opt){
+    if(chosen!==null)return;
+    setChosen(opt);
+    if(opt===currentQ.answer)setScore(function(s){return{r:s.r+1,w:s.w};});
+    else setScore(function(s){return{r:s.r,w:s.w+1};});
+  }
+  function nextQ(){
+    if(qidx>=questions.length-1)setIsDone(true);
+    else{setQidx(function(i){return i+1;});setChosen(null);setQkey(function(k){return k+1;});}
+  }
+  function restart(){setPhase("rule");setQidx(0);setChosen(null);setScore({r:0,w:0});setIsDone(false);setQkey(0);}
+
+  // RULE CARD
+  if(phase==="rule"){
+    return h("div",{style:{padding:"20px 20px 32px"}},
+      h("button",{onClick:props.onBack,style:{background:"none",border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:13,color:GR,padding:"0 0 16px 0",display:"flex",alignItems:"center",gap:6}},
+        h("svg",{width:16,height:16,viewBox:"0 0 24 24",fill:"none",stroke:GR,strokeWidth:2,strokeLinecap:"round"},h("path",{d:"M15 18l-6-6 6-6"})),
+        "Zur\u00fcck"
+      ),
+      h("div",{style:{fontSize:11,fontWeight:600,letterSpacing:0.8,color:LT,textTransform:"uppercase",marginBottom:6}},"GRAMMATIK \u2014 REGEL"),
+      h("div",{style:{fontSize:24,fontWeight:300,fontFamily:SERIF,color:BLK,marginBottom:4}},chapter.title),
+      h("div",{style:{fontSize:14,color:GR,marginBottom:20}},chapter.description),
+      h("div",{style:{background:WH,borderRadius:20,boxShadow:SH,padding:"4px 20px 16px",marginBottom:16}},
+        h("table",{style:{width:"100%",borderCollapse:"collapse"}},
+          h("tbody",null,chapter.table.map(function(row,j){
+            return h("tr",{key:j,style:{borderBottom:"1px solid "+BR}},
+              h("td",{style:{padding:"10px 0",fontSize:14,color:GR}},row[0]),
+              h("td",{style:{padding:"10px 0",fontSize:17,fontWeight:500,color:BLK,textAlign:"right"}},row[1])
+            );
+          }))
+        )
+      ),
+      h("div",{style:{background:GS,borderRadius:14,padding:"12px 16px",borderLeft:"3px solid "+GOLD,marginBottom:24}},
+        h("div",{style:{fontSize:13,color:GOLD}},"\uD83D\uDCA1 "+chapter.tip)
+      ),
+      h("button",{onClick:function(){setPhase("quiz");},style:btnSt()},
+        "Jetzt \u00fcben \u2192 ("+questions.length+" Fragen)"
+      )
+    );
+  }
+
+  // DONE SCREEN
+  if(isDone){
+    var pct2=questions.length?Math.round(score.r/questions.length*100):0;
+    var medal=pct2===100?"\uD83C\uDF1F":pct2>=80?"\uD83C\uDF89":pct2>=60?"\uD83D\uDC4D":"\uD83D\uDCDA";
+    return h("div",{style:{padding:"40px 20px",textAlign:"center"}},
+      h("div",{style:{fontSize:48,marginBottom:16}},medal),
+      h("div",{style:{fontSize:22,fontWeight:300,fontFamily:SERIF,color:BLK,marginBottom:8}},chapter.title),
+      h("div",{style:{fontSize:36,fontWeight:600,color:pct2>=80?GRN:pct2>=60?GOLD:RD,marginBottom:4}},pct2+"%"),
+      h("div",{style:{fontSize:14,color:GR,marginBottom:32}},score.r+" von "+questions.length+" richtig"),
+      h("div",{style:{display:"flex",gap:12}},
+        h("button",{onClick:restart,style:{flex:1,padding:"14px",borderRadius:999,border:"1.5px solid "+BR,background:WH,fontFamily:"inherit",fontSize:14,fontWeight:500,cursor:"pointer",color:BLK}},"\u21BA Wiederholen"),
+        h("button",{onClick:props.onBack,style:Object.assign({},btnSt(),{flex:2})},"Zur\u00fcck")
+      )
+    );
+  }
+
+  // QUIZ
+  return h("div",{style:{padding:"16px 20px 24px"}},
+    h("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:16}},
+      h("button",{onClick:props.onBack,style:{background:"none",border:"none",cursor:"pointer",padding:0}},
+        h("svg",{width:20,height:20,viewBox:"0 0 24 24",fill:"none",stroke:GR,strokeWidth:2,strokeLinecap:"round"},h("path",{d:"M15 18l-6-6 6-6"}))
+      ),
+      h("div",{style:{flex:1}},
+        h("div",{style:{fontSize:13,fontWeight:500,color:BLK}},chapter.title),
+        h("div",{style:{fontSize:11,color:LT}},"Frage "+(qidx+1)+" / "+questions.length)
+      ),
+      h("div",{style:{display:"flex",gap:8}},
+        h("span",{style:{fontSize:13,fontWeight:600,color:GRN}},score.r+"\u2713"),
+        h("span",{style:{fontSize:13,fontWeight:600,color:RD}},score.w+"\u2717")
+      )
+    ),
+    h("div",{style:{height:3,background:BR,borderRadius:2,marginBottom:20}},
+      h("div",{style:{height:"100%",width:Math.round((qidx+1)/questions.length*100)+"%",background:GOLD,borderRadius:2,transition:"width 0.4s"}})
+    ),
+    currentQ?h("div",{key:qkey},
+      h("div",{style:{background:WH,borderRadius:18,boxShadow:SH,padding:"24px 20px",marginBottom:14,textAlign:"center"}},
+        h("div",{style:{fontSize:12,color:LT,marginBottom:10}},"Wie hei\u00dft auf Slowakisch..."),
+        h("div",{style:{fontSize:32,fontWeight:300,fontFamily:SERIF,color:BLK,lineHeight:1.2}},currentQ.question)
+      ),
+      h("div",{style:{display:"flex",flexDirection:"column",gap:10,marginBottom:12}},
+        currentQ.options.map(function(opt){
+          var isC=opt===currentQ.answer,isP=chosen===opt;
+          var bg=WH,border=BR,col=BLK;
+          if(chosen){if(isC){bg="rgba(52,199,89,0.08)";border=GRN;col=GRN;}else if(isP){bg="rgba(255,59,48,0.07)";border=RD;col=RD;}else col=LT;}
+          return h("button",{key:opt,onClick:function(){pick(opt);},style:{
+            padding:"14px 18px",borderRadius:14,fontFamily:"inherit",textAlign:"left",
+            background:bg,border:"1.5px solid "+border,color:col,
+            fontSize:15,fontWeight:chosen&&isC?600:400,
+            cursor:chosen?"default":"pointer",transition:"all 0.18s",boxShadow:chosen?"none":SSH}},
+            h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+              h("span",null,(chosen&&isC?"\u2713 ":(chosen&&isP?"\u2715 ":""))+opt),
+              chosen&&isC?h("span",{style:{fontSize:11,color:GRN}},currentQ.question+" = "+currentQ.answer):null
+            )
+          );
+        })
+      ),
+      chosen?h("button",{onClick:nextQ,style:btnSt()},"Weiter \u2192"):null
+    ):null
+  );
+}
+
 // KNOWLEDGE SCREEN
 function KnowledgeScreen(){
   var r1=useState("Grammatik"),sec=r1[0],setSec=r1[1];
   var r2=useState(-1),open=r2[0],setOpen=r2[1];
   var r3=useState("Alle"),pf=r3[0],setPf=r3[1];
+  var r4=useState(null),learnIdx=r4[0],setLearnIdx=r4[1];
   var secs=["Grammatik","Phrasen"];
   var pfCtx=["Alle"];
   for(var i=0;i<PHRASES.length;i++){if(pfCtx.indexOf(PHRASES[i].context)===-1)pfCtx.push(PHRASES[i].context);}
   var fp=pf==="Alle"?PHRASES:PHRASES.filter(function(p){return p.context===pf;});
+
+  if(learnIdx!==null){
+    return h(GrammarLearnScreen,{chapter:GRAMMAR[learnIdx],onBack:function(){setLearnIdx(null);}});
+  }
+
   return h("div",{style:{display:"flex",flexDirection:"column",height:"100%"}},
     h("div",{style:{padding:"16px 20px 0",display:"flex",borderBottom:"1px solid "+BR}},
       secs.map(function(s){return h("button",{key:s,onClick:function(){setSec(s);},style:{padding:"10px 20px",background:"none",fontFamily:"inherit",border:"none",borderBottom:"2px solid "+(sec===s?GOLD:"transparent"),color:sec===s?GOLD:GR,fontSize:14,fontWeight:sec===s?600:400,cursor:"pointer"}},s);})
@@ -1038,20 +1104,30 @@ function KnowledgeScreen(){
         h("div",{style:{fontSize:13,color:GR,marginBottom:16}},GRAMMAR.length+" Kapitel"),
         GRAMMAR.map(function(g,i){
           return h("div",{key:i,style:{background:WH,borderRadius:16,overflow:"hidden",boxShadow:SSH,marginBottom:10}},
-            h("div",{onClick:function(){setOpen(open===i?-1:i);},style:{padding:"16px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer"}},
-              h("div",null,h("div",{style:{fontSize:15,fontWeight:500,color:BLK}},g.title),h("div",{style:{fontSize:12,color:GR,marginTop:2}},g.description)),
+            h("div",{onClick:function(){setOpen(open===i?-1:i);},style:{padding:"14px 16px",display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer"}},
+              h("div",null,
+                h("div",{style:{fontSize:15,fontWeight:500,color:BLK}},g.title),
+                h("div",{style:{fontSize:12,color:GR,marginTop:2}},g.description)
+              ),
               h("div",{style:{transform:open===i?"rotate(180deg)":"none",transition:"0.2s"}},IcoDn(LT))
             ),
-            open===i?h("div",{style:{padding:"0 20px 20px",borderTop:"1px solid "+BR}},
-              h("table",{style:{width:"100%",borderCollapse:"collapse",marginTop:12}},
-                h("tbody",null,g.table.map(function(row,j){
-                  return h("tr",{key:j,style:{borderBottom:"1px solid "+BR}},
-                    h("td",{style:{padding:"8px 0",fontSize:13,color:GR}},row[0]),
-                    h("td",{style:{padding:"8px 0",fontSize:16,fontWeight:500,color:BLK,textAlign:"right"}},row[1]));
-                }))
-              ),
-              h("div",{style:{marginTop:12,padding:"10px 14px",background:GS,borderRadius:10,borderLeft:"3px solid "+GOLD}},
-                h("div",{style:{fontSize:12,color:GOLD}},"\uD83D\uDCA1 "+g.tip))
+            open===i?h("div",{style:{borderTop:"1px solid "+BR}},
+              h("div",{style:{padding:"0 16px 14px"}},
+                h("table",{style:{width:"100%",borderCollapse:"collapse",marginTop:12}},
+                  h("tbody",null,g.table.map(function(row,j){
+                    return h("tr",{key:j,style:{borderBottom:"1px solid "+BR}},
+                      h("td",{style:{padding:"8px 0",fontSize:13,color:GR}},row[0]),
+                      h("td",{style:{padding:"8px 0",fontSize:16,fontWeight:500,color:BLK,textAlign:"right"}},row[1]));
+                  }))
+                ),
+                h("div",{style:{marginTop:12,padding:"10px 14px",background:GS,borderRadius:10,borderLeft:"3px solid "+GOLD,marginBottom:14}},
+                  h("div",{style:{fontSize:12,color:GOLD}},"\uD83D\uDCA1 "+g.tip)
+                ),
+                h("button",{onClick:function(){setLearnIdx(i);},
+                  style:{width:"100%",padding:"12px",borderRadius:12,border:"none",fontFamily:"inherit",background:GOLD,color:"#fff",fontSize:14,fontWeight:600,cursor:"pointer",boxShadow:SGH}},
+                  "\uD83C\uDFAF Dieses Kapitel \u00fcben"
+                )
+              )
             ):null
           );
         })
@@ -1122,8 +1198,7 @@ function ProgressScreen(){
         days.map(function(day){
           var ht=Math.round(day.data.seen/maxS*68),gr=day.data.seen>=plan.dailyGoal,isT=day.key===todayKey();
           return h("div",{key:day.key,style:{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3}},
-            h("div",{style:{width:"100%",display:"flex",flexDirection:"column",justifyContent:"flex-end",height:68}},
-              h("div",{style:{width:"100%",height:Math.max(ht,2),background:gr?GRN:isT?GOLD:BR,borderRadius:"3px 3px 0 0"}})),
+            h("div",{style:{width:"100%",display:"flex",flexDirection:"column",justifyContent:"flex-end",height:68}},h("div",{style:{width:"100%",height:Math.max(ht,2),background:gr?GRN:isT?GOLD:BR,borderRadius:"3px 3px 0 0"}})),
             h("div",{style:{fontSize:9,color:isT?GOLD:LT,fontFamily:"monospace"}},day.lbl));
         })
       )
@@ -1145,16 +1220,11 @@ function ProgressScreen(){
           var data={progress:lsGet("sk_prog",{}),stats:lsGet("sk_stats",{}),plan:lsGet("sk_plan",{})};
           var blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
           var url=URL.createObjectURL(blob);
-          var a=document.createElement("a");
-          a.href=url;a.download="sloven\u010dina-fortschritt.json";
-          document.body.appendChild(a);a.click();
-          document.body.removeChild(a);URL.revokeObjectURL(url);
-        },style:{flex:1,padding:"12px",borderRadius:14,border:"1.5px solid "+BR,background:WH,fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:"pointer",color:BLK,boxShadow:SSH}},
-          "\uD83D\uDCE4 Exportieren"
-        ),
+          var a=document.createElement("a");a.href=url;a.download="sloven\u010dina-fortschritt.json";
+          document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+        },style:{flex:1,padding:"12px",borderRadius:14,border:"1.5px solid "+BR,background:WH,fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:"pointer",color:BLK,boxShadow:SSH}},"\uD83D\uDCE4 Exportieren"),
         h("button",{onClick:function(){
-          var inp=document.createElement("input");
-          inp.type="file";inp.accept=".json";
+          var inp=document.createElement("input");inp.type="file";inp.accept=".json";
           inp.onchange=function(e){
             var file=e.target.files[0];if(!file)return;
             var reader=new FileReader();
@@ -1170,11 +1240,8 @@ function ProgressScreen(){
             };
             reader.readAsText(file);
           };
-          document.body.appendChild(inp);inp.click();
-          document.body.removeChild(inp);
-        },style:{flex:1,padding:"12px",borderRadius:14,border:"1.5px solid "+BR,background:WH,fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:"pointer",color:BLK,boxShadow:SSH}},
-          "\uD83D\uDCE5 Importieren"
-        )
+          document.body.appendChild(inp);inp.click();document.body.removeChild(inp);
+        },style:{flex:1,padding:"12px",borderRadius:14,border:"1.5px solid "+BR,background:WH,fontFamily:"inherit",fontSize:13,fontWeight:500,cursor:"pointer",color:BLK,boxShadow:SSH}},"\uD83D\uDCE5 Importieren")
       )
     ),
     h("div",{style:cardSt(null)},
@@ -1187,7 +1254,7 @@ function ProgressScreen(){
   );
 }
 
-// IMPRESSUM SCREEN
+// IMPRESSUM
 function ImpressumScreen(){
   var year=new Date().getFullYear();
   return h("div",{style:{padding:"32px 20px 48px"}},
@@ -1201,26 +1268,24 @@ function ImpressumScreen(){
     ),
     h("div",{style:cardSt({marginBottom:12})},
       h("div",{style:lblSt()},"ZWECK"),
-      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7}},"Diese Web-App dient dem pers\u00f6nlichen Erlernen der slowakischen Sprache. Sie ist eine nicht-kommerzielle Privatanwendung.")
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7}},"Diese Web-App dient dem pers\u00f6nlichen Erlernen der slowakischen Sprache. Nicht-kommerzielle Privatanwendung.")
     ),
     h("div",{style:cardSt({marginBottom:12})},
       h("div",{style:lblSt()},"DATENSCHUTZ"),
-      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7,marginBottom:8}},"Es werden keine personenbezogenen Daten erhoben, gespeichert oder an Dritte weitergegeben."),
-      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7,marginBottom:8}},"Lernfortschritt, Statistiken und Einstellungen werden ausschlie\u00dflich lokal im Browser gespeichert (localStorage). Diese Daten verlassen das Ger\u00e4t nicht."),
-      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7}},"Es werden keine Cookies gesetzt, kein Tracking durchgef\u00fchrt und keine Analysedienste verwendet.")
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7,marginBottom:8}},"Keine personenbezogenen Daten werden erhoben oder weitergegeben."),
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7,marginBottom:8}},"Lernfortschritt wird ausschlie\u00dflich lokal gespeichert (localStorage). Keine Cookies, kein Tracking."),
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7}},"Keine Analysedienste.")
     ),
     h("div",{style:cardSt({marginBottom:12})},
       h("div",{style:lblSt()},"EXTERN GELADENE DIENSTE"),
-      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7,marginBottom:12}},"Diese App l\u00e4dt beim ersten Aufruf folgende externe Ressourcen:"),
       h("div",{style:{background:BG,borderRadius:10,padding:"12px 14px",marginBottom:8}},
         h("div",{style:{fontSize:13,fontWeight:600,color:BLK,marginBottom:4}},"React & ReactDOM"),
-        h("div",{style:{fontSize:12,color:GR}},"Anbieter: cdnjs.cloudflare.com (Cloudflare, Inc., USA)"),
-        h("a",{href:"https://www.cloudflare.com/privacypolicy/",target:"_blank",style:{fontSize:12,color:GOLD,textDecoration:"none"}},"Datenschutzerkl\u00e4rung Cloudflare")
+        h("div",{style:{fontSize:12,color:GR}},"cdnjs.cloudflare.com (Cloudflare, Inc., USA)"),
+        h("a",{href:"https://www.cloudflare.com/privacypolicy/",target:"_blank",style:{fontSize:12,color:GOLD,textDecoration:"none"}},"Datenschutzerkl\u00e4rung")
       ),
       h("div",{style:{background:BG,borderRadius:10,padding:"12px 14px"}},
         h("div",{style:{fontSize:13,fontWeight:600,color:BLK,marginBottom:4}},"Sprachausgabe (Web Speech API)"),
-        h("div",{style:{fontSize:12,color:GR}},"Anbieter: Betriebssystem des Ger\u00e4ts (Apple iOS / Google Android)"),
-        h("div",{style:{fontSize:12,color:GR,marginTop:4}},"Es werden keine Audiodaten an externe Server \u00fcbertragen.")
+        h("div",{style:{fontSize:12,color:GR}},"Betriebssystem des Ger\u00e4ts. Keine Audiodaten werden \u00fcbertragen.")
       )
     ),
     h("div",{style:{fontSize:12,color:LT,textAlign:"center",marginTop:20}},"Stand: "+year+" \u2014 Sloven\u010dina Lern-App")
@@ -1241,8 +1306,7 @@ function TabBar(props){
     tabs.map(function(t){
       var active=tab===t.id,col=active?GOLD:LT;
       return h("button",{key:t.id,onClick:function(){setTab(t.id);},style:{flex:1,padding:"10px 0 12px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,fontFamily:"inherit"}},
-        t.icon(col),h("span",{style:{fontSize:9,fontWeight:active?600:400,color:col}},t.label)
-      );
+        t.icon(col),h("span",{style:{fontSize:9,fontWeight:active?600:400,color:col}},t.label));
     }),
     h("button",{onClick:function(){setTab("impressum");},style:{flex:1,padding:"10px 0 12px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,fontFamily:"inherit"}},
       h("span",{style:{fontSize:16,lineHeight:1,color:tab==="impressum"?GOLD:LT,fontWeight:tab==="impressum"?600:400}},"\u00a7"),
