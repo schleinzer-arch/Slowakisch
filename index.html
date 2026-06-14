@@ -510,9 +510,9 @@ var SERIF='Georgia,"Palatino Linotype",Palatino,"Times New Roman",serif';
 function lsGet(k,fb){try{var v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 function loadProgress(){return lsGet("sk_prog",{});}
-function saveProgress(kn,le,counts){
+function saveProgress(kn,le,counts,learnedDates){
   var ka=[],la=[];kn.forEach(function(v){ka.push(v);});le.forEach(function(v){la.push(v);});
-  lsSet("sk_prog",{known:ka,learning:la,counts:counts||{}});
+  lsSet("sk_prog",{known:ka,learning:la,counts:counts||{},learnedDates:learnedDates||{}});
 }
 function loadStats(){return lsGet("sk_stats",{});}
 function saveStats(s){lsSet("sk_stats",s);}
@@ -708,6 +708,7 @@ function FlashScreen(){
   var r13=useState(0),srPos=r13[0],setSrPos=r13[1];
   var r14=useState(false),lit=r14[0],setLit=r14[1];
   var r15=useState({}),reinforced=r15[0],setReinforced=r15[1];
+  var r16=useState(function(){return p.learnedDates||{};}),learnedDates=r16[0],setLearnedDates=r16[1];
 
   var safeQ=queue.length?qpos%queue.length:0;
   var safeA=srQ.length?srPos%srQ.length:0;
@@ -729,9 +730,20 @@ function FlashScreen(){
   function nextCard(mark){
     var sk=card.sk;
     var nk=new Set(setArr(known)),nl=new Set(setArr(learning)),nc=cs({},counts);
-    if(mark==="known"){nc[sk]=(nc[sk]||0)+1;if(nc[sk]>=3){nk.add(sk);nl.delete(sk);}else nl.add(sk);}
-    else{nc[sk]=0;nl.add(sk);nk.delete(sk);}
-    setKnown(nk);setLearning(nl);setCounts(nc);saveProgress(nk,nl,nc);recordActivity(sk,mark==="known");
+    var nld=cs({},learnedDates);
+    if(mark==="known"){
+      nc[sk]=(nc[sk]||0)+1;
+      if(nc[sk]>=3){
+        if(!nk.has(sk)){nld[sk]=todayKey();} // mark the day this word newly became "known"
+        nk.add(sk);nl.delete(sk);
+      } else nl.add(sk);
+    } else {
+      nc[sk]=0;nl.add(sk);
+      if(nk.has(sk)){delete nld[sk];} // word fell back to learning, remove learned-date
+      nk.delete(sk);
+    }
+    setKnown(nk);setLearning(nl);setCounts(nc);setLearnedDates(nld);
+    saveProgress(nk,nl,nc,nld);recordActivity(sk,mark==="known");
     setFlipped(false);setFkey(function(k){return k+1;});
     if(ankiMode){
       var ci=srQ[safeA];
@@ -1165,15 +1177,12 @@ function ProgressScreen(){
   var catS={};
   for(var i=0;i<VOCAB.length;i++){var v=VOCAB[i];if(!catS[v.cat])catS[v.cat]={t:0,k:0};catS[v.cat].t++;if(known.has(v.sk))catS[v.cat].k++;}
 
-  // Words learned TODAY: words seen today that reached known status (counts>=3) and are in known set
-  var prog2=loadProgress();
-  var counts2=prog2.counts||{};
-  var todayWordsSeen=tod.words||[];
+  // Words learned TODAY: words whose learnedDates entry equals today (i.e. reached "known" status today for the first time)
+  var learnedDates=prog.learnedDates||{};
   var learnedToday=0;
-  for(var i=0;i<todayWordsSeen.length;i++){
-    var sk=todayWordsSeen[i];
-    if(known.has(sk))learnedToday++;
-  }
+  Object.keys(learnedDates).forEach(function(sk){
+    if(learnedDates[sk]===todayKey())learnedToday++;
+  });
 
   function resetAll(){
     if(window.confirm("Wirklich ALLE Daten zur\u00fccksetzen? Gelernte W\u00f6rter, Statistiken und Streak gehen unwiderruflich verloren.")){
