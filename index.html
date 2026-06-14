@@ -516,7 +516,7 @@ function saveProgress(kn,le,counts){
 }
 function loadStats(){return lsGet("sk_stats",{});}
 function saveStats(s){lsSet("sk_stats",s);}
-function loadPlan(){return lsGet("sk_plan",{dailyGoal:10});}
+function loadPlan(){return lsGet("sk_plan",{dailyGoal:30});}
 function savePlan(p){lsSet("sk_plan",p);}
 function todayKey(){return new Date().toISOString().slice(0,10);}
 function recordActivity(sk,correct){
@@ -1150,8 +1150,8 @@ function KnowledgeScreen(){
 // PROGRESS SCREEN
 function ProgressScreen(){
   var stats=loadStats(),prog=loadProgress(),known=new Set(prog.known||[]);
-  var plan=loadPlan(),tod=stats[todayKey()]||{seen:0,correct:0};
-  var r1=useState(plan.dailyGoal),goal=r1[0],setGoal=r1[1];
+  var plan={dailyGoal:30};
+  var tod=stats[todayKey()]||{seen:0,correct:0,words:[]};
   var r2=useState(false),saved=r2[0],setSaved=r2[1];
   var totalSeen=objSum(stats,"seen"),totalOk=objSum(stats,"correct");
   var acc=totalSeen?Math.round(totalOk/totalSeen*100):0;
@@ -1164,7 +1164,26 @@ function ProgressScreen(){
   for(var i=0;i<days.length;i++){if(days[i].data.seen>maxS)maxS=days[i].data.seen;}
   var catS={};
   for(var i=0;i<VOCAB.length;i++){var v=VOCAB[i];if(!catS[v.cat])catS[v.cat]={t:0,k:0};catS[v.cat].t++;if(known.has(v.sk))catS[v.cat].k++;}
-  function saveG(){savePlan(Object.assign({},plan,{dailyGoal:goal}));setSaved(true);setTimeout(function(){setSaved(false);},2000);}
+
+  // Words learned TODAY: words seen today that reached known status (counts>=3) and are in known set
+  var prog2=loadProgress();
+  var counts2=prog2.counts||{};
+  var todayWordsSeen=tod.words||[];
+  var learnedToday=0;
+  for(var i=0;i<todayWordsSeen.length;i++){
+    var sk=todayWordsSeen[i];
+    if(known.has(sk))learnedToday++;
+  }
+
+  function resetAll(){
+    if(window.confirm("Wirklich ALLE Daten zur\u00fccksetzen? Gelernte W\u00f6rter, Statistiken und Streak gehen unwiderruflich verloren.")){
+      lsSet("sk_prog",{});
+      lsSet("sk_stats",{});
+      lsSet("sk_plan",{dailyGoal:30});
+      window.location.reload();
+    }
+  }
+
   var dots=[];
   for(var ii=0;ii<30;ii++){
     var dd2=new Date();dd2.setDate(dd2.getDate()-(29-ii));
@@ -1173,6 +1192,7 @@ function ProgressScreen(){
     var bg2=iv2===0?BR:iv2<0.5?GM:iv2<1?GOLD:GRN;
     dots.push(h("div",{key:hk,style:{width:24,height:24,borderRadius:6,background:bg2,border:"2px solid "+(hk===todayKey()?GOLD:"transparent")}}));
   }
+
   return h("div",{style:{padding:"24px 20px 48px"}},
     h("div",{style:{fontSize:26,fontWeight:300,fontFamily:SERIF,color:BLK,marginBottom:24}},"Fortschritt"),
     h("div",{style:cardSt({display:"flex",alignItems:"center",gap:20,marginBottom:16})},
@@ -1184,9 +1204,10 @@ function ProgressScreen(){
       h("div",{style:{flex:1}},
         h("div",{style:{fontSize:22,fontWeight:600,color:BLK}},known.size,h("span",{style:{fontSize:14,fontWeight:400,color:LT}}," / "+VOCAB.length)),
         h("div",{style:{fontSize:13,color:GR,marginTop:2}},"W\u00f6rter gelernt"),
-        h("div",{style:{display:"flex",gap:20,marginTop:12}},
+        h("div",{style:{display:"flex",gap:16,marginTop:12,flexWrap:"wrap"}},
           h("div",null,h("div",{style:{display:"flex",alignItems:"center",gap:4}},h("span",null,"\uD83D\uDD25"),h("span",{style:{fontSize:18,fontWeight:600,color:BLK}},streak)),h("div",{style:{fontSize:11,color:LT}},"Serie")),
-          h("div",null,h("div",{style:{fontSize:18,fontWeight:600,color:BLK}},tod.seen),h("div",{style:{fontSize:11,color:LT}},"Heute")),
+          h("div",null,h("div",{style:{fontSize:18,fontWeight:600,color:BLK}},tod.seen),h("div",{style:{fontSize:11,color:LT}},"Heute gesehen")),
+          h("div",null,h("div",{style:{fontSize:18,fontWeight:600,color:GOLD}},learnedToday),h("div",{style:{fontSize:11,color:LT}},"Heute gelernt")),
           h("div",null,h("div",{style:{fontSize:18,fontWeight:600,color:GRN}},acc+"%"),h("div",{style:{fontSize:11,color:LT}},"Genauigkeit"))
         )
       )
@@ -1245,15 +1266,12 @@ function ProgressScreen(){
       )
     ),
     h("div",{style:cardSt(null)},
-      h("div",{style:lblSt()},"TAGESZIEL"),
-      h("div",{style:{display:"flex",gap:8,marginBottom:16}},
-        [5,10,15,20,30].map(function(n){return h("button",{key:n,onClick:function(){setGoal(n);},style:{flex:1,padding:"10px 4px",borderRadius:12,fontFamily:"inherit",background:goal===n?GOLD:"transparent",border:"1.5px solid "+(goal===n?GOLD:BR),color:goal===n?"#fff":GR,fontSize:14,fontWeight:goal===n?600:400,cursor:"pointer"}},n);})
-      ),
-      h("button",{onClick:saveG,style:btnSt()},saved?"\u2713 Gespeichert!":"Ziel speichern")
+      h("div",{style:lblSt()},"ZUR\u00dcCKSETZEN"),
+      h("div",{style:{fontSize:13,color:GR,marginBottom:14,lineHeight:1.6}},"Setzt alle gelernten W\u00f6rter, Statistiken und die Serie zur\u00fcck. Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden."),
+      h("button",{onClick:resetAll,style:{width:"100%",padding:"15px",borderRadius:999,border:"1.5px solid rgba(255,59,48,0.3)",background:"rgba(255,59,48,0.05)",fontFamily:"inherit",fontSize:15,fontWeight:600,cursor:"pointer",color:RD}},"\uD83D\uDDD1\uFE0F Alle Daten zur\u00fccksetzen")
     )
   );
 }
-
 // IMPRESSUM
 function ImpressumScreen(){
   var year=new Date().getFullYear();
