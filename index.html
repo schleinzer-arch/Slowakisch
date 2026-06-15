@@ -1405,9 +1405,9 @@ function ProgressScreen(){
         )
       )
     ),
-    knownWordsCountForButton>0?h("button",{onClick:function(){setShowVocabList(true);},style:{width:"100%",padding:"14px",borderRadius:14,border:"1.5px solid "+BR,background:WH,fontFamily:"inherit",fontSize:14,fontWeight:500,cursor:"pointer",color:BLK,boxShadow:SSH,marginBottom:16,display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
+    h("button",{onClick:function(){setShowVocabList(true);},style:{width:"100%",padding:"14px",borderRadius:14,border:"1.5px solid "+BR,background:WH,fontFamily:"inherit",fontSize:14,fontWeight:500,cursor:"pointer",color:BLK,boxShadow:SSH,marginBottom:16,display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
       "📖 Meine gelernten Wörter ("+known.size+")"
-    ):null,
+    ),
     h("div",{style:cardSt({marginBottom:16})},h("div",{style:lblSt()},"LETZTE 30 TAGE"),h("div",{style:{display:"flex",flexWrap:"wrap",gap:5}},dots)),
     h("div",{style:cardSt({marginBottom:16})},
       h("div",{style:lblSt()},"LETZTE 14 TAGE"),
