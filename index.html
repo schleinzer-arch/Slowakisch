@@ -1169,6 +1169,7 @@ function VocabTestScreen(props){
   var re=useState(false),isDone=re[0],setIsDone=re[1];
   var rf=useState(0),qkey=rf[0],setQkey=rf[1];
   var rg=useState(null),questions=rg[0],setQuestions=rg[1];
+  var rApplied=useRef(false);
 
   useEffect(function(){
     var qs=words.map(function(w){
@@ -1186,6 +1187,20 @@ function VocabTestScreen(props){
     });
     setQuestions(qs);
   },[]);
+
+  // Apply progress changes for wrong words once, when test completes
+  useEffect(function(){
+    if(!isDone)return;
+    if(rApplied.current)return;
+    rApplied.current=true;
+    if(wrongWords.length===0)return;
+    var prog=loadProgress();
+    var nk=new Set(prog.known||[]),nl=new Set(prog.learning||[]),nc=cs({},prog.counts||{}),nld=cs({},prog.learnedDates||{});
+    wrongWords.forEach(function(w){
+      nk.delete(w.sk);nl.add(w.sk);nc[w.sk]=0;delete nld[w.sk];
+    });
+    saveProgress(nk,nl,nc,nld);
+  },[isDone]);
 
   if(!questions)return h("div",{style:{padding:40,textAlign:"center",color:LT}},"Laden...");
   var currentQ=questions[qidx]||null;
@@ -1209,20 +1224,6 @@ function VocabTestScreen(props){
   if(isDone){
     var pct=questions.length?Math.round(score.r/questions.length*100):0;
     var medal=pct===100?"\uD83C\uDF1F":pct>=80?"\uD83C\uDF89":pct>=60?"\uD83D\uDC4D":"\uD83D\uDCDA";
-    // Apply once
-    var rApplied=useRef(false);
-    useEffect(function(){
-      if(rApplied.current)return;
-      rApplied.current=true;
-      if(wrongWords.length===0)return;
-      var prog=loadProgress();
-      var nk=new Set(prog.known||[]),nl=new Set(prog.learning||[]),nc=cs({},prog.counts||{}),nld=cs({},prog.learnedDates||{});
-      wrongWords.forEach(function(w){
-        nk.delete(w.sk);nl.add(w.sk);nc[w.sk]=0;delete nld[w.sk];
-      });
-      saveProgress(nk,nl,nc,nld);
-    },[]);
-
     return h("div",{style:{padding:"40px 20px",textAlign:"center"}},
       h("div",{style:{fontSize:48,marginBottom:16}},medal),
       h("div",{style:{fontSize:22,fontWeight:300,fontFamily:SERIF,color:BLK,marginBottom:8}},"Wiederholungstest"),
@@ -1341,13 +1342,13 @@ function VocabListScreen(props){
 // PROGRESS SCREEN
 function ProgressScreen(){
   var rNav=useState(false),showVocabList=rNav[0],setShowVocabList=rNav[1];
+  var r2=useState(false),saved=r2[0],setSaved=r2[1];
   if(showVocabList){
     return h(VocabListScreen,{onBack:function(){setShowVocabList(false);}});
   }
   var stats=loadStats(),prog=loadProgress(),known=new Set(prog.known||[]);
   var plan={dailyGoal:30};
   var tod=stats[todayKey()]||{seen:0,correct:0,words:[]};
-  var r2=useState(false),saved=r2[0],setSaved=r2[1];
   var totalSeen=objSum(stats,"seen"),totalOk=objSum(stats,"correct");
   var acc=totalSeen?Math.round(totalOk/totalSeen*100):0;
   var kPct=Math.round(known.size/VOCAB.length*100);
