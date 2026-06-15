@@ -734,12 +734,12 @@ function FlashScreen(){
     if(mark==="known"){
       nc[sk]=(nc[sk]||0)+1;
       if(nc[sk]>=3){
-        if(!nk.has(sk)){nld[sk]=todayKey();} // mark the day this word newly became "known"
+        if(!nk.has(sk)){nld[sk]=todayKey();}
         nk.add(sk);nl.delete(sk);
       } else nl.add(sk);
     } else {
       nc[sk]=0;nl.add(sk);
-      if(nk.has(sk)){delete nld[sk];} // word fell back to learning, remove learned-date
+      if(nk.has(sk)){delete nld[sk];}
       nk.delete(sk);
     }
     setKnown(nk);setLearning(nl);setCounts(nc);setLearnedDates(nld);
@@ -1159,8 +1159,191 @@ function KnowledgeScreen(){
   );
 }
 
+// VOCAB TEST SCREEN (mini quiz over known words)
+function VocabTestScreen(props){
+  var words=props.words; // array of VOCAB entries (already shuffled & capped)
+  var ra=useState(0),qidx=ra[0],setQidx=ra[1];
+  var rb=useState(null),chosen=rb[0],setChosen=rb[1];
+  var rc=useState({r:0,w:0}),score=rc[0],setScore=rc[1];
+  var rd=useState([]),wrongWords=rd[0],setWrongWords=rd[1];
+  var re=useState(false),isDone=re[0],setIsDone=re[1];
+  var rf=useState(0),qkey=rf[0],setQkey=rf[1];
+  var rg=useState(null),questions=rg[0],setQuestions=rg[1];
+
+  useEffect(function(){
+    var qs=words.map(function(w){
+      var dir=Math.random()<0.5?"de2sk":"sk2de";
+      var others=VOCAB.filter(function(v){return v.sk!==w.sk;}).sort(function(){return Math.random()-0.5;}).slice(0,3);
+      var opts,question,answer;
+      if(dir==="de2sk"){
+        opts=others.map(function(o){return o.sk;}).concat([w.sk]).sort(function(){return Math.random()-0.5;});
+        question=w.de;answer=w.sk;
+      } else {
+        opts=others.map(function(o){return o.de;}).concat([w.de]).sort(function(){return Math.random()-0.5;});
+        question=w.sk;answer=w.de;
+      }
+      return {word:w,dir:dir,question:question,answer:answer,options:opts};
+    });
+    setQuestions(qs);
+  },[]);
+
+  if(!questions)return h("div",{style:{padding:40,textAlign:"center",color:LT}},"Laden...");
+  var currentQ=questions[qidx]||null;
+
+  function pick(opt){
+    if(chosen!==null)return;
+    setChosen(opt);
+    var ok=opt===currentQ.answer;
+    if(ok)setScore(function(s){return{r:s.r+1,w:s.w};});
+    else{
+      setScore(function(s){return{r:s.r,w:s.w+1};});
+      setWrongWords(function(ww){return ww.concat([currentQ.word]);});
+    }
+  }
+  function nextQ(){
+    if(qidx>=questions.length-1)setIsDone(true);
+    else{setQidx(function(i){return i+1;});setChosen(null);setQkey(function(k){return k+1;});}
+  }
+
+  // DONE: apply progress changes for wrong words (move back to "learning")
+  if(isDone){
+    var pct=questions.length?Math.round(score.r/questions.length*100):0;
+    var medal=pct===100?"\uD83C\uDF1F":pct>=80?"\uD83C\uDF89":pct>=60?"\uD83D\uDC4D":"\uD83D\uDCDA";
+    // Apply once
+    var rApplied=useRef(false);
+    useEffect(function(){
+      if(rApplied.current)return;
+      rApplied.current=true;
+      if(wrongWords.length===0)return;
+      var prog=loadProgress();
+      var nk=new Set(prog.known||[]),nl=new Set(prog.learning||[]),nc=cs({},prog.counts||{}),nld=cs({},prog.learnedDates||{});
+      wrongWords.forEach(function(w){
+        nk.delete(w.sk);nl.add(w.sk);nc[w.sk]=0;delete nld[w.sk];
+      });
+      saveProgress(nk,nl,nc,nld);
+    },[]);
+
+    return h("div",{style:{padding:"40px 20px",textAlign:"center"}},
+      h("div",{style:{fontSize:48,marginBottom:16}},medal),
+      h("div",{style:{fontSize:22,fontWeight:300,fontFamily:SERIF,color:BLK,marginBottom:8}},"Wiederholungstest"),
+      h("div",{style:{fontSize:36,fontWeight:600,color:pct>=80?GRN:pct>=60?GOLD:RD,marginBottom:4}},pct+"%"),
+      h("div",{style:{fontSize:14,color:GR,marginBottom:24}},score.r+" von "+questions.length+" richtig"),
+      wrongWords.length>0?h("div",{style:{background:WH,borderRadius:16,boxShadow:SSH,padding:"14px 16px",marginBottom:24,textAlign:"left"}},
+        h("div",{style:{fontSize:12,fontWeight:600,color:RD,marginBottom:8}},"\u2192 Zur\u00fcck zu \u201eÜben\u201c verschoben:"),
+        wrongWords.map(function(w,i){
+          return h("div",{key:i,style:{fontSize:13,color:GR,padding:"4px 0",borderBottom:i<wrongWords.length-1?"1px solid "+BR:"none"}},
+            w.sk+" \u2014 "+w.de);
+        })
+      ):h("div",{style:{fontSize:13,color:GRN,marginBottom:24}},"\uD83C\uDF89 Alle W\u00f6rter richtig! Nichts musste zur\u00fcckgesetzt werden."),
+      h("button",{onClick:props.onBack,style:btnSt()},"Zur\u00fcck zur Liste")
+    );
+  }
+
+  // QUIZ
+  return h("div",{style:{padding:"16px 20px 24px"}},
+    h("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:16}},
+      h("button",{onClick:props.onBack,style:{background:"none",border:"none",cursor:"pointer",padding:0}},
+        h("svg",{width:20,height:20,viewBox:"0 0 24 24",fill:"none",stroke:GR,strokeWidth:2,strokeLinecap:"round"},h("path",{d:"M15 18l-6-6 6-6"}))
+      ),
+      h("div",{style:{flex:1}},
+        h("div",{style:{fontSize:13,fontWeight:500,color:BLK}},"Wiederholungstest"),
+        h("div",{style:{fontSize:11,color:LT}},"Frage "+(qidx+1)+" / "+questions.length)
+      ),
+      h("div",{style:{display:"flex",gap:8}},
+        h("span",{style:{fontSize:13,fontWeight:600,color:GRN}},score.r+"\u2713"),
+        h("span",{style:{fontSize:13,fontWeight:600,color:RD}},score.w+"\u2717")
+      )
+    ),
+    h("div",{style:{height:3,background:BR,borderRadius:2,marginBottom:20}},
+      h("div",{style:{height:"100%",width:Math.round((qidx+1)/questions.length*100)+"%",background:GOLD,borderRadius:2,transition:"width 0.4s"}})
+    ),
+    currentQ?h("div",{key:qkey},
+      h("div",{style:{background:WH,borderRadius:18,boxShadow:SH,padding:"24px 20px",marginBottom:14,textAlign:"center"}},
+        h("div",{style:{fontSize:12,color:LT,marginBottom:10}},currentQ.dir==="de2sk"?"Wie hei\u00dft auf Slowakisch...":"Was bedeutet auf Deutsch..."),
+        h("div",{style:{fontSize:32,fontWeight:300,fontFamily:SERIF,color:BLK,lineHeight:1.2}},currentQ.question)
+      ),
+      h("div",{style:{display:"flex",flexDirection:"column",gap:10,marginBottom:12}},
+        currentQ.options.map(function(opt){
+          var isC=opt===currentQ.answer,isP=chosen===opt;
+          var bg=WH,border=BR,col=BLK;
+          if(chosen){if(isC){bg="rgba(52,199,89,0.08)";border=GRN;col=GRN;}else if(isP){bg="rgba(255,59,48,0.07)";border=RD;col=RD;}else col=LT;}
+          return h("button",{key:opt,onClick:function(){pick(opt);},style:{
+            padding:"14px 18px",borderRadius:14,fontFamily:"inherit",textAlign:"left",
+            background:bg,border:"1.5px solid "+border,color:col,
+            fontSize:15,fontWeight:chosen&&isC?600:400,
+            cursor:chosen?"default":"pointer",transition:"all 0.18s",boxShadow:chosen?"none":SSH}},
+            h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+              h("span",null,(chosen&&isC?"\u2713 ":(chosen&&isP?"\u2715 ":""))+opt),
+              chosen&&isC?h("span",{style:{fontSize:11,color:GRN}},currentQ.question+" = "+currentQ.answer):null
+            )
+          );
+        })
+      ),
+      chosen?h("button",{onClick:nextQ,style:btnSt()},qidx>=questions.length-1?"Ergebnis \u2192":"Weiter \u2192"):null
+    ):null
+  );
+}
+
+// VOCAB LIST SCREEN
+function VocabListScreen(props){
+  var prog=loadProgress();
+  var known=new Set(prog.known||[]);
+  var knownWords=VOCAB.filter(function(v){return known.has(v.sk);}).sort(function(a,b){return a.sk.localeCompare(b.sk);});
+  var r1=useState(""),search=r1[0],setSearch=r1[1];
+  var r2=useState(false),testing=r2[0],setTesting=r2[1];
+  var r3=useState(null),testWords=r3[0],setTestWords=r3[1];
+
+  if(testing){
+    return h(VocabTestScreen,{words:testWords,onBack:function(){setTesting(false);}});
+  }
+
+  var q=search.trim().toLowerCase();
+  var filtered=q?knownWords.filter(function(w){return w.sk.toLowerCase().indexOf(q)!==-1||w.de.toLowerCase().indexOf(q)!==-1;}):knownWords;
+
+  function startTest(){
+    var pool=shuffle(knownWords.slice());
+    var sel=pool.slice(0,Math.min(20,pool.length));
+    setTestWords(sel);setTesting(true);
+  }
+
+  return h("div",{style:{padding:"20px 20px 32px"}},
+    h("button",{onClick:props.onBack,style:{background:"none",border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:13,color:GR,padding:"0 0 16px 0",display:"flex",alignItems:"center",gap:6}},
+      h("svg",{width:16,height:16,viewBox:"0 0 24 24",fill:"none",stroke:GR,strokeWidth:2,strokeLinecap:"round"},h("path",{d:"M15 18l-6-6 6-6"})),
+      "Zur\u00fcck"
+    ),
+    h("div",{style:{fontSize:24,fontWeight:300,fontFamily:SERIF,color:BLK,marginBottom:4}},"Gelernte W\u00f6rter"),
+    h("div",{style:{fontSize:14,color:GR,marginBottom:18}},knownWords.length+" von "+VOCAB.length+" W\u00f6rtern gelernt"),
+    knownWords.length===0?h("div",{style:cardSt({textAlign:"center",padding:"32px 20px"})},
+      h("div",{style:{fontSize:28,marginBottom:10}},"\uD83D\uDCDA"),
+      h("div",{style:{fontSize:15,fontWeight:500,color:BLK,marginBottom:6}},"Noch keine W\u00f6rter gelernt"),
+      h("div",{style:{fontSize:13,color:GR}},"Lerne Vokabeln in den Flashcards, um sie hier zu sehen.")
+    ):h("div",null,
+      h("button",{onClick:startTest,style:cs(btnSt(),{marginBottom:16})},"\uD83C\uDFAF Diese W\u00f6rter testen ("+Math.min(20,knownWords.length)+")"),
+      h("input",{type:"text",value:search,onChange:function(e){setSearch(e.target.value);},placeholder:"Suchen...",
+        style:{width:"100%",padding:"12px 16px",borderRadius:14,border:"1.5px solid "+BR,fontFamily:"inherit",fontSize:14,marginBottom:16,boxSizing:"border-box",background:WH}}),
+      h("div",{style:{display:"flex",flexDirection:"column",gap:8}},
+        filtered.map(function(w,i){
+          return h("div",{key:w.sk+i,style:{background:WH,borderRadius:14,padding:"12px 16px",boxShadow:SSH,display:"flex",justifyContent:"space-between",alignItems:"center"}},
+            h("div",{style:{flex:1}},
+              h("div",{style:{fontSize:15,color:BLK,fontWeight:500}},w.sk),
+              h("div",{style:{fontSize:12,color:GR,marginTop:2}},w.de)
+            ),
+            h("span",{style:{fontSize:10,color:GOLD,background:GS,padding:"2px 8px",borderRadius:999,marginRight:8,whiteSpace:"nowrap"}},w.cat),
+            h("button",{onClick:function(){speak(w.sk);},style:{width:36,height:36,borderRadius:999,cursor:"pointer",border:"1.5px solid "+BR,background:WH,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}},IcoSpeak(GR))
+          );
+        })
+      ),
+      filtered.length===0?h("div",{style:{textAlign:"center",color:LT,fontSize:13,padding:"20px 0"}},"Keine Treffer f\u00fcr \u201e"+search+"\u201c"):null
+    )
+  );
+}
+
 // PROGRESS SCREEN
 function ProgressScreen(){
+  var rNav=useState(false),showVocabList=rNav[0],setShowVocabList=rNav[1];
+  if(showVocabList){
+    return h(VocabListScreen,{onBack:function(){setShowVocabList(false);}});
+  }
   var stats=loadStats(),prog=loadProgress(),known=new Set(prog.known||[]);
   var plan={dailyGoal:30};
   var tod=stats[todayKey()]||{seen:0,correct:0,words:[]};
@@ -1168,6 +1351,7 @@ function ProgressScreen(){
   var totalSeen=objSum(stats,"seen"),totalOk=objSum(stats,"correct");
   var acc=totalSeen?Math.round(totalOk/totalSeen*100):0;
   var kPct=Math.round(known.size/VOCAB.length*100);
+  var knownWordsCountForButton=known.size;
   var streak=0,d2=new Date();
   while(true){var k=d2.toISOString().slice(0,10),ss=stats[k];if(ss&&ss.seen>=plan.dailyGoal){streak++;d2.setDate(d2.getDate()-1);}else break;}
   var days=[];
@@ -1177,11 +1361,11 @@ function ProgressScreen(){
   var catS={};
   for(var i=0;i<VOCAB.length;i++){var v=VOCAB[i];if(!catS[v.cat])catS[v.cat]={t:0,k:0};catS[v.cat].t++;if(known.has(v.sk))catS[v.cat].k++;}
 
-  // Words learned TODAY: words whose learnedDates entry equals today (i.e. reached "known" status today for the first time)
-  var learnedDates=prog.learnedDates||{};
+  // Words learned TODAY: words whose learnedDates entry equals today
+  var learnedDatesP=prog.learnedDates||{};
   var learnedToday=0;
-  Object.keys(learnedDates).forEach(function(sk){
-    if(learnedDates[sk]===todayKey())learnedToday++;
+  Object.keys(learnedDatesP).forEach(function(sk){
+    if(learnedDatesP[sk]===todayKey())learnedToday++;
   });
 
   function resetAll(){
@@ -1221,6 +1405,9 @@ function ProgressScreen(){
         )
       )
     ),
+    knownWordsCountForButton>0?h("button",{onClick:function(){setShowVocabList(true);},style:{width:"100%",padding:"14px",borderRadius:14,border:"1.5px solid "+BR,background:WH,fontFamily:"inherit",fontSize:14,fontWeight:500,cursor:"pointer",color:BLK,boxShadow:SSH,marginBottom:16,display:"flex",alignItems:"center",justifyContent:"center",gap:8}},
+      "📖 Meine gelernten Wörter ("+known.size+")"
+    ):null,
     h("div",{style:cardSt({marginBottom:16})},h("div",{style:lblSt()},"LETZTE 30 TAGE"),h("div",{style:{display:"flex",flexWrap:"wrap",gap:5}},dots)),
     h("div",{style:cardSt({marginBottom:16})},
       h("div",{style:lblSt()},"LETZTE 14 TAGE"),
