@@ -1474,33 +1474,48 @@ function ImpressumScreen(){
   var year=new Date().getFullYear();
   return h("div",{style:{padding:"32px 20px 48px"}},
     h("div",{style:{fontSize:26,fontWeight:300,fontFamily:SERIF,color:BLK,marginBottom:4}},"Impressum"),
-    h("div",{style:{fontSize:13,color:GR,marginBottom:32}},"Angaben gem\u00e4\u00df \u00a7 5 ECG"),
+    h("div",{style:{fontSize:13,color:GR,marginBottom:32}},"Angaben gem\u00e4\u00df \u00a7 25 Mediengesetz"),
     h("div",{style:cardSt({marginBottom:12})},
-      h("div",{style:lblSt()},"BETREIBER"),
+      h("div",{style:lblSt()},"BETREIBER & MEDIENINHABER"),
       h("div",{style:{fontSize:15,fontWeight:500,color:BLK,marginBottom:6}},"Clemens Schleinzer"),
       h("div",{style:{fontSize:14,color:GR,lineHeight:1.7}},"Enzersdorfer Stra\u00dfe 9/2/2",h("br",null),"2401 Fischamend",h("br",null),"\u00d6sterreich"),
       h("a",{href:"mailto:schleinzer@gmail.com",style:{display:"block",marginTop:10,fontSize:14,color:GOLD,textDecoration:"none"}},"schleinzer@gmail.com")
     ),
     h("div",{style:cardSt({marginBottom:12})},
       h("div",{style:lblSt()},"ZWECK"),
-      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7}},"Diese Web-App dient dem pers\u00f6nlichen Erlernen der slowakischen Sprache. Nicht-kommerzielle Privatanwendung.")
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7}},"Diese Web-App dient dem pers\u00f6nlichen Erlernen der slowakischen Sprache. Es handelt sich um eine nicht-kommerzielle Privatanwendung ohne Erwerbsabsicht.")
     ),
     h("div",{style:cardSt({marginBottom:12})},
       h("div",{style:lblSt()},"DATENSCHUTZ"),
-      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7,marginBottom:8}},"Keine personenbezogenen Daten werden erhoben oder weitergegeben."),
-      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7,marginBottom:8}},"Lernfortschritt wird ausschlie\u00dflich lokal gespeichert (localStorage). Keine Cookies, kein Tracking."),
-      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7}},"Keine Analysedienste.")
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7,marginBottom:12}},
+        "Verantwortlicher im Sinne der DSGVO: Clemens Schleinzer, Enzersdorfer Stra\u00dfe 9/2/2, 2401 Fischamend \u2014 ",
+        h("a",{href:"mailto:schleinzer@gmail.com",style:{color:GOLD,textDecoration:"none"}},"schleinzer@gmail.com")
+      ),
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7,marginBottom:8}},"Diese App erhebt keine personenbezogenen Daten. Der Lernfortschritt wird ausschlie\u00dflich lokal im Browser gespeichert (localStorage) und verl\u00e4sst das Ger\u00e4t nicht. Es werden keine Cookies gesetzt, kein Tracking durchgef\u00fchrt und keine Analysedienste verwendet."),
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7,marginBottom:12}},"Beim Aufruf dieser Seite wird Ihre IP-Adresse an die Server des Hosting-Anbieters GitHub Pages (GitHub, Inc., USA) \u00fcbertragen. Beim Laden der React-Bibliothek wird Ihre IP-Adresse zus\u00e4tzlich an Cloudflare, Inc. (USA) \u00fcbertragen."),
+      h("div",{style:{background:GS,borderRadius:10,padding:"10px 14px",borderLeft:"3px solid "+GOLD}},
+        h("div",{style:{fontSize:13,color:GOLD,marginBottom:4}},"Beschwerderecht"),
+        h("div",{style:{fontSize:13,color:GR}},"Sie haben das Recht, Beschwerde bei der \u00f6sterreichischen Datenschutzbeh\u00f6rde einzulegen: "),
+        h("a",{href:"https://www.dsb.gv.at",target:"_blank",style:{fontSize:13,color:GOLD,textDecoration:"none"}},"www.dsb.gv.at")
+      )
     ),
     h("div",{style:cardSt({marginBottom:12})},
       h("div",{style:lblSt()},"EXTERN GELADENE DIENSTE"),
       h("div",{style:{background:BG,borderRadius:10,padding:"12px 14px",marginBottom:8}},
-        h("div",{style:{fontSize:13,fontWeight:600,color:BLK,marginBottom:4}},"React & ReactDOM"),
-        h("div",{style:{fontSize:12,color:GR}},"cdnjs.cloudflare.com (Cloudflare, Inc., USA)"),
-        h("a",{href:"https://www.cloudflare.com/privacypolicy/",target:"_blank",style:{fontSize:12,color:GOLD,textDecoration:"none"}},"Datenschutzerkl\u00e4rung")
+        h("div",{style:{fontSize:13,fontWeight:600,color:BLK,marginBottom:4}},"Hosting: GitHub Pages"),
+        h("div",{style:{fontSize:12,color:GR,marginBottom:4}},"GitHub, Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA"),
+        h("div",{style:{fontSize:12,color:GR,marginBottom:4}},"Beim Seitenaufruf wird Ihre IP-Adresse an GitHub-Server \u00fcbertragen."),
+        h("a",{href:"https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",target:"_blank",style:{fontSize:12,color:GOLD,textDecoration:"none"}},"Datenschutzerkl\u00e4rung GitHub")
+      ),
+      h("div",{style:{background:BG,borderRadius:10,padding:"12px 14px",marginBottom:8}},
+        h("div",{style:{fontSize:13,fontWeight:600,color:BLK,marginBottom:4}},"React & ReactDOM (CDN)"),
+        h("div",{style:{fontSize:12,color:GR,marginBottom:4}},"cdnjs.cloudflare.com \u2014 Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, USA"),
+        h("div",{style:{fontSize:12,color:GR,marginBottom:4}},"Beim Laden der Bibliothek wird Ihre IP-Adresse an Cloudflare-Server in den USA \u00fcbertragen."),
+        h("a",{href:"https://www.cloudflare.com/privacypolicy/",target:"_blank",style:{fontSize:12,color:GOLD,textDecoration:"none"}},"Datenschutzerkl\u00e4rung Cloudflare")
       ),
       h("div",{style:{background:BG,borderRadius:10,padding:"12px 14px"}},
         h("div",{style:{fontSize:13,fontWeight:600,color:BLK,marginBottom:4}},"Sprachausgabe (Web Speech API)"),
-        h("div",{style:{fontSize:12,color:GR}},"Betriebssystem des Ger\u00e4ts. Keine Audiodaten werden \u00fcbertragen.")
+        h("div",{style:{fontSize:12,color:GR}},"Die Sprachausgabe wird vom Betriebssystem des Ger\u00e4ts verarbeitet. Es werden keine Audiodaten an externe Server \u00fcbertragen.")
       )
     ),
     h("div",{style:{fontSize:12,color:LT,textAlign:"center",marginTop:20}},"Stand: "+year+" \u2014 Sloven\u010dina Lern-App")
