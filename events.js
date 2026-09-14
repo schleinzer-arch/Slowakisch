@@ -1,0 +1,247 @@
+/* ============================================================
+   Slovenčina — Ereignisse
+   ============================================================ */
+'use strict';
+
+function on(sel, fn) {
+  App.el.querySelectorAll(sel).forEach(el => el.addEventListener('click', ev => {
+    ev.preventDefault();
+    fn(el, ev);
+  }));
+}
+
+function bindAll() {
+  /* --- Navigation --- */
+  on('[data-go]', el => App.go(el.getAttribute('data-go')));
+  on('[data-tab]', el => { Library.tab = el.getAttribute('data-tab'); App.render(); });
+  on('[data-chapter]', el => App.go('grammar', el.getAttribute('data-chapter')));
+  on('[data-start]', () => Run.start());
+  on('[data-quit]', () => {
+    if (Run.i > 0 && Run.i < Run.items.length) {
+      if (!confirm('Session abbrechen? Der bisherige Fortschritt bleibt gespeichert.')) return;
+    }
+    Listen.stop();
+    App.go('home');
+  });
+
+  /* --- Vorlesen --- */
+  on('[data-say]', el => {
+    Voice.say(el.getAttribute('data-say'));
+    el.classList.add('on');
+    setTimeout(() => el.classList.remove('on'), 550);
+  });
+
+  /* --- Neue Vokabel / Phrase bestätigen --- */
+  on('[data-intro-ok]', () => {
+    const it = Run.cur();
+    const st = Leitner.state(Store.data.words, it.word.id);
+    st.due = Store.dayKey(1);
+    Store.day().seen++;
+    Store.save();
+    Run.next();
+  });
+
+  on('[data-phrase-ok]', () => {
+    const it = Run.cur();
+    Leitner.promote(Store.data.phrases, it.phrase.id);
+    Store.day().seen++;
+    Store.save();
+    Run.next();
+  });
+
+  /* --- Mehrfachauswahl --- */
+  on('[data-pick]', el => {
+    if (Run.phase === 'a') return;
+    const it = Run.cur();
+    const choice = el.getAttribute('data-pick');
+    Run.picked = choice;
+    Run.phase = 'a';
+    const ok = choice === it.q.answer;
+    Run.verdict = ok ? 'exact' : 'wrong';
+    Run.answer(ok, it.word.id, Store.data.words, 1);
+    App.render();
+  });
+
+  /* --- Eintippen --- */
+  on('[data-check-type]', () => {
+    const inp = App.el.querySelector('#typed');
+    if (!inp) return;
+    const it = Run.cur();
+    const said = inp.value;
+    Run.picked = said;
+    Run.verdict = Text.compare(said, it.word.sk);
+    Run.phase = 'a';
+    Run.answer(Run.verdict !== 'wrong', it.word.id, Store.data.words, 3);
+    App.render();
+  });
+
+  /* --- Diktat --- */
+  on('[data-check-dict]', () => {
+    const inp = App.el.querySelector('#typed');
+    if (!inp) return;
+    const it = Run.cur();
+    Run.picked = inp.value;
+    Run.verdict = Text.compare(inp.value, it.sent.sk);
+    Run.phase = 'a';
+    const ok = Run.verdict !== 'wrong';
+    it.sent.words.forEach(w => {
+      if (ok) { Leitner.promote(Store.data.words, w); Leitner.raise(Store.data.words, w, 3); }
+    });
+    if (ok) Run.right++; else Run.wrong++;
+    const d = Store.day(); d.seen++; if (ok) d.right++;
+    Store.save();
+    App.render();
+  });
+
+  /* --- Wortbausteine --- */
+  on('[data-slot]', el => {
+    if (Run.phase === 'a') return;
+    Run.built.push(el.getAttribute('data-slot'));
+    App.render();
+  });
+
+  on('[data-unslot]', el => {
+    if (Run.phase === 'a') return;
+    Run.built.splice(parseInt(el.getAttribute('data-unslot'), 10), 1);
+    App.render();
+  });
+
+  on('[data-check-build]', () => {
+    const it = Run.cur();
+    const said = Run.built.join(' ');
+    Run.verdict = Text.compare(said, it.q.target);
+    Run.phase = 'a';
+    const ok = Run.verdict === 'exact' || Run.verdict === 'diacritics';
+    it.sent.words.forEach(w => {
+      if (ok) { Leitner.promote(Store.data.words, w); Leitner.raise(Store.data.words, w, 2); }
+      else Leitner.demote(Store.data.words, w);
+    });
+    if (ok) Run.right++; else Run.wrong++;
+    const d = Store.day(); d.seen++; if (ok) d.right++;
+    Store.save();
+    App.render();
+  });
+
+  /* --- Nachsprechen --- */
+  on('[data-listen]', () => {
+    if (Run.phase === 'a') return;
+    if (Listen.active) { Listen.stop(); return; }
+    const it = Run.cur();
+    Run.heard = '';
+    App.render();
+
+    Listen.start(
+      partial => {
+        Run.heard = partial;
+        const h = App.el.querySelector('.heard');
+        if (h) h.textContent = partial;
+      },
+      final => {
+        Run.heard = final || Run.heard;
+        if (!Run.heard) { App.render(); return; }
+        Run.verdict = Text.compare(Run.heard, it.phrase.sk);
+        Run.phase = 'a';
+        const ok = Run.verdict === 'exact' || Run.verdict === 'diacritics';
+        Leitner[ok ? 'promote' : 'demote'](Store.data.phrases, it.phrase.id);
+        if (ok) Leitner.raise(Store.data.phrases, it.phrase.id, 4);
+        if (ok) Run.right++; else Run.wrong++;
+        const d = Store.day(); d.seen++; if (ok) d.right++;
+        Store.save();
+        App.render();
+      },
+      err => {
+        Run.heard = err === 'not-allowed' || err === 'service-not-allowed'
+          ? 'Mikrofon nicht freigegeben'
+          : err === 'no-speech' ? 'Nichts gehört — nochmal versuchen'
+          : err === 'language-not-supported' ? 'Slowakisch wird nicht unterstützt'
+          : 'Erkennung fehlgeschlagen';
+        App.render();
+      }
+    );
+    setTimeout(() => App.render(), 40);
+  });
+
+  on('[data-skip-speak]', () => {
+    Listen.stop();
+    const it = Run.cur();
+    Leitner.state(Store.data.phrases, it.phrase.id).due = Store.dayKey(1);
+    Store.day().seen++;
+    Store.save();
+    Run.next();
+  });
+
+  on('[data-next]', () => Run.next());
+
+  /* --- Suche in der Wortliste --- */
+  const search = App.el.querySelector('#wsearch');
+  if (search) {
+    search.addEventListener('input', () => {
+      // Diakritika ignorieren: „velky" findet auch „veľký"
+      const q = Text.flat(search.value);
+      App.el.querySelectorAll('#wlist .row').forEach(row => {
+        const t = Text.flat((row.getAttribute('data-word') || '') + ' ' + row.textContent);
+        row.style.display = !q || t.includes(q) ? '' : 'none';
+      });
+    });
+  }
+
+  /* --- Eingabefeld: Enter prüft --- */
+  const typed = App.el.querySelector('#typed');
+  if (typed && !typed.disabled) {
+    typed.addEventListener('keydown', ev => {
+      if (ev.key !== 'Enter') return;
+      ev.preventDefault();
+      const btn = App.el.querySelector('[data-check-type],[data-check-dict]');
+      if (btn) btn.click();
+    });
+  }
+
+  /* --- Sichern --- */
+  on('[data-export]', () => {
+    const blob = new Blob([JSON.stringify(Store.data, null, 1)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'slovencina-fortschritt.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
+  on('[data-import]', () => {
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.json,application/json';
+    inp.addEventListener('change', () => {
+      const f = inp.files && inp.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = () => {
+        try {
+          const d = JSON.parse(r.result);
+          if (!d || !d.words) throw new Error('Format');
+          Store.data = d;
+          Store.save();
+          alert('Fortschritt übernommen.');
+          App.go('profile');
+        } catch (e) {
+          alert('Diese Datei konnte nicht gelesen werden.');
+        }
+      };
+      r.readAsText(f);
+    });
+    document.body.appendChild(inp);
+    inp.click();
+    document.body.removeChild(inp);
+  });
+
+  on('[data-reset]', () => {
+    if (!confirm('Wirklich alle Daten löschen? Kästen, Serien und Statistiken gehen verloren.')) return;
+    Store.reset();
+    App.go('home');
+  });
+}
+
+/* ---------- Start ---------- */
+document.addEventListener('DOMContentLoaded', () => App.boot());
