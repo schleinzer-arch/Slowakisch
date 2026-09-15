@@ -334,3 +334,28 @@ input{font-family:inherit;}
 }
 .toggle.on{background:var(--cobalt);}
 .toggle.on i{transform:translateX(20px);}
+
+/* ---------- Zweitrangiger Knopf ---------- */
+.btn-quiet{
+  display:block;width:100%;padding:14px;border-radius:var(--r-m);margin-top:8px;
+  background:transparent;border:1.5px solid var(--cobalt-wash);
+  color:var(--cobalt);font-size:15px;font-weight:600;text-align:center;
+}
+.btn-quiet:active{background:var(--tint);}
+
+/* ---------- Paare zuordnen ---------- */
+.pairgrid{display:flex;gap:10px;}
+.paircol{flex:1;display:flex;flex-direction:column;gap:9px;}
+.pairbtn{
+  padding:14px 10px;border-radius:var(--r-m);background:var(--surface);
+  border:1.5px solid var(--line);font-size:14.5px;text-align:center;
+  transition:background .15s,border-color .15s,opacity .2s;
+}
+.pairbtn.sel{border-color:var(--cobalt);background:var(--tint);color:var(--cobalt);font-weight:620;}
+.pairbtn.done{opacity:.28;border-style:dashed;}
+.pairbtn.miss{border-color:var(--bad);background:var(--bad-wash);color:var(--bad);}
+
+/* ---------- Übungsmodus ---------- */
+.drillscore{display:flex;gap:9px;font-size:13px;font-weight:620;flex:none;}
+.drillscore .dg{color:var(--good);}
+.drillscore .dr{color:var(--bad);}

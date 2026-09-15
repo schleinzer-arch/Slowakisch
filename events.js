@@ -16,6 +16,8 @@ function bindAll() {
   on('[data-tab]', el => { Library.tab = el.getAttribute('data-tab'); App.render(); });
   on('[data-chapter]', el => App.go('grammar', el.getAttribute('data-chapter')));
   on('[data-start]', () => Run.start());
+  on('[data-drill]', () => Drill.start());
+  on('[data-drillpick]', el => Drill.answer(el.getAttribute('data-drillpick')));
   on('[data-quit]', () => {
     if (Run.i > 0 && Run.i < Run.items.length) {
       if (!confirm('Session abbrechen? Der bisherige Fortschritt bleibt gespeichert.')) return;
@@ -58,7 +60,52 @@ function bindAll() {
     Run.phase = 'a';
     const ok = choice === it.q.answer;
     Run.verdict = ok ? 'exact' : 'wrong';
-    Run.answer(ok, it.word.id, Store.data.words, 1);
+    Run.answer(ok, it.word.id, Store.data.words, it.dir === 'de2sk' ? 2 : 1);
+    App.render();
+  });
+
+  on('[data-pickphrase]', el => {
+    if (Run.phase === 'a') return;
+    const it = Run.cur();
+    const choice = el.getAttribute('data-pickphrase');
+    Run.picked = choice;
+    Run.phase = 'a';
+    const ok = choice === it.phrase.de;
+    Run.verdict = ok ? 'exact' : 'wrong';
+    if (ok) { Run.right++; Leitner.promote(Store.data.phrases, it.phrase.id); }
+    else { Run.wrong++; Leitner.demote(Store.data.phrases, it.phrase.id); }
+    const d = Store.day(); d.seen++; if (ok) d.right++;
+    Store.save();
+    App.render();
+  });
+
+  /* --- Paare zuordnen --- */
+  on('[data-pair]', el => {
+    const val = el.getAttribute('data-pair');
+    const side = val.slice(0, 1), id = val.slice(2);
+    if (Run.matched.indexOf(id) !== -1) return;
+
+    if (!Run.pick1) { Run.pick1 = { side, id }; Run.missPair = null; App.render(); return; }
+    if (Run.pick1.side === side) { Run.pick1 = { side, id }; App.render(); return; }
+
+    const it = Run.cur();
+    if (Run.pick1.id === id) {
+      Run.matched.push(id);
+      Run.pick1 = null; Run.missPair = null;
+      Leitner.raise(Store.data.words, id, 1);
+      if (Run.matched.length >= it.q.total) {
+        Run.right++;
+        const d = Store.day(); d.seen++; d.right++;
+        Store.save();
+        App.render();
+        setTimeout(() => { if (App.screen === 'session') Run.next(); }, 550);
+        return;
+      }
+    } else {
+      Run.missPair = [Run.pick1.side + ':' + Run.pick1.id, side + ':' + id];
+      Run.pick1 = null;
+      setTimeout(() => { Run.missPair = null; if (App.screen === 'session') App.render(); }, 550);
+    }
     App.render();
   });
 

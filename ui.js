@@ -48,6 +48,7 @@ const App = {
     const s = this.screen;
     if (s === 'home') this.el.innerHTML = Home.view();
     else if (s === 'session') this.el.innerHTML = Run.view();
+    else if (s === 'drill') this.el.innerHTML = Drill.view();
     else if (s === 'library') this.el.innerHTML = Library.view();
     else if (s === 'profile') this.el.innerHTML = Profile.view();
     else if (s === 'legal') this.el.innerHTML = Legal.view();
@@ -150,6 +151,7 @@ const Home = {
 
       '<div class="bottom">' +
         '<button class="btn" data-start>Session starten</button>' +
+        '<button class="btn-quiet" data-drill>Vokabeln üben</button>' +
       '</div>' + navbar('home');
   },
 
@@ -171,6 +173,7 @@ const Home = {
 const Run = {
   items: [], i: 0, phase: 'q', picked: null, built: [], heard: '', verdict: null,
   right: 0, wrong: 0, skipped: 0,
+  matched: [], pick1: null, missPair: null,
 
   start() {
     this.items = Session.build(DB);
@@ -181,14 +184,22 @@ const Run = {
     App.go('session');
   },
 
-  reset() { this.phase = 'q'; this.picked = null; this.built = []; this.heard = ''; this.verdict = null; },
+  reset() {
+    this.phase = 'q'; this.picked = null; this.built = []; this.heard = ''; this.verdict = null;
+    this.matched = []; this.pick1 = null; this.missPair = null;
+  },
 
   cur() { return this.items[this.i]; },
 
   prep() {
     const it = this.cur();
     if (!it) return;
-    if (it.kind === 'choice' || it.kind === 'recall') it.q = Make.choice(it.word, DB);
+    if (it.kind === 'choice') it.q = Make.choice(it.word, DB, it.dir);
+    if (it.kind === 'match') it.q = Make.pairs(it.words);
+    if (it.kind === 'phrasechoice') {
+      const others = sample(DB.phrases.filter(x => x.id !== it.phrase.id), 3);
+      it.opts = shuffle(others.map(x => x.de).concat([it.phrase.de]));
+    }
     if (it.kind === 'build') it.q = Make.build(it.sent, DB);
   },
 
@@ -231,7 +242,9 @@ const Run = {
 
     let body = '';
     if (it.kind === 'intro') body = this.intro(it);
-    else if (it.kind === 'choice' || it.kind === 'recall') body = this.choice(it);
+    else if (it.kind === 'match') body = this.match(it);
+    else if (it.kind === 'phrasechoice') body = this.phraseChoice(it);
+    else if (it.kind === 'choice') body = this.choice(it);
     else if (it.kind === 'type') body = this.type(it);
     else if (it.kind === 'build') body = this.build(it);
     else if (it.kind === 'dictation') body = this.dictation(it);
@@ -260,6 +273,59 @@ const Run = {
         '<div class="small" style="margin-top:2px;">' + esc(ex.de) + '</div></div>' : '') +
       '<div class="spacer"></div></div></div>' +
       '<div class="bottom"><button class="btn" data-intro-ok>Verstanden</button></div>';
+  },
+
+
+  /* --- Paare zuordnen --- */
+  match(it) {
+    const q = it.q;
+    const cell = (side, o) => {
+      const done = this.matched.indexOf(o.id) !== -1;
+      const sel = this.pick1 && this.pick1.side === side && this.pick1.id === o.id;
+      const miss = this.missPair && this.missPair.indexOf(side + ':' + o.id) !== -1;
+      let cls = 'pairbtn';
+      if (done) cls += ' done';
+      else if (miss) cls += ' miss';
+      else if (sel) cls += ' sel';
+      return '<button class="' + cls + '" ' + (done ? 'disabled' : '') +
+        ' data-pair="' + side + ':' + o.id + '">' + esc(o.text) + '</button>';
+    };
+    return '<div class="view fade"><div class="view-pad">' +
+      '<div class="muted" style="margin:6px 0 16px;">Was gehört zusammen?</div>' +
+      '<div class="pairgrid">' +
+        '<div class="paircol">' + q.left.map(o => cell('l', o)).join('') + '</div>' +
+        '<div class="paircol">' + q.right.map(o => cell('r', o)).join('') + '</div>' +
+      '</div>' +
+      '<div class="tiny center" style="margin-top:16px;">' +
+        this.matched.length + ' von ' + q.total + ' gefunden</div>' +
+      '<div class="spacer"></div></div></div>';
+  },
+
+  /* --- Phrase als Auswahl, wenn nicht gesprochen wird --- */
+  phraseChoice(it) {
+    const p = it.phrase, shown = this.phase === 'a';
+    const opts = it.opts.map(o => {
+      let cls = 'opt';
+      if (shown) {
+        if (o === p.de) cls += ' right';
+        else if (o === this.picked) cls += ' wrong';
+        else cls += ' dim';
+      }
+      return '<button class="' + cls + '" data-pickphrase="' + esc(o) + '">' +
+        '<span class="opt-in"><span>' + esc(o) + '</span>' +
+        (shown && o === p.de ? '<span>&#10003;</span>' : '') + '</span></button>';
+    }).join('');
+    return '<div class="view fade"><div class="view-pad">' +
+      '<div class="muted center" style="margin:6px 0 16px;">Was bedeutet das?</div>' +
+      '<div class="wordcard" style="min-height:140px;">' +
+        '<button class="speak" data-say="' + esc(p.sk) + '">' + ICON.speak + '</button>' +
+        '<span class="chip">' + esc(p.context) + '</span>' +
+        '<div class="word' + (p.sk.length > 15 ? ' long' : '') + '" style="margin-top:14px;">' +
+          marked(p.sk) + '</div>' +
+      '</div>' +
+      '<div class="opts" style="margin-top:16px;">' + opts + '</div>' +
+      '<div class="spacer"></div></div></div>' +
+      (shown ? '<div class="bottom"><button class="btn" data-next>Weiter</button></div>' : '');
   },
 
   /* --- Mehrfachauswahl --- */
@@ -447,6 +513,114 @@ const Run = {
       '<div class="bottom"><div class="btn-row">' +
         '<button class="btn-line" data-go="home">Schluss</button>' +
         '<button class="btn wide" data-start>Noch eine</button>' +
+      '</div></div>';
+  },
+};
+
+
+/* ---------- Vokabeln üben ----------
+   Endlos, immer gemischte Richtung, kein Ende, kein Ergebnisbildschirm. */
+const Drill = {
+  q: null, picked: null, right: 0, wrong: 0, key: 0,
+
+  start() {
+    this.right = 0; this.wrong = 0; this.key = 0;
+    this.picked = null;
+    this.next();
+    App.go('drill');
+  },
+
+  pool() {
+    const W = Store.data.words;
+    let p = DB.vocab.filter(v => W[v.id]);
+    if (p.length < 8) {
+      const rank = LVL_RANK[Session.level(DB)];
+      p = p.concat(DB.vocab.filter(v => !W[v.id] && LVL_RANK[v.level] <= rank).slice(0, 20));
+    }
+    return p;
+  },
+
+  next() {
+    const p = this.pool();
+    if (p.length < 4) { this.q = null; return; }
+    const v = p[Math.floor(Math.random() * p.length)];
+    this.q = Make.choice(v, DB);   // Richtung zufällig, also gemischt
+    this.q.word = v;
+    this.picked = null;
+    this.key++;
+  },
+
+  answer(opt) {
+    if (this.picked !== null) return;
+    this.picked = opt;
+    const ok = opt === this.q.answer;
+    const id = this.q.word.id;
+    const W = Store.data.words;
+    const st = W[id];
+
+    if (ok) {
+      this.right++;
+      // Nur ein fälliges Wort rückt vor — sonst liesse sich der
+      // Wiederholungsabstand durch Pauken aushebeln.
+      if (st && Leitner.isDue(st)) Leitner.promote(W, id);
+      else if (!st) Leitner.state(W, id).due = Store.dayKey(1);
+    } else {
+      this.wrong++;
+      Leitner.demote(W, id);       // Ein Fehler zählt immer
+    }
+    const d = Store.day();
+    d.right += ok ? 1 : 0;
+    d.drill = (d.drill || 0) + 1;  // getrennt von der Session gezählt
+    Store.save();
+    App.render();
+    setTimeout(() => {
+      if (App.screen !== 'drill') return;
+      this.next();
+      App.render();
+    }, ok ? 650 : 1500);
+  },
+
+  view() {
+    if (!this.q) {
+      return '<div class="safe-top"></div>' +
+        '<div class="appbar"><button class="iconbtn" data-go="home">' + ICON.back + '</button>' +
+        '<div class="head">Vokabeln üben</div><div style="width:38px;"></div></div>' +
+        '<div class="view"><div class="view-pad"><div class="card center" style="margin-top:30px;">' +
+        '<div class="body">Dafür braucht es ein paar Wörter mehr.</div>' +
+        '<div class="small" style="margin-top:6px;">Mach zuerst eine Session.</div>' +
+        '</div></div></div>';
+    }
+    const q = this.q, shown = this.picked !== null;
+    const opts = q.options.map(o => {
+      let cls = 'opt';
+      if (shown) {
+        if (o === q.answer) cls += ' right';
+        else if (o === this.picked) cls += ' wrong';
+        else cls += ' dim';
+      }
+      return '<button class="' + cls + '" data-drillpick="' + esc(o) + '">' +
+        '<span class="opt-in"><span>' + esc(o) + '</span>' +
+        (shown && o === q.answer ? '<span>&#10003;</span>' : '') + '</span></button>';
+    }).join('');
+
+    return '<div class="safe-top"></div>' +
+      '<div class="sess-top">' +
+        '<button class="sess-x" data-go="home">&times;</button>' +
+        '<span class="body" style="font-weight:560;flex:1;">Vokabeln üben</span>' +
+        '<span class="drillscore"><span class="dg">' + this.right + ' &#10003;</span>' +
+        '<span class="dr">' + this.wrong + ' &#10007;</span></span>' +
+      '</div>' +
+      '<div class="view" key="' + this.key + '"><div class="view-pad">' +
+        '<div class="wordcard fade" style="min-height:132px;">' +
+          (q.dir === 'sk2de' ? '<button class="speak" data-say="' + esc(q.ask) + '">' +
+            ICON.speak + '</button>' : '') +
+          '<span class="chip">' + esc(q.dir === 'de2sk' ? 'auf Slowakisch' : 'auf Deutsch') + '</span>' +
+          '<div class="word' + (q.ask.length > 14 ? ' long' : '') + '" style="margin-top:12px;">' +
+            marked(q.ask) + '</div>' +
+        '</div>' +
+        '<div class="opts" style="margin-top:16px;">' + opts + '</div>' +
+        '<div class="tiny center" style="margin-top:18px;">Endlos &mdash; beenden mit &times;</div>' +
+        '<div class="spacer"></div>' +
       '</div></div>';
   },
 };

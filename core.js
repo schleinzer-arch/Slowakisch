@@ -274,6 +274,23 @@ function sample(arr, n) { return shuffle(arr).slice(0, n); }
 
 const LVL_RANK = { A1: 1, A2: 2, B1: 3 };
 
+/* ---------- Ablenker ----------
+   Falsche Antwortmöglichkeiten kommen nur aus Wörtern, die schon
+   begonnen wurden. Sonst liesse sich jede Frage durch Ausschliessen
+   lösen: was man noch nie gesehen hat, ist selten die richtige Antwort. */
+function distractorPool(DB, v) {
+  const W = Store.data.words;
+  let pool = DB.vocab.filter(x => x.id !== v.id && W[x.id] && x.pos === v.pos);
+  if (pool.length < 3) pool = DB.vocab.filter(x => x.id !== v.id && W[x.id]);
+  if (pool.length < 3) {
+    // Am Anfang sind noch zu wenige Wörter begonnen: die nächsten der Liste
+    const near = DB.vocab.filter(x => x.id !== v.id && x.level === v.level);
+    const i = Math.max(0, near.findIndex(x => x.ord >= v.ord) - 6);
+    pool = pool.concat(near.slice(i, i + 14));
+  }
+  return pool;
+}
+
 /* ---------- Sessionaufbau ---------- */
 const Session = {
   // Sprechübungen nur, wenn der Browser sie unterstützt UND sie eingeschaltet sind
@@ -337,86 +354,115 @@ const Session = {
   },
 
   /* Baut die Übungsliste für heute.
-     Mischung: fällige Wiederholungen, neue Wörter, Sätze, Phrasen. */
+     Ein neues Wort wird nicht nur gezeigt, sondern noch in derselben
+     Session zweimal geübt — sonst begegnet man ihm erst am Folgetag
+     wieder und hat es bis dahin verloren. */
   build(DB) {
     const lvl = this.level(DB);
     const rank = LVL_RANK[lvl];
     const W = Store.data.words;
-    const items = [];
+    const goal = Store.data.settings.goal;
+    const core = [];      // Wiederholungen, Sätze, Phrasen
+    const fresh = [];     // je neues Wort: Einführung + zwei Übungen
 
     // 1 · Fällige Wiederholungen
-    const due = DB.vocab
-      .filter(v => Leitner.seen(W, v.id) && Leitner.isDue(W[v.id]))
-      .sort((a, b) => (W[a.id].box - W[b.id].box));
-    sample(due, 10).forEach(v => {
-      items.push({ kind: exerciseFor(W[v.id]), word: v });
+    const due = DB.vocab.filter(v => Leitner.seen(W, v.id) && Leitner.isDue(W[v.id]));
+    sample(due, 9).forEach(v => core.push({ kind: exerciseFor(W[v.id]), word: v }));
+
+    // 2 · Neue Wörter — streng der Reihe nach, kein Vorgriff auf die nächste Stufe
+    const next = DB.vocab.filter(v => !Leitner.seen(W, v.id) && LVL_RANK[v.level] <= rank);
+    const newOnes = next.slice(0, 5);
+    newOnes.forEach(v => {
+      fresh.push([
+        { kind: 'intro',  word: v },
+        { kind: 'choice', word: v, dir: 'sk2de', fresh: true },
+        { kind: 'choice', word: v, dir: 'de2sk', fresh: true },
+      ]);
     });
 
-    // 2 · Neue Wörter des aktuellen Niveaus
-    const fresh = DB.vocab.filter(v =>
-      !Leitner.seen(W, v.id) && LVL_RANK[v.level] <= rank);
-    const ahead = DB.vocab.filter(v =>
-      !Leitner.seen(W, v.id) && LVL_RANK[v.level] === rank + 1);
-    const newOnes = fresh.slice(0, 6).concat(sample(ahead, 1));
-    newOnes.forEach(v => items.push({ kind: 'intro', word: v }));
+    // 3 · Paare zuordnen aus den neuen Wörtern
+    if (newOnes.length >= 4) core.push({ kind: 'match', words: newOnes.slice() });
 
-    // 3 · Sätze — nur eigenes Niveau, nur passende Länge, nur wenn Grundstock da
+    // 4 · Sätze — gedeckelt auf ein Sechstel der Session
     if (this.sentencesReady()) {
       const cap = this.maxTokens(lvl);
+      const max = Math.max(1, Math.floor(goal / 6));
       const open = DB.sentences.filter(s =>
-        LVL_RANK[s.reqLevel] <= rank &&
-        s.tokens <= cap &&
-        this.unlocked(s));
-      sample(open, 4).forEach(s => {
-        items.push({ kind: Math.random() < 0.35 ? 'dictation' : 'build', sent: s });
+        LVL_RANK[s.reqLevel] <= rank && s.tokens <= cap && this.unlocked(s));
+      sample(open, max).forEach(s => {
+        core.push({ kind: Math.random() < 0.35 ? 'dictation' : 'build', sent: s });
       });
     }
 
-    // 4 · Phrasen — nachsprechen nur, wenn die Erkennung wirklich da ist
-    //     und der Nutzer sie nicht abgeschaltet hat
-    const ph = DB.phrases.filter(p => LVL_RANK[p.level] <= rank);
-    const speakable = Session.speechOn();
-    sample(ph, 3).forEach(p => {
-      items.push({ kind: speakable ? 'speak' : 'phrase', phrase: p });
+    // 5 · Phrasen — der Reihe nach, nicht zufällig
+    const P = Store.data.phrases;
+    const speak = this.speechOn();
+    const ready = DB.phrases.filter(p => LVL_RANK[p.level] <= rank);
+    const pDue = ready.filter(p => !P[p.id] || Leitner.isDue(P[p.id]));
+    pDue.slice(0, speak ? 3 : 2).forEach(p => {
+      core.push({ kind: speak ? 'speak' : 'phrasechoice', phrase: p });
     });
 
-    // Neue Wörter zuerst, danach gemischt
-    const intro = items.filter(i => i.kind === 'intro');
-    const rest = shuffle(items.filter(i => i.kind !== 'intro'));
+    return this.weave(core, fresh, goal);
+  },
+
+  /* Mischt so, dass auf jede Einführung bald die zugehörige Übung folgt:
+     Einführung, dann zwei bis drei andere Aufgaben, dann die erste Übung
+     dazu, später die zweite. */
+  weave(core, fresh, goal) {
+    const rest = shuffle(core);
     const out = [];
-    intro.forEach((it, i) => {
-      out.push(it);
-      out.push(...rest.splice(0, i === 0 ? 1 : 2));
+    const later = [];
+    fresh.forEach(trio => {
+      out.push(trio[0]);                  // Einführung
+      out.push(...rest.splice(0, 2));     // Abstand
+      out.push(trio[1]);                  // erste Übung, gleiche Session
+      later.push(trio[2]);                // zweite Übung kommt später
     });
     out.push(...rest);
-    return out.slice(0, Store.data.settings.goal);
+    // Die zweiten Übungen gleichmässig über die zweite Hälfte verteilen
+    const start = Math.max(out.length - later.length * 2, Math.floor(out.length / 2));
+    later.forEach((it, i) => {
+      const at = Math.min(out.length, start + i * 2 + 1);
+      out.splice(at, 0, it);
+    });
+    return out.slice(0, goal);
   },
 };
 
+
 /* Welche Übungsform ist dran?
    Je sicherer ein Wort sitzt, desto mehr wird verlangt:
-   Kasten 1–2 erkennen, ab Kasten 3 selbst schreiben. */
+   Kasten 1 erkennen, ab Kasten 2 auch selbst schreiben. */
 function exerciseFor(st) {
   const box = (st && st.box) || 1;
-  if (box <= 2) return 'choice';
-  if (box === 3) return 'type';
-  return Math.random() < 0.65 ? 'type' : 'choice';
+  if (box <= 1) return 'choice';
+  if (box === 2) return Math.random() < 0.5 ? 'type' : 'choice';
+  return Math.random() < 0.7 ? 'type' : 'choice';
 }
 
 /* ---------- Aufgaben erzeugen ---------- */
 const Make = {
   // Mehrfachauswahl über eine Vokabel
-  choice(v, DB) {
-    const dir = Math.random() < 0.5 ? 'de2sk' : 'sk2de';
-    const same = DB.vocab.filter(x => x.pos === v.pos && x.id !== v.id);
-    const pool = same.length >= 3 ? same : DB.vocab.filter(x => x.id !== v.id);
-    const wrong = sample(pool, 3);
+  choice(v, DB, forceDir) {
+    const dir = forceDir || (Math.random() < 0.5 ? 'de2sk' : 'sk2de');
+    const wrong = sample(distractorPool(DB, v), 3);
     const key = dir === 'de2sk' ? 'sk' : 'de';
     return {
       dir,
       ask: dir === 'de2sk' ? v.de : v.sk,
       answer: v[key],
       options: shuffle(wrong.map(x => x[key]).concat([v[key]])),
+    };
+  },
+
+  // Paare zuordnen: fünf deutsche und fünf slowakische Wörter
+  pairs(words) {
+    const pick = sample(words, Math.min(5, words.length));
+    return {
+      left:  shuffle(pick.map(v => ({ id: v.id, text: v.de }))),
+      right: shuffle(pick.map(v => ({ id: v.id, text: v.sk }))),
+      total: pick.length,
     };
   },
 
