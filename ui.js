@@ -89,6 +89,7 @@ const ICON = {
   home: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 10.5 12 3l9 7.5M5.5 9.5V20h13V9.5"/></svg>',
   book: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4h6a3 3 0 0 1 2 3v14a2.5 2.5 0 0 0-2.5-2H4z"/><path d="M20 4h-6a3 3 0 0 0-2 3v14a2.5 2.5 0 0 1 2.5-2H20z"/></svg>',
   user: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-3.7 4.1-5.5 7.5-5.5s6.1 1.8 7.5 5.5"/></svg>',
+  skip: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 5l7 7-7 7M13 5l7 7-7 7"/></svg>',
   back: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>',
   down: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>',
 };
@@ -125,7 +126,9 @@ const Home = {
       '<div class="plan"><div class="panel">' +
         '<div class="plan-row"><span class="dot"></span>' + counts.fresh + ' neue Wörter</div>' +
         '<div class="plan-row"><span class="dot soft"></span>' + counts.due + ' Wiederholungen</div>' +
-        '<div class="plan-row"><span class="dot ochre"></span>' + counts.speak + ' zum Sprechen</div>' +
+        (counts.speak
+          ? '<div class="plan-row"><span class="dot ochre"></span>' + counts.speak + ' zum Sprechen</div>'
+          : '<div class="plan-row"><span class="dot ochre"></span>' + counts.phrases + ' Redewendungen</div>') +
       '</div></div>' +
 
       '<div style="padding:20px var(--pad) 0;display:flex;align-items:center;gap:18px;">' +
@@ -158,7 +161,8 @@ const Home = {
     return {
       due: Math.min(due, 10),
       fresh: Math.min(fresh, 7),
-      speak: Listen.available || window.MediaRecorder ? 3 : 2,
+      speak: Session.speechOn() ? 3 : 0,
+      phrases: 3,
     };
   },
 };
@@ -166,11 +170,11 @@ const Home = {
 /* ---------- Session ---------- */
 const Run = {
   items: [], i: 0, phase: 'q', picked: null, built: [], heard: '', verdict: null,
-  right: 0, wrong: 0,
+  right: 0, wrong: 0, skipped: 0,
 
   start() {
     this.items = Session.build(DB);
-    this.i = 0; this.right = 0; this.wrong = 0;
+    this.i = 0; this.right = 0; this.wrong = 0; this.skipped = 0;
     this.reset();
     if (!this.items.length) { App.go('home'); return; }
     this.prep();
@@ -215,10 +219,15 @@ const Run = {
     const it = this.cur();
     const pct = Math.round(this.i / this.items.length * 100);
 
+    // Ueberspringen nur, solange noch nicht geantwortet wurde
+    const canSkip = this.phase !== 'a';
     const top = '<div class="safe-top"></div>' +
       '<div class="sess-top"><button class="sess-x" data-quit>&times;</button>' +
       '<span class="track"><i style="width:' + pct + '%"></i></span>' +
-      '<span class="tiny num">' + (this.i + 1) + '/' + this.items.length + '</span></div>';
+      '<span class="tiny num">' + (this.i + 1) + '/' + this.items.length + '</span>' +
+      (canSkip ? '<button class="skip" data-skip title="Übung überspringen">' +
+        ICON.skip + '</button>' : '<span style="width:26px;"></span>') +
+      '</div>';
 
     let body = '';
     if (it.kind === 'intro') body = this.intro(it);
@@ -372,7 +381,7 @@ const Run = {
       '<div class="spacer"></div></div></div>' +
       '<div class="bottom">' +
         (shown ? '<button class="btn" data-next>Weiter</button>'
-               : '<button class="btn-soft" data-skip-speak>Überspringen</button>') +
+               : '<button class="btn-soft" data-say="' + esc(p.sk) + '">Nochmal anhören</button>') +
       '</div>';
   },
 
@@ -428,7 +437,8 @@ const Run = {
       '<div class="title" style="margin-bottom:10px;">Session beendet</div>' +
       '<div class="result-pct" style="color:' +
         (pct >= 80 ? 'var(--good)' : pct >= 60 ? 'var(--ochre)' : 'var(--bad)') + '">' + pct + '%</div>' +
-      '<div class="small" style="margin-top:4px;">' + this.right + ' von ' + total + ' richtig</div>' +
+      '<div class="small" style="margin-top:4px;">' + this.right + ' von ' + total + ' richtig' +
+        (this.skipped ? ', ' + this.skipped + ' übersprungen' : '') + '</div>' +
       (newly ? '<div class="panel" style="margin-top:24px;text-align:left;">' +
         '<div class="body"><b>' + newly + '</b> ' +
         (newly === 1 ? 'Wort ist' : 'Wörter sind') + ' heute ins Langzeitgedächtnis gewandert.</div>' +
@@ -615,6 +625,19 @@ const Profile = {
         '<div class="row"><div class="row-main"><div class="row-sk">Insgesamt verfügbar</div></div>' +
         '<span class="chip plain">' + DB.vocab.length + '</span></div>' +
       '</div>' +
+
+      '<div class="head" style="margin:26px 0 10px;">Sprechübungen</div>' +
+      '<div class="card">' +
+        '<div class="row"><div class="row-main">' +
+          '<div class="row-sk">Nachsprechen</div>' +
+          '<div class="row-de">' + (Listen.available
+            ? 'Braucht das Mikrofon. Aus, wenn du still üben willst.'
+            : 'Dieser Browser bietet keine Spracherkennung.') + '</div></div>' +
+        (Listen.available
+          ? '<button class="toggle' + (Store.data.settings.speech !== false ? ' on' : '') +
+            '" data-speech-toggle><i></i></button>'
+          : '<span class="chip plain">nicht verfügbar</span>') +
+        '</div></div>' +
 
       '<div class="head" style="margin:26px 0 10px;">Fortschritt sichern</div>' +
       '<div class="btn-row">' +

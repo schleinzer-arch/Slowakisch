@@ -16,7 +16,7 @@ const Store = {
       words: {},        // id -> {box, due, strength, learned}
       phrases: {},      // id -> {box, due, strength}
       days: {},         // 'YYYY-MM-DD' -> {seen, right, newWords, sessions}
-      settings: { goal: 24 },
+      settings: { goal: 24, speech: true },
       started: Store.today(),
     };
   },
@@ -29,6 +29,8 @@ const Store = {
       this.data = this.blank();
     }
     if (!this.data.words) this.data = this.blank();
+    if (!this.data.settings) this.data.settings = { goal: 24, speech: true };
+    if (this.data.settings.speech === undefined) this.data.settings.speech = true;
     return this.data;
   },
 
@@ -274,6 +276,11 @@ const LVL_RANK = { A1: 1, A2: 2, B1: 3 };
 
 /* ---------- Sessionaufbau ---------- */
 const Session = {
+  // Sprechübungen nur, wenn der Browser sie unterstützt UND sie eingeschaltet sind
+  speechOn() {
+    return Listen.available && Store.data.settings.speech !== false;
+  },
+
   // Aktuelles Niveau aus dem Langzeitwortschatz ableiten
   level(DB) {
     const n = this.masteredCount(DB);
@@ -301,15 +308,32 @@ const Session = {
     return known / sent.words.length;
   },
 
-  // Freigeschaltet: 80 % bekannt ODER höchstens ein unbekanntes Wort
+  // Ein Satz ist frei, wenn genug seiner Wörter sitzen.
+  // Die Nachsicht "ein unbekanntes Wort ist erlaubt" gilt erst ab drei
+  // verknüpften Wörtern — sonst wäre ein Satz mit einer einzigen
+  // Verknüpfung von Anfang an offen, ohne dass man ihn lösen könnte.
   unlocked(sent) {
-    if (!sent.words.length) return true;
+    const n = sent.words.length;
+    if (n < 2) return false;
     let unknown = 0;
     sent.words.forEach(w => {
       const st = Store.data.words[w];
       if (!st || st.box < 2) unknown++;
     });
-    return unknown <= 1 || this.coverage(sent) >= 0.8;
+    if (n >= 3 && unknown <= 1) return true;
+    return this.coverage(sent) >= 0.8;
+  },
+
+  // Wie lang darf ein Satz auf dieser Stufe sein?
+  maxTokens(level) {
+    return level === 'A1' ? 6 : level === 'A2' ? 10 : 99;
+  },
+
+  // Satzübungen erst, wenn überhaupt ein Grundstock sitzt
+  sentencesReady() {
+    let n = 0;
+    for (const id in Store.data.words) if (Store.data.words[id].box >= 2) n++;
+    return n >= 30;
   },
 
   /* Baut die Übungsliste für heute.
@@ -336,17 +360,23 @@ const Session = {
     const newOnes = fresh.slice(0, 6).concat(sample(ahead, 1));
     newOnes.forEach(v => items.push({ kind: 'intro', word: v }));
 
-    // 3 · Sätze
-    const open = DB.sentences.filter(s => this.unlocked(s) &&
-      LVL_RANK[s.reqLevel] <= rank + 1);
-    sample(open, 4).forEach(s => {
-      items.push({ kind: Math.random() < 0.35 ? 'dictation' : 'build', sent: s });
-    });
+    // 3 · Sätze — nur eigenes Niveau, nur passende Länge, nur wenn Grundstock da
+    if (this.sentencesReady()) {
+      const cap = this.maxTokens(lvl);
+      const open = DB.sentences.filter(s =>
+        LVL_RANK[s.reqLevel] <= rank &&
+        s.tokens <= cap &&
+        this.unlocked(s));
+      sample(open, 4).forEach(s => {
+        items.push({ kind: Math.random() < 0.35 ? 'dictation' : 'build', sent: s });
+      });
+    }
 
-    // 4 · Phrasen zum Sprechen
+    // 4 · Phrasen — nachsprechen nur, wenn die Erkennung wirklich da ist
+    //     und der Nutzer sie nicht abgeschaltet hat
     const ph = DB.phrases.filter(p => LVL_RANK[p.level] <= rank);
-    const speakable = Listen.available || !!window.MediaRecorder;
-    sample(ph, speakable ? 3 : 2).forEach(p => {
+    const speakable = Session.speechOn();
+    sample(ph, 3).forEach(p => {
       items.push({ kind: speakable ? 'speak' : 'phrase', phrase: p });
     });
 
@@ -390,14 +420,21 @@ const Make = {
     };
   },
 
-  // Wortbausteine aus einem Satz
+  // Wortbausteine aus einem Satz.
+  // Ablenker kommen aus denselben Wortarten wie der Satz — sonst
+  // liesse sich die Aufgabe durch blosses Ausschliessen loesen.
   build(s, DB) {
     const target = s.sk.replace(/\s+/g, ' ').trim();
     const parts = target.split(' ');
-    const extras = sample(
-      DB.vocab.filter(v => !target.toLowerCase().includes(v.sk.toLowerCase())),
-      Math.min(3, Math.max(2, 5 - parts.length))
-    ).map(v => v.sk);
+    const low = target.toLowerCase();
+    const kinds = s.words.map(id => DB.byId[id] && DB.byId[id].pos).filter(Boolean);
+    let pool = DB.vocab.filter(v =>
+      kinds.indexOf(v.pos) !== -1 && low.indexOf(v.sk.toLowerCase()) === -1);
+    if (pool.length < 4) {
+      pool = DB.vocab.filter(v => low.indexOf(v.sk.toLowerCase()) === -1);
+    }
+    const want = Math.min(3, Math.max(2, 6 - parts.length));
+    const extras = sample(pool, want).map(v => v.sk);
     return { target, parts, bank: shuffle(parts.concat(extras)) };
   },
 };

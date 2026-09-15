@@ -161,16 +161,21 @@ function bindAll() {
     setTimeout(() => App.render(), 40);
   });
 
-  on('[data-skip-speak]', () => {
+  /* Übung überspringen — bleibt ungewertet.
+     Kein Kastenwechsel, keine Statistik, das Wort kommt wieder. */
+  on('[data-skip]', () => {
     Listen.stop();
-    const it = Run.cur();
-    Leitner.state(Store.data.phrases, it.phrase.id).due = Store.dayKey(1);
-    Store.day().seen++;
-    Store.save();
+    Run.skipped++;
     Run.next();
   });
 
   on('[data-next]', () => Run.next());
+
+  on('[data-speech-toggle]', () => {
+    Store.data.settings.speech = Store.data.settings.speech === false;
+    Store.save();
+    App.render();
+  });
 
   /* --- Suche in der Wortliste --- */
   const search = App.el.querySelector('#wsearch');
