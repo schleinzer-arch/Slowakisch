@@ -1,6 +1,6 @@
 /* Slovencina - Offline-Cache */
-var CACHE = 'sk-v1';
-var FILES = ['./','index.html','styles.css','core.js','ui.js','events.js',
+var CACHE = 'sk-v4';
+var FILES = ['./','index.html','styles.css?v=4','core.js?v=4','ui.js?v=4','events.js?v=4',
   'data/vocab.json','data/sentences.json','data/phrases.json','data/grammar.json'];
 
 self.addEventListener('install', function (e) {
@@ -18,6 +18,8 @@ self.addEventListener('activate', function (e) {
 
 self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET') return;
+  // Das HTML nie aus dem Cache beantworten - es enthaelt die Versionsnummern
+  // der uebrigen Dateien. Sonst bleibt eine alte Fassung dauerhaft haengen.
   e.respondWith(
     fetch(e.request).then(function (res) {
       var copy = res.clone();

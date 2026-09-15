@@ -354,36 +354,22 @@ const Session = {
   },
 
   /* Baut die Übungsliste für heute.
-     Ein neues Wort wird nicht nur gezeigt, sondern noch in derselben
-     Session zweimal geübt — sonst begegnet man ihm erst am Folgetag
-     wieder und hat es bis dahin verloren. */
+     Ein neues Wort wird eingeführt und noch in derselben Session einmal
+     abgefragt. Diese Sofortabfrage bewegt den Kasten NICHT — der Abstand
+     soll erst nach einer Nacht wirken. Das Wort ist morgen wieder fällig. */
   build(DB) {
     const lvl = this.level(DB);
     const rank = LVL_RANK[lvl];
     const W = Store.data.words;
     const goal = Store.data.settings.goal;
-    const core = [];      // Wiederholungen, Sätze, Phrasen
-    const fresh = [];     // je neues Wort: Einführung + zwei Übungen
+    const core = [];
 
     // 1 · Fällige Wiederholungen
     const due = DB.vocab.filter(v => Leitner.seen(W, v.id) && Leitner.isDue(W[v.id]));
-    sample(due, 9).forEach(v => core.push({ kind: exerciseFor(W[v.id]), word: v }));
+    const dueTake = sample(due, 10);
+    dueTake.forEach(v => core.push({ kind: exerciseFor(W[v.id]), word: v }));
 
-    // 2 · Neue Wörter — streng der Reihe nach, kein Vorgriff auf die nächste Stufe
-    const next = DB.vocab.filter(v => !Leitner.seen(W, v.id) && LVL_RANK[v.level] <= rank);
-    const newOnes = next.slice(0, 5);
-    newOnes.forEach(v => {
-      fresh.push([
-        { kind: 'intro',  word: v },
-        { kind: 'choice', word: v, dir: 'sk2de', fresh: true },
-        { kind: 'choice', word: v, dir: 'de2sk', fresh: true },
-      ]);
-    });
-
-    // 3 · Paare zuordnen aus den neuen Wörtern
-    if (newOnes.length >= 4) core.push({ kind: 'match', words: newOnes.slice() });
-
-    // 4 · Sätze — gedeckelt auf ein Sechstel der Session
+    // 2 · Sätze
     if (this.sentencesReady()) {
       const cap = this.maxTokens(lvl);
       const max = Math.max(1, Math.floor(goal / 6));
@@ -394,42 +380,79 @@ const Session = {
       });
     }
 
-    // 5 · Phrasen — der Reihe nach, nicht zufällig
+    // 3 · Phrasen der Reihe nach
     const P = Store.data.phrases;
-    const speak = this.speechOn();
+    const canSpeak = this.speechOn();
     const ready = DB.phrases.filter(p => LVL_RANK[p.level] <= rank);
     const pDue = ready.filter(p => !P[p.id] || Leitner.isDue(P[p.id]));
-    pDue.slice(0, speak ? 3 : 2).forEach(p => {
-      core.push({ kind: speak ? 'speak' : 'phrasechoice', phrase: p });
+    pDue.slice(0, canSpeak ? 3 : 2).forEach(p => {
+      core.push({ kind: canSpeak ? 'speak' : 'phrasechoice', phrase: p });
     });
+
+    // 4 · Neue Wörter — so viele, dass die Session voll wird.
+    //     In den ersten Tagen gibt es nichts zu wiederholen; dann ist mehr
+    //     Neues besser, als dieselben paar Wörter durchzukauen.
+    const space = Math.max(0, goal - core.length - 1);   // 1 Platz für die Paare
+    const count = Math.min(10, Math.max(3, Math.floor(space / 2)));
+    const next = DB.vocab.filter(v => !Leitner.seen(W, v.id) && LVL_RANK[v.level] <= rank);
+    const newOnes = next.slice(0, count);
+    const fresh = newOnes.map(v => ([
+      { kind: 'intro',  word: v },
+      { kind: 'choice', word: v, dir: 'sk2de', fresh: true },
+    ]));
+
+    // 5 · Paare: neue und bekannte Wörter mischen
+    if (newOnes.length >= 3) {
+      const known = dueTake.length ? dueTake : DB.vocab.filter(v => Leitner.seen(W, v.id));
+      const mix = newOnes.slice(0, 3).concat(sample(known, 3));
+      if (mix.length >= 4) core.push({ kind: 'match', words: mix });
+    }
 
     return this.weave(core, fresh, goal);
   },
 
-  /* Mischt so, dass auf jede Einführung bald die zugehörige Übung folgt:
-     Einführung, dann zwei bis drei andere Aufgaben, dann die erste Übung
-     dazu, später die zweite. */
+  /* Verteilt so, dass zwischen zwei Begegnungen mit demselben Wort
+     mindestens drei andere Aufgaben liegen. Passt keine Stelle, entfällt
+     die Sofortabfrage lieber, als sie direkt anzuhängen. */
   weave(core, fresh, goal) {
-    const rest = shuffle(core);
+    const base = shuffle(core);
     const out = [];
-    const later = [];
-    fresh.forEach(trio => {
-      out.push(trio[0]);                  // Einführung
-      out.push(...rest.splice(0, 2));     // Abstand
-      out.push(trio[1]);                  // erste Übung, gleiche Session
-      later.push(trio[2]);                // zweite Übung kommt später
+    const n = fresh.length || 1;
+    const step = Math.max(2, Math.round((base.length + n) / n));
+
+    let bi = 0;
+    fresh.forEach(pair => {
+      out.push(pair[0]);
+      for (let k = 0; k < step - 1 && bi < base.length; k++) out.push(base[bi++]);
     });
-    out.push(...rest);
-    // Die zweiten Übungen gleichmässig über die zweite Hälfte verteilen
-    const start = Math.max(out.length - later.length * 2, Math.floor(out.length / 2));
-    later.forEach((it, i) => {
-      const at = Math.min(out.length, start + i * 2 + 1);
-      out.splice(at, 0, it);
+    while (bi < base.length) out.push(base[bi++]);
+
+    fresh.forEach(pair => {
+      const id = pair[1].word.id;
+      const at = out.findIndex(x => x.kind === 'intro' && x.word && x.word.id === id);
+      if (at < 0) return;
+      let placed = false;
+      for (let j = at + 4; j <= out.length; j++) {
+        if (touches(out[j - 1], id) || touches(out[j], id)) continue;
+        out.splice(j, 0, pair[1]);
+        placed = true;
+        break;
+      }
+      if (!placed && out.length && !touches(out[out.length - 1], id)) out.push(pair[1]);
     });
+
     return out.slice(0, goal);
   },
 };
 
+/* Kommt dieses Wort in der Aufgabe vor? */
+function touches(item, id) {
+  if (!item) return false;
+  if (item.word) return item.word.id === id;
+  if (item.words) return item.words.some(v => v.id === id);
+  if (item.sent) return item.sent.words.indexOf(id) !== -1;
+  return false;
+}
 
 /* Welche Übungsform ist dran?
    Je sicherer ein Wort sitzt, desto mehr wird verlangt:

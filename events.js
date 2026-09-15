@@ -37,6 +37,7 @@ function bindAll() {
   on('[data-intro-ok]', () => {
     const it = Run.cur();
     const st = Leitner.state(Store.data.words, it.word.id);
+    st.box = 1;
     st.due = Store.dayKey(1);
     Store.day().seen++;
     Store.save();
@@ -60,7 +61,19 @@ function bindAll() {
     Run.phase = 'a';
     const ok = choice === it.q.answer;
     Run.verdict = ok ? 'exact' : 'wrong';
-    Run.answer(ok, it.word.id, Store.data.words, it.dir === 'de2sk' ? 2 : 1);
+
+    if (it.fresh) {
+      // Sofortabfrage direkt nach der Einführung: zählt als geübt,
+      // bewegt den Kasten aber nicht. Das Wort ist morgen wieder dran.
+      const st = Leitner.state(Store.data.words, it.word.id);
+      st.due = Store.dayKey(1);
+      if (ok) { Run.right++; Leitner.raise(Store.data.words, it.word.id, 1); }
+      else Run.wrong++;
+      const d = Store.day(); d.seen++; if (ok) d.right++;
+      Store.save();
+    } else {
+      Run.answer(ok, it.word.id, Store.data.words, it.dir === 'de2sk' ? 2 : 1);
+    }
     App.render();
   });
 

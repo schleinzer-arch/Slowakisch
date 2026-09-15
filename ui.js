@@ -3,6 +3,7 @@
    ============================================================ */
 'use strict';
 
+const APP_VERSION = '4';
 const DB = { vocab: [], sentences: [], phrases: [], grammar: [], byId: {}, sentById: {} };
 
 const App = {
@@ -823,6 +824,8 @@ const Profile = {
       'Nicht umkehrbar.</div>' +
       '<button class="btn-danger" data-reset>Alle Daten löschen</button>' +
 
+      '<div class="tiny center" style="margin-top:26px;">Version ' + APP_VERSION +
+      ' &middot; ' + DB.vocab.length + ' Wörter, ' + DB.sentences.length + ' Sätze</div>' +
       '<div class="spacer"></div></div></div>' + navbar('profile');
   },
 };
