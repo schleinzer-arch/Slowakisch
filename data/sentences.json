@@ -21,7 +21,8 @@
   "de": "Sie arbeitet in Bratislava.",
   "words": [
    "ona",
-   "pracovat"
+   "pracovat",
+   "v"
   ],
   "tokens": 4
  },
@@ -48,7 +49,8 @@
   "words": [
    "zajtra",
    "ist",
-   "praca"
+   "praca",
+   "do"
   ],
   "tokens": 4
  },
@@ -90,7 +92,8 @@
   "words": [
    "mat",
    "maly",
-   "byt-2"
+   "byt-2",
+   "byt"
   ],
   "tokens": 3
  },
@@ -144,7 +147,8 @@
   "words": [
    "prosim",
    "jeden",
-   "listok"
+   "listok",
+   "do"
   ],
   "tokens": 5
  },
@@ -198,7 +202,8 @@
   "de": "Das Fenster ist offen.",
   "words": [
    "okno",
-   "otvoreny"
+   "otvoreny",
+   "otvorene"
   ],
   "tokens": 3
  },
@@ -238,7 +243,8 @@
   "de": "Ich sitze am Tisch.",
   "words": [
    "sediet",
-   "stol"
+   "stol",
+   "pri"
   ],
   "tokens": 3
  },
@@ -251,7 +257,8 @@
   "de": "Der Schlüssel liegt auf dem Tisch.",
   "words": [
    "kluc",
-   "stol"
+   "stol",
+   "na"
   ],
   "tokens": 4
  },
@@ -395,7 +402,8 @@
   "de": "Der Computer steht auf dem Tisch.",
   "words": [
    "pocitac",
-   "stol"
+   "stol",
+   "na"
   ],
   "tokens": 4
  },
@@ -448,7 +456,8 @@
   "words": [
    "otec",
    "pracovat",
-   "doma"
+   "doma",
+   "moj"
   ],
   "tokens": 4
  },
@@ -475,7 +484,9 @@
   "de": "Der Großvater liest gern.",
   "words": [
    "stary-otec",
-   "citat"
+   "citat",
+   "otec",
+   "stary"
   ],
   "tokens": 4
  },
@@ -488,7 +499,8 @@
   "de": "Die Großmutter backt einen Kuchen.",
   "words": [
    "stara-mama",
-   "piect"
+   "piect",
+   "mama"
   ],
   "tokens": 4
  },
@@ -500,7 +512,9 @@
   "sk": "Môj priateľ je milý.",
   "de": "Mein Freund ist nett.",
   "words": [
-   "priatel"
+   "priatel",
+   "mily",
+   "moj"
   ],
   "tokens": 4
  },
@@ -527,7 +541,8 @@
   "words": [
    "sused",
    "byvat",
-   "vedla"
+   "vedla",
+   "nas"
   ],
   "tokens": 4
  },
@@ -909,7 +924,8 @@
   "sk": "Prší celý deň.",
   "de": "Es regnet den ganzen Tag.",
   "words": [
-   "den"
+   "den",
+   "cely"
   ],
   "tokens": 3
  },
@@ -935,7 +951,8 @@
   "de": "Ich habe blaue Augen.",
   "words": [
    "mat",
-   "modry"
+   "modry",
+   "oci"
   ],
   "tokens": 3
  },
@@ -1089,7 +1106,8 @@
   "words": [
    "sobota",
    "hrat",
-   "tenis"
+   "tenis",
+   "v"
   ],
   "tokens": 4
  },
@@ -1102,7 +1120,8 @@
   "de": "Am Sonntag erhole ich mich.",
   "words": [
    "nedela",
-   "oddychovat"
+   "oddychovat",
+   "v"
   ],
   "tokens": 3
  },
@@ -1142,7 +1161,8 @@
   "sk": "Stretnutie začína o deviatej.",
   "de": "Das Treffen beginnt um neun Uhr.",
   "words": [
-   "zacat"
+   "zacat",
+   "o"
   ],
   "tokens": 4
  },
@@ -1155,7 +1175,8 @@
   "de": "Die Arbeit endet um fünf Uhr.",
   "words": [
    "praca",
-   "skoncit"
+   "skoncit",
+   "o"
   ],
   "tokens": 4
  },
@@ -1168,7 +1189,8 @@
   "de": "Ich warte auf den Kollegen.",
   "words": [
    "cakat",
-   "kolega"
+   "kolega",
+   "na"
   ],
   "tokens": 3
  },
@@ -1206,7 +1228,8 @@
   "sk": "Čítam krátky email.",
   "de": "Ich lese eine kurze E-Mail.",
   "words": [
-   "citat"
+   "citat",
+   "kratky"
   ],
   "tokens": 3
  },
@@ -1233,7 +1256,9 @@
   "de": "Ich lerne Slowakisch.",
   "words": [
    "ucit-sa",
-   "po-slovensky"
+   "po-slovensky",
+   "po",
+   "sa"
   ],
   "tokens": 4
  },
@@ -1247,7 +1272,8 @@
   "words": [
    "hovorit",
    "trochu",
-   "po-slovensky"
+   "po-slovensky",
+   "po"
   ],
   "tokens": 4
  },
@@ -1261,7 +1287,8 @@
   "words": [
    "rozumiet",
    "tento",
-   "slovo"
+   "slovo",
+   "nerozumiem"
   ],
   "tokens": 3
  },
@@ -1288,7 +1315,8 @@
   "de": "Wie heißen Sie?",
   "words": [
    "ako",
-   "volat"
+   "volat",
+   "sa"
   ],
   "tokens": 3
  },
@@ -1312,7 +1340,8 @@
   "sk": "Som z Rakúska.",
   "de": "Ich komme aus Österreich.",
   "words": [
-   "rakusko"
+   "rakusko",
+   "z"
   ],
   "tokens": 3
  },
@@ -1327,7 +1356,8 @@
    "prist",
    "doma",
    "najprv",
-   "caj"
+   "caj",
+   "ked"
   ],
   "tokens": 7
  },
@@ -1341,7 +1371,9 @@
   "words": [
    "vcera",
    "mesto",
-   "kupit"
+   "kupit",
+   "a",
+   "v"
   ],
   "tokens": 9
  },
@@ -1356,7 +1388,8 @@
    "ak",
    "zajtra",
    "spolu",
-   "vylet"
+   "vylet",
+   "na"
   ],
   "tokens": 8
  },
@@ -1372,7 +1405,8 @@
    "autobus",
    "prist",
    "praca",
-   "neskoro"
+   "neskoro",
+   "do"
   ],
   "tokens": 8
  },
@@ -1389,7 +1423,8 @@
    "daleko",
    "ale",
    "casto",
-   "telefonovat"
+   "telefonovat",
+   "moj"
   ],
   "tokens": 8
  },
@@ -1404,7 +1439,9 @@
    "vecer",
    "pozerat",
    "potom",
-   "citat"
+   "citat",
+   "a",
+   "film"
   ],
   "tokens": 8
  },
@@ -1420,7 +1457,8 @@
    "cestovat",
    "vlak",
    "pretoze",
-   "pohodlny"
+   "pohodlny",
+   "na"
   ],
   "tokens": 8
  },
@@ -1435,7 +1473,8 @@
    "musiet",
    "zapamatat-si",
    "novy",
-   "slovo"
+   "slovo",
+   "pred"
   ],
   "tokens": 8
  },
@@ -1451,7 +1490,9 @@
    "rozumiet",
    "otazka",
    "ucitel",
-   "pomoc"
+   "pomoc",
+   "nerozumiem",
+   "o"
   ],
   "tokens": 7
  },
@@ -1466,7 +1507,9 @@
    "restauracia",
    "objednat",
    "polievka",
-   "jedlo"
+   "jedlo",
+   "a",
+   "v"
   ],
   "tokens": 9
  },
@@ -1512,7 +1555,9 @@
    "pred",
    "cesta",
    "vzdy",
-   "listok"
+   "listok",
+   "a",
+   "pas"
   ],
   "tokens": 8
  },
@@ -1528,7 +1573,8 @@
    "musiet",
    "prist",
    "aspon",
-   "hodina"
+   "hodina",
+   "na"
   ],
   "tokens": 8
  },
@@ -1543,7 +1589,8 @@
    "lietadlo",
    "odletiet",
    "neskor",
-   "cakat"
+   "cakat",
+   "preto"
   ],
   "tokens": 7
  },
@@ -1557,7 +1604,9 @@
   "words": [
    "prichod",
    "hotel",
-   "batozina"
+   "batozina",
+   "po",
+   "do"
   ],
   "tokens": 9
  },
@@ -1572,7 +1621,8 @@
    "izba",
    "balkon",
    "vidiet",
-   "more"
+   "more",
+   "z"
   ],
   "tokens": 8
  },
@@ -1601,7 +1651,9 @@
    "ak",
    "potrebovat",
    "volat",
-   "recepcia"
+   "recepcia",
+   "na",
+   "uterak"
   ],
   "tokens": 6
  },
@@ -1616,7 +1668,9 @@
    "mesto",
    "vela",
    "obchod",
-   "restauracia"
+   "restauracia",
+   "a",
+   "v"
   ],
   "tokens": 8
  },
@@ -1632,7 +1686,9 @@
    "kupovat",
    "cerstvy",
    "ovocie",
-   "zelenina"
+   "zelenina",
+   "na",
+   "a"
   ],
   "tokens": 7
  },
@@ -1708,7 +1764,10 @@
   "words": [
    "sobota",
    "byt-2",
-   "oblecenie"
+   "oblecenie",
+   "a",
+   "v",
+   "byt"
   ],
   "tokens": 7
  },
@@ -1753,7 +1812,9 @@
   "de": "Nach dem Essen geben wir die Teller in den Geschirrspüler.",
   "words": [
    "jedlo",
-   "dat"
+   "dat",
+   "do",
+   "po"
   ],
   "tokens": 6
  },
@@ -1783,7 +1844,9 @@
    "leto",
    "vela",
    "vonku",
-   "zahrada"
+   "zahrada",
+   "na",
+   "v"
   ],
   "tokens": 8
  },
@@ -1797,7 +1860,9 @@
   "words": [
    "jar",
    "rano",
-   "teply"
+   "teply",
+   "na",
+   "a"
   ],
   "tokens": 8
  },
@@ -1812,7 +1877,9 @@
    "zima",
    "chodit",
    "casto",
-   "hora"
+   "hora",
+   "na",
+   "v"
   ],
   "tokens": 6
  },
@@ -1826,7 +1893,9 @@
   "words": [
    "pocasie",
    "rychlo",
-   "zacat"
+   "zacat",
+   "a",
+   "sa"
   ],
   "tokens": 7
  },
@@ -1839,7 +1908,8 @@
   "de": "Am Himmel sind dunkle Wolken, wahrscheinlich kommt ein Gewitter.",
   "words": [
    "asi",
-   "burka"
+   "burka",
+   "na"
   ],
   "tokens": 8
  },
@@ -1886,7 +1956,8 @@
    "lekar",
    "cvicit",
    "viac",
-   "chodit"
+   "chodit",
+   "a"
   ],
   "tokens": 8
  },
@@ -1900,7 +1971,8 @@
   "words": [
    "chrbat",
    "dnes",
-   "cvicit"
+   "cvicit",
+   "preto"
   ],
   "tokens": 6
  },
@@ -1915,7 +1987,9 @@
    "lekaren",
    "kupit",
    "liek",
-   "kasel"
+   "kasel",
+   "v",
+   "proti"
   ],
   "tokens": 8
  },
@@ -1930,7 +2004,8 @@
    "ak",
    "dobre",
    "zostat",
-   "doma"
+   "doma",
+   "sa"
   ],
   "tokens": 6
  },
@@ -1945,7 +2020,8 @@
    "operacia",
    "musiet",
    "den",
-   "oddychovat"
+   "oddychovat",
+   "po"
   ],
   "tokens": 7
  },
@@ -1959,7 +2035,8 @@
   "words": [
    "vcera",
    "horucka",
-   "dnes"
+   "dnes",
+   "sa"
   ],
   "tokens": 8
  },
@@ -1972,7 +2049,8 @@
   "de": "Meine Allergie ist im Frühling normalerweise schlimmer.",
   "words": [
    "alergia",
-   "jar"
+   "jar",
+   "na"
   ],
   "tokens": 7
  },
@@ -1986,7 +2064,8 @@
   "words": [
    "vzdy",
    "vziat",
-   "voda"
+   "voda",
+   "na"
   ],
   "tokens": 7
  },
@@ -2002,7 +2081,8 @@
    "tyzden",
    "hrat",
    "tenis",
-   "priatel"
+   "priatel",
+   "s"
   ],
   "tokens": 6
  },
@@ -2032,7 +2112,10 @@
    "praca",
    "niekedy",
    "stretnut-sa",
-   "kolega"
+   "kolega",
+   "sa",
+   "po",
+   "s"
   ],
   "tokens": 7
  },
@@ -2047,7 +2130,9 @@
    "kolega",
    "hovorit",
    "po-slovensky",
-   "po-anglicky"
+   "po-anglicky",
+   "moj",
+   "po"
   ],
   "tokens": 8
  },
@@ -2110,7 +2195,8 @@
   "words": [
    "novy",
    "pocitac",
-   "stary"
+   "stary",
+   "ako"
   ],
   "tokens": 7
  },
@@ -2125,7 +2211,8 @@
    "dnes",
    "takze",
    "pracovat",
-   "dom"
+   "dom",
+   "z"
   ],
   "tokens": 7
  },
@@ -2168,7 +2255,8 @@
   "words": [
    "heslo",
    "musiet",
-   "mesiac"
+   "mesiac",
+   "zmenit"
   ],
   "tokens": 7
  },
@@ -2197,7 +2285,9 @@
   "words": [
    "skola",
    "ucit-sa",
-   "novy"
+   "novy",
+   "v",
+   "sa"
   ],
   "tokens": 8
  },
@@ -2213,7 +2303,8 @@
    "slovo",
    "vediet",
    "dobre",
-   "zapamatat-si"
+   "zapamatat-si",
+   "neviem"
   ],
   "tokens": 6
  },
@@ -2227,7 +2318,8 @@
   "words": [
    "ked",
    "citat",
-   "po-slovensky"
+   "po-slovensky",
+   "po"
   ],
   "tokens": 6
  },
@@ -2241,7 +2333,8 @@
   "words": [
    "ucitelka",
    "medzi",
-   "slovo"
+   "slovo",
+   "rozdiel"
   ],
   "tokens": 7
  },
@@ -2256,7 +2349,8 @@
    "moct",
    "povedat",
    "este",
-   "pomaly"
+   "pomaly",
+   "tu"
   ],
   "tokens": 7
  },
@@ -2270,7 +2364,9 @@
   "words": [
    "rozumiet",
    "ale",
-   "slovo"
+   "slovo",
+   "nie",
+   "rozumiem"
   ],
   "tokens": 7
  },
@@ -2284,7 +2380,8 @@
   "words": [
    "niekedy",
    "pisat",
-   "po-slovensky"
+   "po-slovensky",
+   "po"
   ],
   "tokens": 7
  },
@@ -2300,7 +2397,8 @@
    "hovorit",
    "kazdy",
    "den",
-   "cvicit"
+   "cvicit",
+   "preto"
   ],
   "tokens": 7
  },
@@ -2315,7 +2413,9 @@
    "ked",
    "nieco",
    "vediet",
-   "pytat-sa"
+   "pytat-sa",
+   "sa",
+   "neviem"
   ],
   "tokens": 6
  },
@@ -2329,7 +2429,8 @@
   "words": [
    "vcera",
    "navstivit",
-   "dedina"
+   "dedina",
+   "na"
   ],
   "tokens": 7
  },
@@ -2346,7 +2447,8 @@
    "maly",
    "mesto",
    "pri",
-   "hranica"
+   "hranica",
+   "v"
   ],
   "tokens": 8
  },
@@ -2360,7 +2462,9 @@
   "words": [
    "bratranec",
    "chodit",
-   "zriedka"
+   "zriedka",
+   "a",
+   "v"
   ],
   "tokens": 8
  },
@@ -2373,7 +2477,11 @@
   "de": "Die Nachbarn luden uns am Samstag zum Abendessen ein.",
   "words": [
    "sused",
-   "sobota"
+   "sobota",
+   "susedia",
+   "na",
+   "nas",
+   "v"
   ],
   "tokens": 7
  },
@@ -2402,7 +2510,11 @@
   "words": [
    "stary-otec",
    "pracovat",
-   "zahrada"
+   "zahrada",
+   "moj",
+   "v",
+   "stary",
+   "otec"
   ],
   "tokens": 8
  },
@@ -2416,7 +2528,9 @@
   "words": [
    "stara-mama",
    "vzdy",
-   "priniest"
+   "priniest",
+   "mama",
+   "domaci"
   ],
   "tokens": 7
  },
@@ -2430,7 +2544,10 @@
   "words": [
    "priatel",
    "stretnut-sa",
-   "najma"
+   "najma",
+   "sa",
+   "cez",
+   "s"
   ],
   "tokens": 7
  },
@@ -2445,7 +2562,8 @@
    "hoci",
    "chciet",
    "ist",
-   "kratky"
+   "kratky",
+   "na"
   ],
   "tokens": 7
  },
@@ -2458,7 +2576,9 @@
   "de": "Nach dem Abendessen gingen wir am Fluss spazieren.",
   "words": [
    "vecer",
-   "rieka"
+   "rieka",
+   "po",
+   "sa"
   ],
   "tokens": 7
  },
@@ -2485,7 +2605,8 @@
   "sk": "Na vrchol sme prišli až popoludní.",
   "de": "Den Gipfel erreichten wir erst am Nachmittag.",
   "words": [
-   "prist"
+   "prist",
+   "na"
   ],
   "tokens": 6
  },
@@ -2499,7 +2620,8 @@
   "words": [
    "cesta",
    "lahky",
-   "hore"
+   "hore",
+   "spat"
   ],
   "tokens": 7
  },
@@ -2514,7 +2636,8 @@
    "pri",
    "more",
    "zostat",
-   "tyzden"
+   "tyzden",
+   "cely"
   ],
   "tokens": 6
  },
@@ -2530,7 +2653,8 @@
    "rano",
    "plavat",
    "pred",
-   "ranajky"
+   "ranajky",
+   "este"
   ],
   "tokens": 7
  },
@@ -2544,7 +2668,9 @@
   "words": [
    "menej",
    "ludia",
-   "mesto"
+   "mesto",
+   "na",
+   "v"
   ],
   "tokens": 8
  },
@@ -2574,7 +2700,10 @@
    "dovolenka",
    "skusit",
    "menej",
-   "mobil"
+   "mobil",
+   "na",
+   "pouzivat",
+   "sa"
   ],
   "tokens": 7
  },
@@ -2588,7 +2717,8 @@
   "words": [
    "skoro",
    "dva",
-   "hodina"
+   "hodina",
+   "v"
   ],
   "tokens": 7
  },
@@ -2602,7 +2732,8 @@
   "words": [
    "tato",
    "pacit-sa",
-   "viac"
+   "viac",
+   "sa"
   ],
   "tokens": 8
  },
@@ -2633,7 +2764,8 @@
    "pred",
    "cesta",
    "citat",
-   "mesto"
+   "mesto",
+   "o"
   ],
   "tokens": 9
  },
@@ -2648,7 +2780,9 @@
    "mapa",
    "najst",
    "cesta",
-   "hotel"
+   "hotel",
+   "na",
+   "k"
   ],
   "tokens": 8
  },
@@ -2664,7 +2798,8 @@
    "ponahlat-sa",
    "moct",
    "ist",
-   "taxik"
+   "taxik",
+   "sa"
   ],
   "tokens": 6
  },
@@ -2680,7 +2815,8 @@
    "lacny",
    "hoci",
    "cesta",
-   "dlhy"
+   "dlhy",
+   "lacnejsi"
   ],
   "tokens": 7
  },
@@ -2697,7 +2833,8 @@
    "kym",
    "prist",
    "nas",
-   "vlak"
+   "vlak",
+   "na"
   ],
   "tokens": 8
  },
@@ -2711,7 +2848,10 @@
   "words": [
    "prichod",
    "stretnut-sa",
-   "priatel"
+   "priatel",
+   "sa",
+   "po",
+   "s"
   ],
   "tokens": 8
  },
@@ -2726,7 +2866,8 @@
    "uz",
    "neskoro",
    "ist",
-   "rovno"
+   "rovno",
+   "preto"
   ],
   "tokens": 8
  },
@@ -2742,7 +2883,9 @@
    "chciet",
    "zostat",
    "doma",
-   "oddychovat"
+   "oddychovat",
+   "a",
+   "v"
   ],
   "tokens": 7
  },
@@ -2803,7 +2946,8 @@
    "vybrat-si",
    "maly",
    "hotel",
-   "pri"
+   "pri",
+   "nakoniec"
   ],
   "tokens": 8
  },
@@ -2821,7 +2965,8 @@
    "dokoncit",
    "uloha",
    "este",
-   "pred"
+   "pred",
+   "sa"
   ],
   "tokens": 13
  },
@@ -2838,7 +2983,8 @@
    "zhorsit",
    "musiet",
    "rozhodnut-sa",
-   "co"
+   "co",
+   "sa"
   ],
   "tokens": 11
  },
@@ -2909,7 +3055,9 @@
    "nazor",
    "viac",
    "zamerat-sa",
-   "kvalita"
+   "kvalita",
+   "na",
+   "sa"
   ],
   "tokens": 14
  },
@@ -2924,7 +3072,8 @@
    "napriek",
    "problem",
    "projekt",
-   "dokoncit"
+   "dokoncit",
+   "sa"
   ],
   "tokens": 9
  },
@@ -2941,7 +3090,10 @@
    "najma",
    "ako",
    "dobre",
-   "uloha"
+   "uloha",
+   "na",
+   "sa",
+   "od"
   ],
   "tokens": 11
  },
@@ -2959,7 +3111,8 @@
    "ciel",
    "musiet",
    "postupne",
-   "pracovny"
+   "pracovny",
+   "zmenit"
   ],
   "tokens": 10
  },
@@ -2977,7 +3130,8 @@
    "dolezity",
    "otazka",
    "vobec",
-   "riesit"
+   "riesit",
+   "po"
   ],
   "tokens": 12
  },
@@ -2994,7 +3148,8 @@
    "kazdy",
    "zamestnanec",
    "zodpovednost",
-   "projekt"
+   "projekt",
+   "za"
   ],
   "tokens": 11
  },
@@ -3010,7 +3165,9 @@
    "zabezpecit",
    "proces",
    "jednoduchy",
-   "spolahlivy"
+   "spolahlivy",
+   "a",
+   "cely"
   ],
   "tokens": 11
  },
@@ -3042,7 +3199,8 @@
    "rozpocet",
    "obmedzeny",
    "musiet",
-   "projekt"
+   "projekt",
+   "z"
   ],
   "tokens": 11
  },
@@ -3060,7 +3218,9 @@
    "system",
    "zvysit",
    "znizit",
-   "chyba"
+   "chyba",
+   "a",
+   "ze"
   ],
   "tokens": 11
  },
@@ -3076,7 +3236,9 @@
    "najma",
    "problem",
    "ovplyvnit",
-   "praca"
+   "praca",
+   "na",
+   "sa"
   ],
   "tokens": 11
  },
@@ -3094,7 +3256,8 @@
    "prispiet",
    "vztah",
    "medzi",
-   "oddelenie"
+   "oddelenie",
+   "k"
   ],
   "tokens": 11
  },
@@ -3111,7 +3274,10 @@
    "reagovat",
    "okamzite",
    "najst",
-   "pricina"
+   "pricina",
+   "a",
+   "jej",
+   "sa"
   ],
   "tokens": 12
  },
@@ -3127,7 +3293,9 @@
    "mozny",
    "problem",
    "riesit",
-   "dolezity"
+   "dolezity",
+   "nie",
+   "preto"
   ],
   "tokens": 11
  },
@@ -3141,7 +3309,9 @@
   "words": [
    "vyhodny",
    "kvalita",
-   "chyba"
+   "chyba",
+   "z",
+   "do"
   ],
   "tokens": 12
  },
@@ -3157,7 +3327,8 @@
    "navrhnut",
    "riesenie",
    "moct",
-   "peniaze"
+   "peniaze",
+   "usetrit"
   ],
   "tokens": 10
  },
@@ -3174,7 +3345,8 @@
    "odmietnut",
    "ale",
    "neskor",
-   "vyhoda"
+   "vyhoda",
+   "v"
   ],
   "tokens": 12
  },
@@ -3193,7 +3365,8 @@
    "dostupny",
    "moznost",
    "mozny",
-   "nasledok"
+   "nasledok",
+   "a"
   ],
   "tokens": 12
  },
@@ -3208,7 +3381,8 @@
    "dohoda",
    "iba",
    "ak",
-   "potvrdit"
+   "potvrdit",
+   "platit"
   ],
   "tokens": 11
  },
@@ -3241,7 +3415,8 @@
    "projekt",
    "ziskat",
    "vela",
-   "skusenost"
+   "skusenost",
+   "pri"
   ],
   "tokens": 11
  },
@@ -3258,7 +3433,8 @@
    "zavisiet",
    "len",
    "rozpocet",
-   "ale"
+   "ale",
+   "od"
   ],
   "tokens": 12
  },
@@ -3275,7 +3451,11 @@
    "zlepsit",
    "musiet",
    "vediet",
-   "chyba"
+   "chyba",
+   "a",
+   "z",
+   "sa",
+   "prijat"
   ],
   "tokens": 13
  },
@@ -3292,7 +3472,8 @@
    "jednoduchy",
    "kym",
    "poznat",
-   "vsetko"
+   "vsetko",
+   "sa"
   ],
   "tokens": 9
  },
@@ -3325,7 +3506,9 @@
    "vyjadrit",
    "svoj",
    "nazor",
-   "dovod"
+   "dovod",
+   "a",
+   "pocas"
   ],
   "tokens": 11
  },
@@ -3343,7 +3526,10 @@
    "rozumiet",
    "preco",
    "niekto",
-   "moct"
+   "moct",
+   "mat",
+   "rozumiem",
+   "s"
   ],
   "tokens": 12
  },
@@ -3373,7 +3559,9 @@
   "de": "Im Artikel führte der Autor mehrere Beispiele an, die sein Hauptargument stützen.",
   "words": [
    "uviest",
-   "jeho"
+   "jeho",
+   "hlavny",
+   "v"
   ],
   "tokens": 11
  },
@@ -3389,7 +3577,11 @@
    "obsahovat",
    "udaj",
    "ale",
-   "vyznam"
+   "vyznam",
+   "chyba",
+   "v",
+   "udaje",
+   "ich"
   ],
   "tokens": 11
  },
@@ -3406,7 +3598,8 @@
    "informacia",
    "dobry",
    "overit",
-   "spolahlivy"
+   "spolahlivy",
+   "dobre"
   ],
   "tokens": 11
  },
@@ -3421,7 +3614,10 @@
    "rychlo",
    "sprava",
    "musiet",
-   "pravdivy"
+   "pravdivy",
+   "na",
+   "sa",
+   "byt"
   ],
   "tokens": 10
  },
@@ -3436,7 +3632,9 @@
    "ked",
    "citat",
    "sprava",
-   "nazor"
+   "nazor",
+   "sa",
+   "od"
   ],
   "tokens": 10
  },
@@ -3485,7 +3683,8 @@
    "postupne",
    "sposob",
    "pracovat",
-   "cestovat"
+   "cestovat",
+   "a"
   ],
   "tokens": 10
  },
@@ -3534,7 +3733,11 @@
    "heslo",
    "dostatocny",
    "dlhy",
-   "pouzivat"
+   "pouzivat",
+   "a",
+   "malo",
+   "sa",
+   "byt"
   ],
   "tokens": 13
  },
@@ -3550,7 +3753,8 @@
    "praca",
    "udaje",
    "nevyhnutny",
-   "ochrana"
+   "ochrana",
+   "s"
   ],
   "tokens": 9
  },
@@ -3612,7 +3816,9 @@
    "ludia",
    "zaujimat-sa",
    "ako",
-   "udaje"
+   "udaje",
+   "sa",
+   "o"
   ],
   "tokens": 12
  },
@@ -3648,7 +3854,9 @@
    "iba",
    "cena",
    "ale",
-   "spolahlivy"
+   "spolahlivy",
+   "na",
+   "sa"
   ],
   "tokens": 12
  },
@@ -3663,7 +3871,8 @@
    "ak",
    "chciet",
    "znizit",
-   "musiet"
+   "musiet",
+   "zmenit"
   ],
   "tokens": 10
  },
@@ -3695,7 +3904,8 @@
    "sposob",
    "moct",
    "znizit",
-   "mesto"
+   "mesto",
+   "v"
   ],
   "tokens": 10
  },
@@ -3710,7 +3920,8 @@
    "mesto",
    "rozsirit",
    "siet",
-   "dostupny"
+   "dostupny",
+   "pre"
   ],
   "tokens": 11
  },
@@ -3727,7 +3938,8 @@
    "menej",
    "ludia",
    "jazdit",
-   "auto"
+   "auto",
+   "sa"
   ],
   "tokens": 10
  },
@@ -3765,7 +3977,8 @@
    "ale",
    "zaroven",
    "zodpovednost",
-   "slovo"
+   "slovo",
+   "za"
   ],
   "tokens": 14
  },
@@ -3797,7 +4010,9 @@
    "volby",
    "ludia",
    "viac",
-   "zaujimat-sa"
+   "zaujimat-sa",
+   "o",
+   "sa"
   ],
   "tokens": 10
  },
@@ -3832,7 +4047,8 @@
    "rychly",
    "ponuka",
    "cena",
-   "zvysit"
+   "zvysit",
+   "sa"
   ],
   "tokens": 10
  },
@@ -3848,7 +4064,8 @@
    "kvalita",
    "hladat",
    "novy",
-   "riesenie"
+   "riesenie",
+   "a"
   ],
   "tokens": 10
  },
@@ -3867,7 +4084,8 @@
    "vyrobok",
    "ale",
    "jeho",
-   "kvalita"
+   "kvalita",
+   "o"
   ],
   "tokens": 11
  },
@@ -3883,7 +4101,8 @@
    "dovera",
    "najma",
    "kvalita",
-   "spolahlivy"
+   "spolahlivy",
+   "a"
   ],
   "tokens": 11
  },
@@ -3917,7 +4136,8 @@
    "prilis",
    "vyhodny",
    "overit",
-   "vsetko"
+   "vsetko",
+   "sa"
   ],
   "tokens": 10
  },
@@ -3950,7 +4170,9 @@
    "pretoze",
    "pokazit-sa",
    "uz",
-   "den"
+   "den",
+   "sa",
+   "po"
   ],
   "tokens": 11
  },
@@ -3966,7 +4188,8 @@
    "problem",
    "uznat",
    "okamzite",
-   "zariadenie"
+   "zariadenie",
+   "a"
   ],
   "tokens": 9
  },
@@ -3981,7 +4204,10 @@
    "ak",
    "zakaznik",
    "co",
-   "ocakavat"
+   "ocakavat",
+   "nie",
+   "spokojny",
+   "vysvetlit"
   ],
   "tokens": 11
  },
@@ -3997,7 +4223,8 @@
    "cestovat",
    "vyhnut-sa",
    "prilis",
-   "turista"
+   "turista",
+   "sa"
   ],
   "tokens": 11
  },
@@ -4012,7 +4239,8 @@
    "najprv",
    "informacia",
    "potom",
-   "ubytovanie"
+   "ubytovanie",
+   "a"
   ],
   "tokens": 11
  },
@@ -4029,7 +4257,9 @@
    "daleko",
    "pokojny",
    "prostredie",
-   "cena"
+   "cena",
+   "a",
+   "od"
   ],
   "tokens": 12
  },
@@ -4045,7 +4275,10 @@
    "musiet",
    "pretoze",
    "zhorsit",
-   "pocasie"
+   "pocasie",
+   "sa",
+   "pocas",
+   "zmenit"
   ],
   "tokens": 11
  },
@@ -4063,7 +4296,9 @@
    "viac",
    "vsimnut-si",
    "prisposobit-sa",
-   "situacia"
+   "situacia",
+   "a",
+   "sa"
   ],
   "tokens": 12
  },
@@ -4080,7 +4315,8 @@
    "vziat",
    "iba",
    "skutocny",
-   "potrebovat"
+   "potrebovat",
+   "na"
   ],
   "tokens": 10
  },
@@ -4097,7 +4333,8 @@
    "vyuzit",
    "citat",
    "alebo",
-   "den"
+   "den",
+   "na"
   ],
   "tokens": 12
  },
@@ -4112,7 +4349,8 @@
    "pri",
    "ucit-sa",
    "aspon",
-   "slovo"
+   "slovo",
+   "sa"
   ],
   "tokens": 11
  },
@@ -4128,7 +4366,8 @@
    "jazyk",
    "moct",
    "vytvorit",
-   "prijemny"
+   "prijemny",
+   "v"
   ],
   "tokens": 10
  },
@@ -4142,7 +4381,9 @@
   "words": [
    "ked",
    "rozumiet",
-   "iba"
+   "iba",
+   "nerozumiem",
+   "o"
   ],
   "tokens": 12
  },
@@ -4176,7 +4417,8 @@
    "slovo",
    "zapamatat-si",
    "ked",
-   "pouzivat"
+   "pouzivat",
+   "ich"
   ],
   "tokens": 11
  },
@@ -4190,7 +4432,9 @@
   "words": [
    "ak",
    "chyba",
-   "len"
+   "len",
+   "sa",
+   "namiesto"
   ],
   "tokens": 14
  },
@@ -4208,7 +4452,8 @@
    "rozumiet",
    "viac",
    "bez",
-   "prekladat"
+   "prekladat",
+   "rozumiem"
   ],
   "tokens": 11
  },
@@ -4226,7 +4471,8 @@
    "zacat",
    "hovorit",
    "bez",
-   "chyba"
+   "chyba",
+   "z"
   ],
   "tokens": 13
  },
@@ -4242,7 +4488,8 @@
    "este",
    "hovorit",
    "dokazat",
-   "situacia"
+   "situacia",
+   "sa"
   ],
   "tokens": 11
  },
@@ -4259,7 +4506,9 @@
    "vyznam",
    "nie",
    "kazdy",
-   "chyba"
+   "chyba",
+   "na",
+   "sa"
   ],
   "tokens": 13
  },
@@ -4304,7 +4553,10 @@
    "mesiac",
    "ziskat",
    "dovera",
-   "hovorit"
+   "hovorit",
+   "a",
+   "sa",
+   "po"
   ],
   "tokens": 12
  },
@@ -4320,7 +4572,8 @@
    "ze",
    "jazyk",
    "ucinny",
-   "ucit-sa"
+   "ucit-sa",
+   "s"
   ],
   "tokens": 13
  },
@@ -4336,7 +4589,9 @@
    "clovek",
    "ucit-sa",
    "sposob",
-   "najst"
+   "najst",
+   "sa",
+   "preto"
   ],
   "tokens": 13
  },
@@ -4352,7 +4607,8 @@
    "stanovit",
    "ciel",
    "udrzat",
-   "proces"
+   "proces",
+   "pocas"
   ],
   "tokens": 12
  },
@@ -4368,7 +4624,9 @@
    "rozumiet",
    "kazdy",
    "slovo",
-   "zmysel"
+   "zmysel",
+   "nie",
+   "hlavny"
   ],
   "tokens": 12
  },
@@ -4383,7 +4641,10 @@
    "ked",
    "ucit-sa",
    "novy",
-   "zapamatat-si"
+   "zapamatat-si",
+   "v",
+   "sa",
+   "ich"
   ],
   "tokens": 12
  },
@@ -4401,7 +4662,9 @@
    "pri",
    "moct",
    "hovorit",
-   "po-slovensky"
+   "po-slovensky",
+   "sa",
+   "po"
   ],
   "tokens": 11
  },
@@ -4414,7 +4677,10 @@
   "de": "Auch wenn ich einen Fehler mache, führe ich das Gespräch weiter und korrigiere ihn erst später.",
   "words": [
    "chyba",
-   "neskor"
+   "neskor",
+   "a",
+   "v",
+   "ked"
   ],
   "tokens": 12
  },
@@ -4430,7 +4696,9 @@
    "vediet",
    "ale",
    "dokazat",
-   "pouzit"
+   "pouzit",
+   "v",
+   "ich"
   ],
   "tokens": 12
  },
@@ -4446,7 +4714,8 @@
    "ze",
    "maly",
    "kazdy",
-   "pokrok"
+   "pokrok",
+   "po"
   ],
   "tokens": 12
  }
