@@ -286,6 +286,28 @@
   "strength": 0
  },
  {
+  "id": "mam-rad",
+  "sk": "Mám rád...",
+  "de": "Ich mag...",
+  "context": "Kennenlernen",
+  "level": "A1",
+  "src": "neu",
+  "box": 1,
+  "due": null,
+  "strength": 0
+ },
+ {
+  "id": "nemam-rad",
+  "sk": "Nemám rád...",
+  "de": "Ich mag nicht...",
+  "context": "Kennenlernen",
+  "level": "A1",
+  "src": "neu",
+  "box": 1,
+  "due": null,
+  "strength": 0
+ },
+ {
   "id": "prosim",
   "sk": "Prosím",
   "de": "Bitte",

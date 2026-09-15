@@ -951,8 +951,7 @@
   "de": "Ich habe blaue Augen.",
   "words": [
    "mat",
-   "modry",
-   "oci"
+   "modry"
   ],
   "tokens": 3
  },
@@ -1287,8 +1286,7 @@
   "words": [
    "rozumiet",
    "tento",
-   "slovo",
-   "nerozumiem"
+   "slovo"
   ],
   "tokens": 3
  },
@@ -1491,7 +1489,6 @@
    "otazka",
    "ucitel",
    "pomoc",
-   "nerozumiem",
    "o"
   ],
   "tokens": 7
@@ -2303,8 +2300,7 @@
    "slovo",
    "vediet",
    "dobre",
-   "zapamatat-si",
-   "neviem"
+   "zapamatat-si"
   ],
   "tokens": 6
  },
@@ -2365,8 +2361,7 @@
    "rozumiet",
    "ale",
    "slovo",
-   "nie",
-   "rozumiem"
+   "nie"
   ],
   "tokens": 7
  },
@@ -2414,8 +2409,7 @@
    "nieco",
    "vediet",
    "pytat-sa",
-   "sa",
-   "neviem"
+   "sa"
   ],
   "tokens": 6
  },
@@ -3528,7 +3522,6 @@
    "niekto",
    "moct",
    "mat",
-   "rozumiem",
    "s"
   ],
   "tokens": 12
@@ -4382,7 +4375,6 @@
    "ked",
    "rozumiet",
    "iba",
-   "nerozumiem",
    "o"
   ],
   "tokens": 12
@@ -4452,8 +4444,7 @@
    "rozumiet",
    "viac",
    "bez",
-   "prekladat",
-   "rozumiem"
+   "prekladat"
   ],
   "tokens": 11
  },
